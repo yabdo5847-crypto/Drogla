@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart | DROGLA</title>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/home.css">
+<script>
+    if (localStorage.getItem('drogla_theme') === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+    }
+</script>
+    <style>
+        .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; margin-bottom: 3rem; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.05em;}
+        @media(max-width:768px) {
+          .cart-two-col { flex-direction: column !important; }
+          .cart-two-col > div:last-child { position:static !important; }
+        }
+    </style>
+</head>
+<body>
+
+
+    <!-- NAV -->
+    <nav id="nav">
+      <a href="index.html" class="nav-logo">Drogla</a>
+      <ul class="nav-links">
+        <li class="nav-item">
+          <a href="#">MEN ⌄</a>
+          <div class="mega-menu">
+            <div class="mega-col">
+              <span class="mega-title">TOPS</span>
+              <a href="shop.html?cat=men-tops" class="mega-link">SHOP ALL TOPS</a>
+              <a href="shop.html?cat=men-tshirts" class="mega-link">T-SHIRTS</a>
+            </div>
+            <div class="mega-col">
+              <span class="mega-title">BOTTOMS</span>
+              <a href="shop.html?cat=men-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="#">WOMEN ⌄</a>
+          <div class="mega-menu">
+            <div class="mega-col">
+              <span class="mega-title">TOPS</span>
+              <a href="shop.html?cat=women-tops" class="mega-link">SHOP ALL TOPS</a>
+              <a href="shop.html?cat=women-tshirts" class="mega-link">T-SHIRTS</a>
+            </div>
+            <div class="mega-col">
+              <span class="mega-title">BOTTOMS</span>
+              <a href="shop.html?cat=women-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item"><a href="shop.html">Collection</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+        <a href="cart.html" class="nav-cart" id="cartBtn">Bag (<span id="cart-count">0</span>)</a>
+        <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MOBILE DRAWER -->
+    <div class="mobile-nav-drawer" id="mobileDrawer">
+      <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <ul class="mobile-nav-links">
+        <li><span>Men</span>
+          <ul class="mobile-nav-submenu">
+            <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
+            <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
+            <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
+          </ul>
+        </li>
+        <li><span>Women</span>
+          <ul class="mobile-nav-submenu">
+            <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
+            <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
+            <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
+          </ul>
+        </li>
+        <li><a href="shop.html">Collection</a></li>
+      </ul>
+      <div class="mobile-nav-bottom">
+        <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
+      </div>
+    </div>
+
+    <div class="admin-container fade-up visible">
+      <!-- Breadcrumb -->
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:2.5rem; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted);">
+        <a href="index.html" style="color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Home</a>
+        <span>›</span>
+        <a href="shop.html" style="color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Collection</a>
+        <span>›</span>
+        <span style="color:var(--text-main); font-weight:600;">Your Bag</span>
+      </div>
+
+      <div class="cart-two-col" style="display:flex; gap:3.5rem; align-items:flex-start;">
+        <!-- Left: Items -->
+        <div style="flex:1.4;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2rem; border-bottom:1px solid rgba(92,26,26,0.08); padding-bottom:1.5rem;">
+            <h1 style="font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,3.2rem); font-weight:300; letter-spacing:-0.01em; color:var(--text-main);">Your Bag</h1>
+            <span id="bag-count" style="font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted);"></span>
+          </div>
+          <div id="cart-container"></div>
+        </div>
+        <!-- Right: Summary -->
+        <div style="flex:0.6; position:sticky; top:120px;">
+          <div id="cart-summary" class="cart-summary-box" style="display:none;">
+            <div style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:1.5rem; font-weight:600; border-bottom:1px solid rgba(92,26,26,0.08); padding-bottom:1rem;">Order Summary</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem; font-size:0.78rem;">
+              <span style="color:var(--text-muted);">Subtotal</span>
+              <span style="font-weight:600;">EGP <span id="total-price">0.00</span></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem; font-size:0.78rem;">
+              <span style="color:var(--text-muted);">Shipping</span>
+              <span style="color:var(--text-muted); font-size:0.7rem; letter-spacing:0.05em;">Calculated at checkout</span>
+            </div>
+            <div style="border-top:1px solid rgba(92,26,26,0.08); margin:1.5rem 0; padding-top:1.5rem; display:flex; justify-content:space-between; align-items:baseline;">
+              <span style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:300;">Estimated Total</span>
+              <span style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; color:var(--text-main);">EGP <span id="total-price-summary">0.00</span></span>
+            </div>
+            <a href="checkout.html" class="checkout-btn" style="margin-top:0.5rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; letter-spacing:0.2em; text-decoration:none;">Proceed to Checkout ›</a>
+            <a href="shop.html" style="display:block; text-align:center; margin-top:1.2rem; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-top">
+        <div>
+          <span class="footer-brand-name">Drogla</span>
+          <p class="footer-brand-tag">Digital Grit streetwear.<br/>Bridging virtual aesthetics with physical urban durability since 2026.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const mobileClose = document.getElementById('mobileClose');
+    function closeDrawer() {
+      hamburger.classList.remove('open');
+      mobileDrawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', () => {
+      const open = hamburger.classList.toggle('open');
+      mobileDrawer.classList.toggle('open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
+    mobileDrawer.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', closeDrawer);
+    });
+
+
+
+    // Nav scroll
+    const nav=document.getElementById('nav');
+    window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
+
+    // Mirror total-price into total-price-summary
+    (function() {
+      const src = document.getElementById('total-price');
+      const mirror = document.getElementById('total-price-summary');
+      if (!src || !mirror) return;
+      const observer = new MutationObserver(() => { mirror.textContent = src.textContent; });
+      observer.observe(src, { childList: true, characterData: true, subtree: true });
+    })();
+    </script>
+</body>
+</html>

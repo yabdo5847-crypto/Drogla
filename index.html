@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="google-site-verification" content="JORWp3O4ruzTiGLEolA9uF6uzqGYvpIfL3EKO3wZSVU" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Drogla - Premium Digital Grit streetwear. Crafted for those who move between worlds. Shop our New Collection 2026." />
+  <meta name="keywords"
+    content="Drogla, streetwear, oversized tee, track pants, fashion, digital grit, premium quality" />
+  <meta name="author" content="Drogla" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Drogla — New Collection 2026" />
+  <meta property="og:description"
+    content="Premium Digital Grit streetwear. Crafted for those who move between worlds. Shop our New Collection." />
+  <meta property="og:site_name" content="Drogla" />
+
+  <title>Drogla — New Collection 2026</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/home.css">
+  <script>
+    if (localStorage.getItem('drogla_theme') === 'dark') {
+      document.documentElement.classList.add('dark-mode'); // for future proofing
+      document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+    }
+  </script>
+</head>
+
+<body>
+
+
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">Drogla</a>
+    <ul class="nav-links">
+      <li class="nav-item">
+        <a href="#">MEN ⌄</a>
+        <div class="mega-menu">
+          <div class="mega-col">
+            <span class="mega-title">TOPS</span>
+            <a href="shop.html?cat=men-tops" class="mega-link">SHOP ALL TOPS</a>
+            <a href="shop.html?cat=men-tshirts" class="mega-link">T-SHIRTS</a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-title">BOTTOMS</span>
+            <a href="shop.html?cat=men-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="#">WOMEN ⌄</a>
+        <div class="mega-menu">
+          <div class="mega-col">
+            <span class="mega-title">TOPS</span>
+            <a href="shop.html?cat=women-tops" class="mega-link">SHOP ALL TOPS</a>
+            <a href="shop.html?cat=women-tshirts" class="mega-link">T-SHIRTS</a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-title">BOTTOMS</span>
+            <a href="shop.html?cat=women-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item"><a href="shop.html">Collection</a></li>
+      <li class="nav-item"><a href="#value">The Value</a></li>
+    </ul>
+    <div class="nav-right">
+      <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </svg></button>
+      <a href="cart.html" class="nav-cart" id="cartBtn">Bag (<span id="cart-count">0</span>)</a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE DRAWER -->
+  <div class="mobile-nav-drawer" id="mobileDrawer">
+    <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+    <ul class="mobile-nav-links">
+      <li><span>Men</span>
+        <ul class="mobile-nav-submenu">
+          <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
+          <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
+        </ul>
+      </li>
+      <li><span>Women</span>
+        <ul class="mobile-nav-submenu">
+          <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
+          <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
+        </ul>
+      </li>
+      <li><a href="shop.html">Collection</a></li>
+      <li><a href="#value" id="mobileValueLink">The Value</a></li>
+    </ul>
+    <div class="mobile-nav-bottom">
+      <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
+    </div>
+  </div>
+
+  <!-- FLOATING CART FAB (MOBILE) -->
+  <a href="cart.html" class="cart-fab" id="cartFab" aria-label="View Bag">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+      <path d="M3 6h18" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+    <span class="cart-fab-badge" id="cart-fab-count">0</span>
+  </a> 
+  <!-- HERO -->
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="video/bg.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <!-- Desktop content -->
+      <div class="hero-desktop-content">
+        <p class="hero-eyebrow">New Collection — 2026</p>
+        <h1 class="hero-title">The <em>Drogla</em><br />Collection</h1>
+        <p class="hero-sub">Crafted for those who move between worlds.<br />Grit encoded in every thread.</p>
+        <div class="hero-ctas">
+          <a href="shop.html" class="btn-light">Shop Now</a>
+          <a href="#value" class="btn-outline-light">About The Value</a>
+        </div>
+      </div>
+      <!-- Mobile pill button only -->
+      <a href="shop.html" class="btn-hero-pill">Shop Collection</a>
+    </div>
+    <div class="hero-scroll">
+      <span class="scroll-label">Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- BNPL BAR -->
+  <div class="bnpl-bar">
+    <span>Free shipping over 1000 EGP</span>
+    <span>·</span>
+    <strong>Buy Now, Pay Later — Klarna & Afterpay</strong>
+    <span>·</span>
+    <span>Global delivery</span>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-inner" id="marq">
+      <span class="marquee-item">New Collection 2026</span>
+      <span class="marquee-item"><strong>//</strong> Digital Grit</span>
+      <span class="marquee-item">The Value is Open</span>
+      <span class="marquee-item"><strong>//</strong> Oversized Tee — Burgundy</span>
+      <span class="marquee-item">Wide-Leg Track Pant — Black</span>
+      <span class="marquee-item"><strong>//</strong> Limited Drop</span>
+      <span class="marquee-item">New Collection 2026</span>
+      <span class="marquee-item"><strong>//</strong> Digital Grit</span>
+      <span class="marquee-item">The Value is Open</span>
+      <span class="marquee-item"><strong>//</strong> Oversized Tee — Burgundy</span>
+      <span class="marquee-item">Wide-Leg Track Pant — Black</span>
+      <span class="marquee-item"><strong>//</strong> Limited Drop</span>
+    </div>
+  </div>
+
+  <!-- COLLECTION -->
+  <section id="collection">
+    <div class="collection-hdr fade-up">
+      <div>
+        <p class="s-label">SS26</p>
+        <h2 class="s-title">New <em>Arrivals</em></h2>
+        <div class="s-rule"></div>
+      </div>
+      <a href="shop.html" class="btn-text">View All →</a>
+    </div>
+    <div class="collection-grid" id="home-collection-grid">
+      <p style="color:var(--text-muted); font-size: 0.8rem; padding: 2rem 0;">Loading latest arrivals...</p>
+    </div>
+  </section>
+
+  <!-- THE VALUE -->
+  <section class="value-section" id="value">
+    <div class="value-inner">
+      <div class="value-visual fade-up">
+        <div class="value-frame"></div>
+        <video class="value-video" autoplay muted loop playsinline>
+          <source src="video/bb.mp4" type="video/mp4" />
+        </video>
+        <div class="value-badge-float">Premium Quality</div>
+      </div>
+      <div class="value-content fade-up" style="transition-delay:.15s">
+        <p class="s-label">Our Promise</p>
+        <h2 class="s-title">The <em>Value</em></h2>
+        <div class="s-rule"></div>
+        <p class="value-desc">At Drogla, we don't just sell clothes; we deliver an experience. Every piece is crafted
+          with uncompromising quality, designed to elevate your personal style, and shipped to your door with unmatched
+          speed.</p>
+        <ul class="value-perks">
+          <li>Uncompromising Premium Quality: Fabrics engineered for durability and ultimate comfort.</li>
+          <li>Lightning-Fast Shipping: Get your fits delivered exactly when you need them.</li>
+          <li>Cutting-Edge Styling: Designs that bridge modern aesthetics with street-ready grit.</li>
+          <li>Flawless Fit Guarantee: Tailored to perfection to elevate your everyday look.</li>
+        </ul>
+        <div class="value-ctas">
+          <a href="shop.html" class="btn-primary" style="text-decoration:none;">Shop Collection</a>
+          <a href="#" class="btn-outline" style="text-decoration:none;">Discover More</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <span class="footer-brand-name">Drogla</span>
+        <p class="footer-brand-tag">Digital Grit streetwear.<br />Bridging virtual aesthetics with physical urban
+          durability since 2026.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social">IG</a>
+          <a href="#" class="footer-social">TK</a>
+          <a href="#" class="footer-social">TW</a>
+          <a href="#" class="footer-social">YT</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Shop</p>
+        <ul>
+          <li><a href="shop.html">New Arrivals</a></li>
+          <li><a href="shop.html">Tops</a></li>
+          <li><a href="shop.html">Bottoms</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Help</p>
+        <ul>
+          <li><a href="#">Sizing Guide</a></li>
+          <li><a href="#">Shipping & Returns</a></li>
+          <li><a href="#">Track Your Order</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
+      <div class="footer-pay">
+        <span class="pay-tag">Klarna</span>
+        <span class="pay-tag">Afterpay</span>
+        <span class="pay-tag">Visa</span>
+        <span class="pay-tag">Mastercard</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const mobileClose = document.getElementById('mobileClose');
+    function closeDrawer() {
+      hamburger.classList.remove('open');
+      mobileDrawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', () => {
+      const open = hamburger.classList.toggle('open');
+      mobileDrawer.classList.toggle('open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
+    // Close drawer on link click
+    mobileDrawer.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', closeDrawer);
+    });
+
+
+
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60) });
+
+    // Fade up on scroll
+    const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }), { threshold: .12 });
+    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+    // Fetch Dynamic Products for Homepage
+    document.addEventListener('DOMContentLoaded', async () => {
+      const grid = document.getElementById('home-collection-grid');
+      if (!grid) return;
+
+      try {
+        // Fetch top 3 products
+        const { data: products, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('id', { ascending: false })
+          .limit(3);
+
+        if (error) throw error;
+
+        if (products && products.length > 0) {
+          grid.innerHTML = ''; // clear loading text
+          products.forEach((p, idx) => {
+            const firstImage = (p.image && p.image.split(',')[0].trim()) || 'https://via.placeholder.com/800x1000/16161a/ffffff?text=DROGLA';
+            const isVideo = firstImage.match(/\.(mp4|webm)$/i);
+
+            const mediaHTML = isVideo
+              ? `<video class="placeholder-video" autoplay muted loop playsinline><source src="${firstImage}" type="video/mp4"/></video>`
+              : `<img src="${firstImage}" alt="${p.name}" class="card-img">`;
+
+            const card = document.createElement('a');
+            card.href = `product.html?id=${p.id}`;
+            card.className = 'product-card fade-up visible';
+            card.style.transitionDelay = `${idx * 0.1}s`;
+            card.innerHTML = `
+                  <div class="card-img-wrap">
+                    ${idx === 0 ? '<div class="badge-new card-badge">New</div>' : ''}
+                    <div class="card-img-placeholder">
+                      ${mediaHTML}
+                    </div>
+                    <div class="card-actions">
+                      <button class="btn-add">Explore</button>
+                    </div>
+                  </div>
+                  <div class="card-info">
+                    <p class="card-cat">${p.category || 'Apparel'}</p>
+                    <p class="card-name">${p.name}</p>
+                    <div class="card-foot">
+                      <span class="card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
+                      <span class="card-stock">In Stock</span>
+                    </div>
+                  </div>
+                `;
+
+
+
+            grid.appendChild(card);
+          });
+        } else {
+          grid.innerHTML = '<p style="color:var(--text-muted); font-size: 0.8rem; padding: 2rem 0;">No products found in store.</p>';
+        }
+      } catch (err) {
+        console.error('Error fetching home products:', err);
+        grid.innerHTML = '<p style="color:var(--text-muted); font-size: 0.8rem; padding: 2rem 0;">Failed to load products.</p>';
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="View product details on Drogla. Premium Digital Grit streetwear. Crafted for those who move between worlds." />
+    <meta name="keywords" content="Drogla product, streetwear, fashion, premium quality, digital grit" />
+    <meta name="author" content="Drogla" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="product" />
+    <meta property="og:title" content="Product | DROGLA" />
+    <meta property="og:description" content="View product details on Drogla. Premium Digital Grit streetwear." />
+    <meta property="og:site_name" content="Drogla" />
+    
+    <title>Product | DROGLA</title>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/home.css">
+<script>
+    if (localStorage.getItem('drogla_theme') === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+    }
+</script>
+    <style>
+        /* ── Desktop ── */
+        .shop-container { padding: 140px 3rem 6rem; min-height: 80vh; }
+        #loader { text-align: center; padding: 2rem; color: var(--text-muted); display: none; }
+        #loader.active { display: block; }
+
+        /* ── Product gallery thumbnails ── */
+        #product-gallery {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        #product-gallery::-webkit-scrollbar { display: none; }
+        #product-gallery img,
+        #product-gallery video {
+            width: 80px;
+            height: 100px;
+            object-fit: cover;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        #product-gallery img.active,
+        #product-gallery video.active {
+            border-color: var(--burgundy);
+        }
+
+        /* ── Qty selector ── */
+        .qty-selector { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+        #qty-minus, #qty-plus {
+            background: transparent;
+            border: 1px solid rgba(110,108,105,0.3);
+            color: var(--text-main);
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s;
+            touch-action: manipulation;
+        }
+        #qty-minus:hover, #qty-plus:hover { border-color: var(--burgundy); }
+        #qty-val { font-weight: 600; font-size: 1.1rem; min-width: 24px; text-align: center; }
+
+        /* ── Selector labels & section spacing ── */
+        .selector-label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .size-section {
+            margin-bottom: 28px;
+        }
+        .qty-section {
+            margin-bottom: 30px;
+        }
+
+        /* ── Product skeleton states ── */
+        .product-skeleton-img { width:100%; aspect-ratio:3/4; background:var(--cream); animation:shimmer 1.6s infinite linear; }
+        @keyframes shimmer { 0%{background-position:-1200px 0} 100%{background-position:1200px 0} }
+        .product-skeleton-img { background:linear-gradient(90deg,var(--cream) 25%,rgba(92,26,26,0.06) 50%,var(--cream) 75%); background-size:1200px 100%; }
+
+        /* ── MOBILE (≤ 768px) ── */
+        @media (max-width: 768px) {
+            .shop-container {
+                padding: 80px 1rem 5rem;
+                min-height: unset;
+            }
+            .single-product {
+                flex-direction: column;
+                gap: 1.5rem;
+                margin-top: 1.2rem;
+            }
+            .product-media {
+                width: 100%;
+                flex: none;
+            }
+            /* Main image full-width */
+            .product-media > #product-media-main img,
+            .product-media > #product-media-main video {
+                width: 100%;
+                max-height: 85vw;
+                object-fit: cover;
+                object-position: center top;
+                display: block;
+            }
+            /* Thumbnails smaller on mobile */
+            #product-gallery img,
+            #product-gallery video {
+                width: 64px;
+                height: 80px;
+            }
+            /* Details section — unstick, full width */
+            .product-details {
+                position: static !important;
+                width: 100%;
+                flex: none;
+                padding-bottom: 4rem;
+            }
+            .product-details h1 {
+                font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+                margin-bottom: 12px;
+            }
+            .product-details .price {
+                font-size: 1.2rem;
+                margin-bottom: 20px;
+            }
+            .product-details .desc {
+                font-size: 0.78rem;
+                line-height: 1.75;
+                margin-bottom: 20px;
+            }
+            /* Section spacing on mobile */
+            .size-section { margin-bottom: 18px; }
+            .qty-section { margin-bottom: 18px; }
+
+            /* Larger touch targets for size/color buttons */
+            .size-btn {
+                padding: 12px 18px;
+                font-size: 0.65rem;
+                min-height: 44px;
+                min-width: 44px;
+            }
+            /* Larger qty buttons */
+            #qty-minus, #qty-plus {
+                width: 48px;
+                height: 48px;
+            }
+            /* Sticky full-width Add to Bag */
+            .add-to-cart-btn {
+                padding: 1.15rem 1rem;
+                font-size: 0.65rem;
+                letter-spacing: 0.18em;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 80;
+                margin-top: 0;
+                box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+            }
+        }
+
+        /* ── SMALL MOBILE (≤ 480px) ── */
+        @media (max-width: 480px) {
+            .shop-container { padding: 74px 0.85rem 5rem; }
+            .product-details h1 { font-size: clamp(1.5rem, 7vw, 2rem); }
+            .product-details .price { font-size: 1.1rem; }
+            #product-gallery img,
+            #product-gallery video { width: 56px; height: 70px; }
+            .size-btn { padding: 10px 14px; }
+        }
+    </style>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+
+    <!-- NAV -->
+    <nav id="nav">
+      <a href="index.html" class="nav-logo">Drogla</a>
+      <ul class="nav-links">
+        <li class="nav-item">
+          <a href="#">MEN ⌄</a>
+          <div class="mega-menu">
+            <div class="mega-col">
+              <span class="mega-title">TOPS</span>
+              <a href="shop.html?cat=men-tops" class="mega-link">SHOP ALL TOPS</a>
+              <a href="shop.html?cat=men-tshirts" class="mega-link">T-SHIRTS</a>
+            </div>
+            <div class="mega-col">
+              <span class="mega-title">BOTTOMS</span>
+              <a href="shop.html?cat=men-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="#">WOMEN ⌄</a>
+          <div class="mega-menu">
+            <div class="mega-col">
+              <span class="mega-title">TOPS</span>
+              <a href="shop.html?cat=women-tops" class="mega-link">SHOP ALL TOPS</a>
+              <a href="shop.html?cat=women-tshirts" class="mega-link">T-SHIRTS</a>
+            </div>
+            <div class="mega-col">
+              <span class="mega-title">BOTTOMS</span>
+              <a href="shop.html?cat=women-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item"><a href="shop.html">Collection</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+        <a href="cart.html" class="nav-cart" id="cartBtn">Bag (<span id="cart-count">0</span>)</a>
+        <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MOBILE DRAWER -->
+    <div class="mobile-nav-drawer" id="mobileDrawer">
+      <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <ul class="mobile-nav-links">
+        <li><span>Men</span>
+          <ul class="mobile-nav-submenu">
+            <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
+            <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
+            <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
+          </ul>
+        </li>
+        <li><span>Women</span>
+          <ul class="mobile-nav-submenu">
+            <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
+            <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
+            <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
+          </ul>
+        </li>
+        <li><a href="shop.html">Collection</a></li>
+      </ul>
+      <div class="mobile-nav-bottom">
+        <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
+      </div>
+    </div>
+
+    <!-- FLOATING CART FAB (MOBILE) -->
+    <a href="cart.html" class="cart-fab" id="cartFab" aria-label="View Bag">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="cart-fab-badge" id="cart-fab-count">0</span>
+    </a>
+
+    <div class="shop-container">
+        <div id="loader" class="loader active">Loading details...</div>
+
+        <div class="single-product fade-up" id="single-product" style="display: none;">
+
+            <!-- ── Breadcrumb ── -->
+            <div id="product-breadcrumb" style="display:none; align-items:center; gap:0.5rem; margin-bottom:2rem; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted);">
+              <a href="index.html" style="color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Home</a>
+              <span>›</span>
+              <a href="shop.html" style="color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Collection</a>
+              <span>›</span>
+              <span id="breadcrumb-product-name" style="color:var(--text-main); font-weight:600;">Product</span>
+            </div>
+
+            <div class="product-media">
+                <div id="product-media-main">
+                    <!-- Media injected here -->
+                </div>
+                <div id="product-gallery">
+                    <!-- Thumbnails injected here -->
+                </div>
+            </div>
+
+            <div class="product-details">
+                <h1 id="product-name">...</h1>
+                <div class="price" id="product-price">...</div>
+                <p class="desc" id="product-desc">...</p>
+
+                <div id="color-wrapper" class="size-section" style="display: none;">
+                    <span class="selector-label">Select Color</span>
+                    <div id="color-container" class="size-selector">
+                        <!-- Color buttons injected here -->
+                    </div>
+                </div>
+
+                <div class="size-section">
+                    <span class="selector-label">Select Size</span>
+                    <div id="size-container" class="size-selector">
+                        <!-- Size buttons injected here -->
+                    </div>
+                </div>
+
+                <div class="qty-section">
+                    <span class="selector-label">Quantity</span>
+                    <div class="qty-selector">
+                        <button id="qty-minus" aria-label="Decrease quantity">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                        </button>
+                        <span id="qty-val">1</span>
+                        <button id="qty-plus" aria-label="Increase quantity">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Validation error message (replaces JS alert) -->
+                <div id="product-error-msg" style="display:none; color:#e53935; font-size:0.72rem; letter-spacing:0.08em; margin-bottom:12px; padding:10px 14px; background:rgba(229,57,53,0.05); border-left:3px solid #e53935;"></div>
+
+                <button class="add-to-cart-btn" id="add-to-cart-btn">Add to Bag</button>
+
+                <!-- Trust badges -->
+                <div style="display:flex; flex-wrap:wrap; gap:1.5rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid rgba(92,26,26,0.08);">
+                  <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 003 12c0 6.627 5.373 12 12 12 6.627 0 12-5.373 12-12 0-2.108-.547-4.09-1.507-5.814M15 6.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Premium Quality
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+                    Fast Delivery
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+                    Secure Payment
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-top">
+        <div>
+          <span class="footer-brand-name">Drogla</span>
+          <p class="footer-brand-tag">Digital Grit streetwear.<br/>Bridging virtual aesthetics with physical urban durability since 2026.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
+      </div>
+    </footer>
+
+    <script src="js/supabase.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/product.js"></script>
+    <script>
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const mobileClose = document.getElementById('mobileClose');
+    function closeDrawer() {
+      hamburger.classList.remove('open');
+      mobileDrawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', () => {
+      const open = hamburger.classList.toggle('open');
+      mobileDrawer.classList.toggle('open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
+    mobileDrawer.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', closeDrawer);
+    });
+
+
+
+    // Nav scroll
+    const nav=document.getElementById('nav');
+    window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
+    
+    // Fade up
+    const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
+    setTimeout(() => { document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el)); }, 500);
+
+    // Mark body for sticky add-to-cart so FAB moves up
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      document.body.classList.add('has-sticky-btn');
+    }
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // breadcrumb shown by product.js after name is set
+    });
+    </script>
+</body>
+</html>

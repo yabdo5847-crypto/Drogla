@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Shop the Drogla Collection. Premium Digital Grit streetwear. Find the latest oversized tees, track pants, and more." />
+    <meta name="keywords" content="Drogla shop, streetwear store, oversized tee, track pants, fashion, digital grit, apparel" />
+    <meta name="author" content="Drogla" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Shop | DROGLA" />
+    <meta property="og:description" content="Shop the Drogla Collection. Premium Digital Grit streetwear. Find the latest oversized tees, track pants, and more." />
+    <meta property="og:site_name" content="Drogla" />
+    
+    <title>Shop | DROGLA</title>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/home.css">
+<script>
+    if (localStorage.getItem('drogla_theme') === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+    }
+</script>
+    <style>
+        .shop-container { padding: 140px 3rem 6rem; min-height: 80vh; }
+        .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 6vw, 5rem); font-weight: 300; margin-bottom: 3rem; color: var(--text-main); }
+        .page-title em { font-style: italic; }
+
+        /* ── Filter Bar ── */
+        .shop-filter-bar { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin-bottom:2.5rem; padding-bottom:2rem; border-bottom:1px solid rgba(92,26,26,0.08); }
+        .shop-filter-input { padding:10px 16px; font-size:0.72rem; letter-spacing:0.05em; font-family:'Montserrat',sans-serif; background:var(--cream); border:1px solid rgba(92,26,26,0.12); color:var(--text-main); flex:1; min-width:200px; transition:border-color 0.3s; outline:none; }
+        .shop-filter-input:focus { border-color:var(--burgundy); }
+        .filter-pills { display:flex; gap:0.5rem; flex-wrap:wrap; }
+        .filter-pill { padding:8px 18px; font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; font-weight:600; font-family:'Montserrat',sans-serif; background:transparent; border:1px solid rgba(92,26,26,0.2); color:var(--text-muted); cursor:pointer; transition:all 0.25s; }
+        .filter-pill:hover, .filter-pill.active { background:var(--burgundy); color:var(--off-white); border-color:var(--burgundy); }
+
+        /* ── Skeleton ── */
+        .skeleton-card { pointer-events:none; }
+        .skeleton-img { background: linear-gradient(90deg, rgba(92,26,26,0.07) 25%, rgba(92,26,26,0.13) 50%, rgba(92,26,26,0.07) 75%); background-size:200% 100%; animation: shimmer 1.4s infinite; }
+        .skeleton-line { background: linear-gradient(90deg, rgba(92,26,26,0.07) 25%, rgba(92,26,26,0.13) 50%, rgba(92,26,26,0.07) 75%); background-size:200% 100%; animation: shimmer 1.4s infinite; border-radius:2px; }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+        /* ── Empty State ── */
+        #no-results { display:none; padding:4rem 0; color:var(--text-muted); font-family:'Montserrat',sans-serif; font-size:0.8rem; letter-spacing:0.1em; text-align:center; }
+    </style>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+
+    <!-- NAV -->
+    <nav id="nav">
+      <a href="index.html" class="nav-logo">Drogla</a>
+      <ul class="nav-links">
+        <li class="nav-item">
+          <a href="#">MEN ⌄</a>
+          <div class="mega-menu">
+            <div class="mega-col">
+              <span class="mega-title">TOPS</span>
+              <a href="shop.html?cat=men-tops" class="mega-link">SHOP ALL TOPS</a>
+              <a href="shop.html?cat=men-tshirts" class="mega-link">T-SHIRTS</a>
+            </div>
+            <div class="mega-col">
+              <span class="mega-title">BOTTOMS</span>
+              <a href="shop.html?cat=men-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="#">WOMEN ⌄</a>
+          <div class="mega-menu">
+            <div class="mega-col">
+              <span class="mega-title">TOPS</span>
+              <a href="shop.html?cat=women-tops" class="mega-link">SHOP ALL TOPS</a>
+              <a href="shop.html?cat=women-tshirts" class="mega-link">T-SHIRTS</a>
+            </div>
+            <div class="mega-col">
+              <span class="mega-title">BOTTOMS</span>
+              <a href="shop.html?cat=women-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item"><a href="shop.html">Collection</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+        <a href="cart.html" class="nav-cart" id="cartBtn">Bag (<span id="cart-count">0</span>)</a>
+        <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MOBILE DRAWER -->
+    <div class="mobile-nav-drawer" id="mobileDrawer">
+      <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <ul class="mobile-nav-links">
+        <li><span>Men</span>
+          <ul class="mobile-nav-submenu">
+            <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
+            <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
+            <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
+          </ul>
+        </li>
+        <li><span>Women</span>
+          <ul class="mobile-nav-submenu">
+            <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
+            <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
+            <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
+          </ul>
+        </li>
+        <li><a href="shop.html">Collection</a></li>
+      </ul>
+      <div class="mobile-nav-bottom">
+        <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
+      </div>
+    </div>
+
+    <!-- FLOATING CART FAB (MOBILE) -->
+    <a href="cart.html" class="cart-fab" id="cartFab" aria-label="View Bag">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="cart-fab-badge" id="cart-fab-count">0</span>
+    </a>
+
+    <div class="shop-container">
+        <h1 class="page-title" id="shop-title">All <em>Collection</em></h1>
+
+        <!-- FILTER BAR -->
+        <div class="shop-filter-bar fade-up visible">
+            <input type="text" id="shopSearchInput" placeholder="Search collection..." class="shop-filter-input">
+            <div class="filter-pills">
+                <button class="filter-pill active" data-filter="all">ALL</button>
+                <button class="filter-pill" data-filter="men">MEN</button>
+                <button class="filter-pill" data-filter="women">WOMEN</button>
+                <button class="filter-pill" data-filter="t-shirts">T-SHIRTS</button>
+                <button class="filter-pill" data-filter="bottoms">BOTTOMS</button>
+            </div>
+        </div>
+
+        <!-- SKELETON LOADER (shown while fetching) -->
+        <div id="loader" class="collection-grid" style="display:none;">
+            <div class="skeleton-card"><div class="skeleton-img" style="aspect-ratio:3/4;width:100%;"></div><div style="padding:1rem"><div class="skeleton-line" style="width:60%;height:12px;margin-bottom:8px"></div><div class="skeleton-line" style="width:40%;height:10px"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img" style="aspect-ratio:3/4;width:100%;"></div><div style="padding:1rem"><div class="skeleton-line" style="width:60%;height:12px;margin-bottom:8px"></div><div class="skeleton-line" style="width:40%;height:10px"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img" style="aspect-ratio:3/4;width:100%;"></div><div style="padding:1rem"><div class="skeleton-line" style="width:60%;height:12px;margin-bottom:8px"></div><div class="skeleton-line" style="width:40%;height:10px"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img" style="aspect-ratio:3/4;width:100%;"></div><div style="padding:1rem"><div class="skeleton-line" style="width:60%;height:12px;margin-bottom:8px"></div><div class="skeleton-line" style="width:40%;height:10px"></div></div></div>
+        </div>
+
+        <!-- PRODUCTS GRID -->
+        <div class="collection-grid" id="products-grid">
+            <!-- Products injected here via JS -->
+        </div>
+
+        <!-- NO RESULTS -->
+        <p id="no-results">No products match your search.</p>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-top">
+        <div>
+          <span class="footer-brand-name">Drogla</span>
+          <p class="footer-brand-tag">Digital Grit streetwear.<br/>Bridging virtual aesthetics with physical urban durability since 2026.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
+      </div>
+    </footer>
+
+    <script src="js/supabase.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const mobileClose = document.getElementById('mobileClose');
+    function closeDrawer() {
+      hamburger.classList.remove('open');
+      mobileDrawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', () => {
+      const open = hamburger.classList.toggle('open');
+      mobileDrawer.classList.toggle('open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
+    mobileDrawer.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', closeDrawer);
+    });
+
+
+
+    // Nav scroll
+    const nav=document.getElementById('nav');
+    window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
+    </script>
+</body>
+</html>

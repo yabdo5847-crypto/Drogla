@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Console | DROGLA</title>
+    
+    <!-- Typography & Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <!-- Theme Toggle Helper -->
+    <script>
+        if (localStorage.getItem('drogla_theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+        }
+    </script>
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Chart.js for Advanced Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- ==================== LOGIN AREA ==================== -->
+    <div id="login-panel" class="dashboard-login-container" style="display: none;">
+        <div class="login-panel fade-up visible" style="margin: 0; max-width: 420px; width: 100%;">
+            <h2 style="text-align: center; font-weight: 300; margin-bottom: 8px; font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--text-main);">AUTHORIZED AREA</h2>
+            <p style="text-align: center; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 30px;">Drogla Operations Console</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Admin Email</label>
+                    <input type="email" id="admin-email" required placeholder="name@drogla.com">
+                </div>
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label>Password</label>
+                    <input type="password" id="admin-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="submit-btn" style="letter-spacing: 0.25em;">Authenticate</button>
+                <div id="login-error" style="color: #ff4444; margin-top: 15px; text-align: center; font-size: 0.82rem; font-weight: 500;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== CONSOLE WORKSPACE ==================== -->
+    <div id="admin-panel" class="admin-layout" style="display: none;">
+        
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">Drogla SYS</a>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="active" data-tab="dashboard">
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li data-tab="catalog">
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        Catalog
+                    </a>
+                </li>
+                <li data-tab="orders">
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                        Orders
+                    </a>
+                </li>
+                <li data-tab="shipping">
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                        Shipping Rates
+                    </a>
+                </li>
+                <li data-tab="settings">
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="admin-profile">
+                    <div class="admin-avatar" id="avatarName">A</div>
+                    <div class="admin-details">
+                        <span class="admin-name" id="profileEmail">Admin</span>
+                        <span class="admin-role">System Operator</span>
+                    </div>
+                </div>
+                <button class="logout-icon-btn" id="logout-btn" title="Sign Out">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE -->
+        <main class="admin-main">
+            
+            <!-- TOP BAR -->
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <h1 class="topbar-title" id="tabTitle">Operations Overview</h1>
+                </div>
+                
+                <div class="topbar-right">
+                    <!-- Tab-specific live search panels -->
+                    <div class="topbar-search-wrap" id="catalogSearchWrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="catalogSearch" placeholder="Search catalog...">
+                    </div>
+                    <div class="topbar-search-wrap" id="ordersSearchWrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="ordersSearch" placeholder="Search orders by customer or ID...">
+                    </div>
+                    
+                    <!-- Dark/Light Theme Button -->
+                    <button id="theme-toggle" class="theme-btn" style="padding: 6px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- ==================== TAB 1: DASHBOARD ==================== -->
+            <div id="tab-dashboard" class="tab-content active">
+                
+                <!-- Metrics KPI row -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">TOTAL REVENUE</span>
+                            <div class="metric-icon-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <span class="metric-value" id="kpi-revenue">EGP 0.00</span>
+                        <div class="metric-trend trend-up">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                            <span>Live Syncing</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">TOTAL ORDERS</span>
+                            <div class="metric-icon-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                            </div>
+                        </div>
+                        <span class="metric-value" id="kpi-orders">0</span>
+                        <div class="metric-trend trend-neutral">
+                            <span>Total Count</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">AVERAGE VALUE</span>
+                            <div class="metric-icon-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            </div>
+                        </div>
+                        <span class="metric-value" id="kpi-aov">EGP 0.00</span>
+                        <div class="metric-trend trend-neutral">
+                            <span>Per Transaction</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">CATALOG ITEMS</span>
+                            <div class="metric-icon-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                        </div>
+                        <span class="metric-value" id="kpi-products">0</span>
+                        <div class="metric-trend trend-neutral">
+                            <span>Active in Store</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics graphs row -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h3 class="chart-card-title">Sales Revenue Flow</h3>
+                            <span style="font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">EGP (Daily Sum)</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="salesFlowChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h3 class="chart-card-title">Department Matrix</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="categoryMatrixChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ==================== TAB 2: CATALOG ==================== -->
+            <div id="tab-catalog" class="tab-content">
+                <div class="section-hdr">
+                    <h2 class="section-title">Catalog Inventory</h2>
+                    <div class="section-actions">
+                        <button class="submit-btn" id="openAddDrawerBtn" style="padding: 10px 20px; font-size: 0.68rem; display: inline-flex; align-items: center; gap: 8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            Add Product
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-card">
+                    <div class="table-search-bar">
+                        <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Product Listings</span>
+                        
+                        <div class="table-filter-group">
+                            <select id="catalogFilterGender">
+                                <option value="">All Departments</option>
+                                <option value="Men">Men</option>
+                                <option value="Women">Women</option>
+                                <option value="Unisex">Unisex</option>
+                            </select>
+                            <select id="catalogFilterType">
+                                <option value="">All Types</option>
+                                <option value="T-Shirts">T-Shirts</option>
+                                <option value="Tops">Other Tops</option>
+                                <option value="Bottoms">Bottoms</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="width: 100%; overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Product Details</th>
+                                    <th>Department</th>
+                                    <th>Sizes</th>
+                                    <th>Price</th>
+                                    <th style="text-align: right;">Operations</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-products-list">
+                                <tr><td colspan="5" class="skeleton" style="height: 60px; border-bottom: none;"></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ==================== TAB 3: ORDERS ==================== -->
+            <div id="tab-orders" class="tab-content">
+                <div class="section-hdr">
+                    <h2 class="section-title">Customer Transactions</h2>
+                </div>
+                
+                <div class="table-card">
+                    <div class="table-search-bar">
+                        <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Order Logs</span>
+                        <div class="table-filter-group">
+                            <select id="ordersFilterPayment">
+                                <option value="">All Payments</option>
+                                <option value="Cash on Delivery">Cash on Delivery</option>
+                                <option value="Vodafone Cash">Vodafone Cash</option>
+                                <option value="InstaPay">InstaPay</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="width: 100%; overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Reference ID</th>
+                                    <th>Customer Profile</th>
+                                    <th>Total Charged</th>
+                                    <th>Payment Status</th>
+                                    <th style="text-align: right;">Operations</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-orders-list">
+                                <tr><td colspan="5" class="skeleton" style="height: 60px; border-bottom: none;"></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ==================== TAB 4: SHIPPING ==================== -->
+            <div id="tab-shipping" class="tab-content">
+                <div class="section-hdr">
+                    <h2 class="section-title">Shipping Tariffs</h2>
+                </div>
+                
+                <div class="metrics-grid" style="grid-template-columns: 1fr 2fr; gap: 2rem; align-items: flex-start;">
+                    <!-- Add rate form card -->
+                    <div class="metric-card" style="padding: 2.2rem; gap: 1.5rem; overflow: visible;">
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 0.5rem;">Configure Rate</h3>
+                        
+                        <form id="shipping-form">
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label>Governorate Name</label>
+                                <input type="text" id="s-gov" required placeholder="e.g. Cairo" style="padding: 12px; font-size: 0.76rem;">
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 2rem;">
+                                <label>Shipping Rate (EGP)</label>
+                                <input type="number" step="1" id="s-cost" required placeholder="e.g. 50" style="padding: 12px; font-size: 0.76rem;">
+                            </div>
+                            
+                            <button type="submit" class="submit-btn" id="s-add-btn" style="padding: 12px; font-size: 0.65rem;">Deploy Rate</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Table rate card -->
+                    <div class="table-card" style="margin-bottom: 0;">
+                        <div class="table-search-bar" style="padding: 1.2rem 2rem;">
+                            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Tariff Inventory</span>
+                        </div>
+                        
+                        <div style="width: 100%; overflow-x: auto;">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Governorate</th>
+                                        <th>Shipping cost</th>
+                                        <th style="text-align: right;">Operations</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-shipping-list">
+                                    <tr><td colspan="3" class="skeleton" style="height: 60px; border-bottom: none;"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ==================== TAB 5: SETTINGS ==================== -->
+            <div id="tab-settings" class="tab-content">
+                <div class="section-hdr">
+                    <h2 class="section-title">Payment Configurations</h2>
+                </div>
+                
+                <div class="table-card" style="max-width: 600px; padding: 3rem; background: var(--card-bg);">
+                    <form id="settings-form" class="settings-form">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label>Vodafone Cash Number</label>
+                            <input type="text" id="set-vodafone" placeholder="e.g., 01012345678" style="padding: 14px; font-size: 0.8rem;">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 2.2rem;">
+                            <label>InstaPay Account Username</label>
+                            <input type="text" id="set-instapay" placeholder="e.g., drogla@instapay" style="padding: 14px; font-size: 0.8rem;">
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" id="set-save-btn" style="letter-spacing: 0.2em;">Save Store Settings</button>
+                        
+                        <div id="settings-msg" style="display: none; text-align: center; margin-top: 20px; font-size: 0.76rem; font-weight: 600;"></div>
+                    </form>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- ==================== PRODUCT EDITOR DRAWER ==================== -->
+    <div class="drawer-overlay" id="productDrawerOverlay"></div>
+    <div class="drawer-panel" id="productDrawer">
+        <header class="drawer-header">
+            <h3 class="drawer-title" id="drawerTitle">Publish New Product</h3>
+            <button class="drawer-close" id="closeDrawerBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </header>
+        
+        <form id="add-product-form" style="display: flex; flex-direction: column; height: calc(100% - 80px);">
+            <div class="drawer-body">
+                <input type="hidden" id="p-id">
+                
+                <div class="form-group" style="margin-bottom: 1.2rem;">
+                    <label>Product Name</label>
+                    <input type="text" id="p-name" required placeholder="e.g., DROGLA HOODIE v1">
+                </div>
+                
+                <div class="product-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.2rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Price (EGP)</label>
+                        <input type="number" step="0.01" id="p-price" required placeholder="EGP">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Department</label>
+                        <select id="p-gender" required>
+                            <option value="Men">Men</option>
+                            <option value="Women">Women</option>
+                            <option value="Unisex">Unisex</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="product-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.2rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Product Type</label>
+                        <select id="p-type" required>
+                            <option value="T-Shirts">T-Shirts</option>
+                            <option value="Tops">Other Tops</option>
+                            <option value="Bottoms">Bottoms</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Sizes (Comma list)</label>
+                        <input type="text" id="p-size" required placeholder="e.g., S, M, L, XL">
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.2rem;">
+                    <label>Colors (Comma list)</label>
+                    <input type="text" id="p-color" placeholder="e.g., Black, Steel Gray">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.2rem;">
+                    <label>Product Images (Drag &amp; Drop or Click)</label>
+                    <div id="image-dropzone" style="border: 2px dashed var(--border-color); padding: 25px; text-align: center; cursor: pointer; border-radius: 4px; transition: var(--transition-smooth);">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="26" height="26" style="margin: 0 auto 10px; display: block; color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/></svg>
+                        <p id="dropzone-text" style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">Click to upload images</p>
+                    </div>
+                    <input type="file" id="p-file-input" multiple accept="image/*" style="display: none;">
+                    <input type="hidden" id="p-image">
+                    <div id="image-preview-container" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;"></div>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.2rem;">
+                    <label>Video Storage URL (Optional)</label>
+                    <input type="url" id="p-video" placeholder="e.g. Supabase Video URL">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Product Description</label>
+                    <textarea id="p-desc" rows="4" placeholder="Describe the fabrics, weight, fit details..."></textarea>
+                </div>
+            </div>
+            
+            <footer class="drawer-footer">
+                <button type="button" class="btn-outline" id="cancelDrawerBtn" style="border: 1px solid var(--border-color); color: var(--text-main); font-size: 0.65rem; padding: 12px;">Cancel</button>
+                <button type="submit" class="submit-btn" id="add-p-btn" style="font-size: 0.65rem; padding: 12px;">Publish Product</button>
+            </footer>
+        </form>
+    </div>
+
+    <!-- ==================== RECEIPT DETAILS MODAL ==================== -->
+    <div class="modal-overlay" id="orderModalOverlay">
+        <div class="modal-window">
+            <header class="modal-header">
+                <h3 class="modal-title" id="orderModalTitle">Order Verification Panel</h3>
+                <button class="drawer-close" id="closeOrderModalBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </header>
+            
+            <div class="modal-body receipt-layout">
+                <!-- Info cards grid -->
+                <div class="receipt-grid">
+                    <div class="receipt-box">
+                        <span class="receipt-label">Customer Profile</span>
+                        <div class="receipt-value" id="orderCustomer">Loading customer...</div>
+                    </div>
+                    <div class="receipt-box">
+                        <span class="receipt-label">Grand Total</span>
+                        <div class="receipt-value" id="orderTotal" style="font-size: 1.15rem; color: var(--burgundy); font-weight: 600;">EGP 0.00</div>
+                    </div>
+                </div>
+                
+                <div class="receipt-box" style="width: 100%;">
+                    <span class="receipt-label">Shipping Destination</span>
+                    <div class="receipt-value" id="orderAddress">Loading destination...</div>
+                </div>
+                
+                <!-- Proof verification section -->
+                <div id="orderProofSection" style="display: none;">
+                    <span class="receipt-label">Transfer Verification Attachment</span>
+                    <div class="proof-verification-area" id="proofVerificationArea">
+                        <img id="modalProofImg" src="" alt="Payment transfer proof screen">
+                        <button class="proof-zoom-btn">Zoom Screen</button>
+                    </div>
+                </div>
+                
+                <!-- Items list -->
+                <div>
+                    <span class="receipt-label" style="display: block; margin-bottom: 0.8rem;">Digital Receipt Breakdown</span>
+                    <div class="receipt-box" style="padding: 1.5rem;">
+                        <div class="receipt-items-list" id="orderItemsBreakdown">
+                            <div style="font-size: 0.72rem; color: var(--text-muted); text-align: center;">Itemizing purchased products...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== PROOF SCREEN ZOOM MODAL ==================== -->
+    <div class="modal-overlay" id="zoomModalOverlay" style="z-index: 1100;">
+        <div class="modal-window" style="width: 80%; height: 85vh; border: none; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; position: relative;">
+            <button class="drawer-close" id="closeZoomBtn" style="position: absolute; top: 20px; right: 20px; border-color: rgba(255,255,255,0.4); color: white; background: rgba(255,255,255,0.05); z-index: 10;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <img id="zoomModalImg" src="" alt="Enlarged transfer proof screen" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Logic Scripts -->
+    <script src="js/supabase.js"></script>
+    <script src="js/admin.js"></script>
+    <script>
+    // Theme sync listener
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const isDark = document.body.classList.toggle('dark-mode');
+            document.documentElement.classList.toggle('dark-mode', isDark);
+            localStorage.setItem('drogla_theme', isDark ? 'dark' : 'light');
+            
+            // Re-render charts color scheme if ChartFlow exists
+            if (window.initializeDashboardCharts) {
+                window.initializeDashboardCharts();
+            }
+        });
+    }
+    </script>
+</body>
+</html>
