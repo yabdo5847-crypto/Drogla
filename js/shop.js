@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ================================================================
     function buildCard(p, idx, isFirst) {
         const firstImage = (p.image && p.image.split(',')[0].trim()) ||
-            'https://via.placeholder.com/800x1000/16161a/ffffff?text=DROGLA';
+            'https://placehold.co/800x1000/16161a/ffffff?text=DROGLA';
 
         const isVideo   = /\.(mp4|webm)$/i.test(firstImage);
         const mediaHTML = isVideo

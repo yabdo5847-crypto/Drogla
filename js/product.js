@@ -214,9 +214,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const images    = product.image
             ? product.image.split(',').map(i => i.trim()).filter(i => i !== '')
             : [];
-        const firstImage = images.length > 0
-            ? images[0]
-            : 'https://via.placeholder.com/800x1000/16161a/ffffff?text=DROGLA';
+        const firstImage = (images && images.length > 0)
+            ? images[0].trim()
+            : 'https://placehold.co/800x1000/16161a/ffffff?text=DROGLA';
 
         if (product.video_url && product.video_url.trim() !== '') {
             // ── Video mode ──────────────────────────────────────────────────

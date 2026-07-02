@@ -69,7 +69,7 @@ function renderCart() {
 
         itemEl.innerHTML = `
             <div class="cart-item-info" style="display:flex; align-items:center; gap:24px; flex:1;">
-                <img src="${item.image || 'https://via.placeholder.com/80x100/f5f0eb/5c1a1a?text=DROGLA'}" alt="${item.name}" style="width:80px; height:100px; object-fit:cover; border-radius:2px;">
+                <img src="${item.image || 'https://placehold.co/80x100/f5f0eb/5c1a1a?text=DROGLA'}" alt="${item.name}" style="width:80px; height:100px; object-fit:cover; border-radius:2px;">
                 <div>
                     <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:400; margin-bottom:4px; color:var(--text-main); letter-spacing:0.02em;">${item.name}</h4>
                     <p style="color:var(--text-muted); font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:8px;">Size: ${item.size}${item.color ? ' · ' + item.color : ''}</p>
