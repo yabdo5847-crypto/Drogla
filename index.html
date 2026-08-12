@@ -67,26 +67,87 @@
 
   <!-- NAV -->
   <nav id="nav">
+    <!-- Left Utilities (Cart, User, Egypt, Theme) & Mobile Hamburger -->
     <div class="nav-left">
       <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
+
+      <div class="nav-util-desktop">
+        <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag" title="Shopping Bag">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+            <path d="M3 6h18"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="nav-cart-badge" id="cart-count">0</span>
+        </a>
+        <a href="admin.html" class="nav-user-icon" aria-label="Account" title="Account / Admin Console">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <span class="nav-country-tag">مصر</span>
+        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme" title="Toggle Theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+      </div>
     </div>
-    <a href="#" class="nav-logo">Drogla</a>
+
+    <!-- Center Brand Logo -->
+    <a href="index.html" class="nav-logo">Drogla</a>
+
+    <!-- Right Categories Menu (PC) & Mobile Utilities -->
     <div class="nav-right">
-      <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-        </svg></button>
-      <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-          <path d="M3 6h18"/>
-          <path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
-        <span class="nav-cart-badge" id="cart-count">0</span>
-      </a>
+      <ul class="nav-menu-desktop">
+        <li class="nav-item">
+          <a href="#faq" class="nav-link">استبدال واسترجاع</a>
+        </li>
+        <li class="nav-item nav-has-dropdown">
+          <a href="shop.html?cat=women-tops" class="nav-link">
+            WOMEN <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="shop.html?cat=women-tops" class="dropdown-link">Shop All Tops (توبات)</a>
+            <a href="shop.html?cat=women-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
+            <a href="shop.html?cat=women-shirts" class="dropdown-link">Shirts (قمصان)</a>
+            <a href="shop.html?cat=women-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
+          </div>
+        </li>
+        <li class="nav-item nav-has-dropdown">
+          <a href="shop.html?cat=men-tops" class="nav-link">
+            الرجال <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="shop.html?cat=men-tops" class="dropdown-link">Shop All Tops (توبات)</a>
+            <a href="shop.html?cat=men-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
+            <a href="shop.html?cat=men-shirts" class="dropdown-link">Shirts (قمصان)</a>
+            <a href="shop.html?cat=men-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="shop.html" class="nav-link nav-link-highlight">SUMMER COLLECTION</a>
+        </li>
+      </ul>
+
+      <div class="nav-util-mobile">
+        <button id="theme-toggle-mobile" class="theme-btn" aria-label="Toggle Theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+        <a href="cart.html" class="nav-cart-icon" id="cartBtnMobile" aria-label="View Bag">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+            <path d="M3 6h18"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="nav-cart-badge" id="cart-count-mobile-badge">0</span>
+        </a>
+      </div>
     </div>
   </nav>
 
@@ -114,7 +175,7 @@
         </ul>
       </li>
       <li><a href="shop.html">Collection</a></li>
-      <li><a href="#value" id="mobileValueLink">The Value</a></li>
+      <li><a href="#faq" id="mobileFaqLink">FAQ</a></li>
     </ul>
     <div class="mobile-nav-bottom">
       <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
@@ -165,26 +226,99 @@
     </div>
   </section>
 
-  <!-- THE VALUE -->
-  <section class="value-section" id="value">
-    <div class="value-inner">
-      <!-- The Visual video removed per request -->
-      <div class="value-content fade-up" style="transition-delay:.15s">
-        <p class="s-label">Our Promise</p>
-        <h2 class="s-title">The <em>Value</em></h2>
-        <div class="s-rule"></div>
-        <p class="value-desc">At Drogla, we don't just sell clothes; we deliver an experience. Every piece is crafted
-          with uncompromising quality, designed to elevate your personal style, and shipped to your door with unmatched
-          speed.</p>
-        <ul class="value-perks">
-          <li>Uncompromising Premium Quality: Fabrics engineered for durability and ultimate comfort.</li>
-          <li>Lightning-Fast Shipping: Get your fits delivered exactly when you need them.</li>
-          <li>Cutting-Edge Styling: Designs that bridge modern aesthetics with street-ready grit.</li>
-          <li>Flawless Fit Guarantee: Tailored to perfection to elevate your everyday look.</li>
-        </ul>
-        <div class="value-ctas">
-          <a href="shop.html" class="btn-primary" style="text-decoration:none;">Shop Collection</a>
-          <a href="#" class="btn-outline" style="text-decoration:none;">Discover More</a>
+  <!-- FREQUENTLY ASKED QUESTIONS -->
+  <section class="faq-section" id="faq">
+    <div class="faq-container">
+      <div class="faq-hdr fade-up">
+        <p class="s-label">HELP &amp; SUPPORT</p>
+        <h2 class="faq-main-title">FREQUENTLY ASKED QUESTIONS</h2>
+        <div class="s-rule" style="margin: 1.2rem auto 0;"></div>
+      </div>
+
+      <div class="faq-accordion fade-up" style="transition-delay: .15s;">
+        <!-- Question 1 -->
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">How long does it take for new orders to arrive?</span>
+            <span class="faq-chevron" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Orders within Cairo and Giza are typically delivered within 2 to 3 business days. For other governorates across Egypt, delivery takes 3 to 5 business days. Once your order is dispatched, you will receive real-time tracking updates via SMS and email.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">What is your return/exchange policy?</span>
+            <span class="faq-chevron" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>We provide a 14-day return and exchange policy from the date of delivery. Items must be unworn, unwashed, and in their original packaging with all tags attached. Simply contact our support team to schedule a prompt return or exchange pickup.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">The item/size I want is out of stock, when will it restock?</span>
+            <span class="faq-chevron" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Our apparel is crafted in limited batches to ensure exclusivity and uncompromising quality. Restocks for high-demand pieces are announced on our official Instagram page. Make sure to follow <strong>@drogla</strong> to catch the next drop.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Do you have a sizing chart?</span>
+            <span class="faq-chevron" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes! Every product page features a detailed sizing chart with precise measurements in centimeters. Our streetwear pieces are designed with a relaxed, modern oversized fit unless otherwise noted.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">How can I contact you?</span>
+            <span class="faq-chevron" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>You can reach our customer support team anytime via Instagram Direct Message (<strong>@drogla</strong>), WhatsApp, or through email. We are available daily to assist you with sizing advice, order status, and exchanges.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -215,9 +349,9 @@
       <div class="footer-col">
         <p class="footer-col-title">Help</p>
         <ul>
-          <li><a href="#">Sizing Guide</a></li>
-          <li><a href="#">Shipping & Returns</a></li>
-          <li><a href="#">Track Your Order</a></li>
+          <li><a href="#faq">Sizing Guide</a></li>
+          <li><a href="#faq">Shipping & Returns</a></li>
+          <li><a href="#faq">FAQ</a></li>
         </ul>
       </div>
     </div>
@@ -325,6 +459,27 @@
         console.error('Error fetching home products:', err);
         grid.innerHTML = '<p style="color:var(--text-muted); font-size: 0.8rem; padding: 2rem 0;">Failed to load products.</p>';
       }
+    });
+
+    // FAQ Accordion Toggle
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = button.closest('.faq-item');
+        const isActive = item.classList.contains('active');
+
+        // Close all other items for clean single-open accordion behavior
+        document.querySelectorAll('.faq-item.active').forEach(openItem => {
+          if (openItem !== item) {
+            openItem.classList.remove('active');
+            const otherBtn = openItem.querySelector('.faq-question');
+            if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Toggle current item
+        item.classList.toggle('active', !isActive);
+        button.setAttribute('aria-expanded', String(!isActive));
+      });
     });
   </script>
 </body>

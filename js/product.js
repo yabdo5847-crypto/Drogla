@@ -100,13 +100,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (productSection) productSection.style.display = 'flex';
 
         // ─────────────────────────────────────────────────────────────────────
-        // 4. POPULATE TEXT — fade in smoothly (opacity 0 → 1 over 0.4 s)
+        // 4. POPULATE TEXT & DYNAMIC PRICING
         // ─────────────────────────────────────────────────────────────────────
         const fadeIn = (el, content, isHTML = false) => {
             if (!el) return;
-            el.style.transition = 'opacity 0.4s ease';
+            el.style.transition = 'opacity 0.3s ease';
             el.style.opacity    = '0';
-            // Small tick so the browser registers the opacity: 0 before animating
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     if (isHTML) {
@@ -119,297 +118,288 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         };
 
+        const numPrice = parseFloat(product.price) || 560;
         document.title = `${product.name} | DROGLA`;
         fadeIn(productNameEl, product.name);
-        fadeIn(productPriceEl, `EGP ${parseFloat(product.price).toFixed(2)}`);
-        fadeIn(
-            productDescEl,
-            product.description || 'Premium oversized aesthetic. Engineered for ultimate comfort and silhouette.'
-        );
+        fadeIn(productPriceEl, `LE ${numPrice.toFixed(2)}`);
+        
+        const oldPriceEl = document.getElementById('product-old-price');
+        if (oldPriceEl) {
+            const oldPrice = numPrice * 1.25;
+            oldPriceEl.textContent = `LE ${oldPrice.toFixed(2)}`;
+        }
+
+        const descBody = document.getElementById('product-desc-body');
+        if (descBody) {
+            descBody.innerHTML = `<p>${product.description ? product.description.replace(/\n/g, '<br>') : '• Premium heavyweight cotton (260 GSM) for a structured streetwear silhouette.<br>• Soft, breathable, pre-shrunk combed fabric for all-day comfort.<br>• Oversized boxy drape with reinforced neckband and twin needle stitching.'}</p>`;
+        }
+
+        // Dynamic Shipping Dates
+        const now = new Date();
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const formatDate = (d) => `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+
+        const dPlaced = new Date(now);
+        const dDispStart = new Date(now.getTime() + 1 * 86400000);
+        const dDispEnd = new Date(now.getTime() + 2 * 86400000);
+        const dDelStart = new Date(now.getTime() + 3 * 86400000);
+        const dDelEnd = new Date(now.getTime() + 5 * 86400000);
+
+        const stepOrder = document.getElementById('step-order-date');
+        const stepDisp = document.getElementById('step-dispatch-date');
+        const stepDel = document.getElementById('step-delivery-date');
+        if (stepOrder) stepOrder.textContent = formatDate(dPlaced);
+        if (stepDisp) stepDisp.textContent = `${formatDate(dDispStart)} – ${formatDate(dDispEnd)}`;
+        if (stepDel) stepDel.textContent = `${formatDate(dDelStart)} – ${formatDate(dDelEnd)}`;
 
         // ─────────────────────────────────────────────────────────────────────
-        // 5 & 6. COLOR AND SIZE SELECTORS (WITH VARIANTS SUPPORT)
+        // 5. COLOR & SIZE SELECTORS (MAVIN SYSTEM)
         // ─────────────────────────────────────────────────────────────────────
         const sizeContainer = document.getElementById('size-container');
         const colorWrapper = document.getElementById('color-wrapper');
         const colorContainer = document.getElementById('color-container');
-        
+        const colorLabel = document.getElementById('selected-color-label');
+        const sizeBadge = document.getElementById('mavin-size-badge');
+        const cartBtn = document.getElementById('add-to-cart-btn');
+
         let selectedSize = null;
         let selectedColor = null;
 
-        const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
-        
-        function renderSizesForVariant(variant) {
-            sizeContainer.innerHTML = '';
-            selectedSize = null;
-            if (!variant || !variant.sizes || Object.keys(variant.sizes).length === 0) {
-                sizeContainer.innerHTML = '<span style="color:#fff;">One Size</span>';
-                selectedSize = 'One Size';
-                return;
-            }
-            
-            Object.entries(variant.sizes).forEach(([s, q]) => {
-                const btn = document.createElement('button');
-                btn.className = 'size-btn';
-                btn.innerText = s;
-                
-                if (q <= 0) {
-                    btn.style.opacity = '0.3';
-                    btn.style.textDecoration = 'line-through';
-                    btn.disabled = true;
-                    btn.title = 'Out of Stock';
-                } else {
-                    btn.onclick = () => {
-                        sizeContainer.querySelectorAll('.size-btn').forEach(b => {
-                            b.classList.remove('active');
-                            b.style.boxShadow = '';
-                        });
-                        btn.classList.add('active');
-                        btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                        selectedSize = s;
-                    };
-                }
-                sizeContainer.appendChild(btn);
-            });
-        }
-
-        if (hasVariants) {
-            colorWrapper.style.display = 'block';
-            
-            product.variants.forEach((v, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'size-btn';
-                btn.innerText = v.color;
-                
-                btn.onclick = () => {
-                    colorContainer.querySelectorAll('.size-btn').forEach(b => {
-                        b.classList.remove('active');
-                        b.style.boxShadow = '';
-                    });
-                    btn.classList.add('active');
-                    btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                    selectedColor = v.color;
-                    
-                    const mainImg = document.getElementById('main-img-view');
-                    if (mainImg && v.image) {
-                        mainImg.style.opacity = '0';
-                        setTimeout(() => {
-                            mainImg.src = v.image;
-                            mainImg.style.opacity = '1';
-                        }, 200);
-                    }
-                    
-                    renderSizesForVariant(v);
-                };
-                
-                if (index === 0) {
-                    btn.classList.add('active');
-                    btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                    selectedColor = v.color;
-                    renderSizesForVariant(v);
-                    
-                    setTimeout(() => {
-                        const mainImg = document.getElementById('main-img-view');
-                        if (mainImg && v.image && !product.video_url) {
-                            mainImg.src = v.image;
-                        }
-                    }, 50);
-                }
-                colorContainer.appendChild(btn);
-            });
-        } else {
-            // --- Legacy Fallback Logic ---
-            const sizes = product.size ? product.size.split(',').map(s => s.trim()).filter(s => s !== '') : [];
-            if (sizes.length === 0) {
-                sizeContainer.innerHTML = '<span style="color:#fff;">One Size</span>';
-                selectedSize = 'One Size';
+        function updateCartButtonState() {
+            if (!cartBtn) return;
+            if (selectedSize) {
+                cartBtn.textContent = `ADD TO BAG — LE ${numPrice.toFixed(2)}`;
+                cartBtn.classList.add('ready');
             } else {
-                sizes.forEach((s) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'size-btn';
-                    btn.innerText = s;
-                    btn.onclick = () => {
-                        sizeContainer.querySelectorAll('.size-btn').forEach(b => { b.classList.remove('active'); b.style.boxShadow = ''; });
-                        btn.classList.add('active');
-                        btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                        selectedSize = s;
-                    };
-                    if (sizes.length === 1) btn.onclick();
-                    sizeContainer.appendChild(btn);
-                });
-            }
-
-            const colors = product.colors ? product.colors.split(',').map(c => c.trim()).filter(c => c !== '') : [];
-            if (colors.length > 0) {
-                colorWrapper.style.display = 'block';
-                colors.forEach((c) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'size-btn';
-                    btn.innerText = c;
-                    btn.onclick = () => {
-                        colorContainer.querySelectorAll('.size-btn').forEach(b => { b.classList.remove('active'); b.style.boxShadow = ''; });
-                        btn.classList.add('active');
-                        btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                        selectedColor = c;
-                    };
-                    if (colors.length === 1) btn.onclick();
-                    colorContainer.appendChild(btn);
-                });
+                cartBtn.textContent = 'SELECT A SIZE';
+                cartBtn.classList.remove('ready');
             }
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // 7. MEDIA — video OR image gallery
-        // ─────────────────────────────────────────────────────────────────────
-        const gallery   = document.getElementById('product-gallery');
-        const images    = product.image
+        const images = product.image
             ? product.image.split(',').map(i => i.trim()).filter(i => i !== '')
             : [];
         const firstImage = (images && images.length > 0)
             ? images[0].trim()
             : 'https://placehold.co/800x1000/16161a/ffffff?text=DROGLA';
 
+        function renderSizesForVariant(variant) {
+            sizeContainer.innerHTML = '';
+            selectedSize = null;
+            if (sizeBadge) sizeBadge.textContent = 'SELECT SIZE';
+            updateCartButtonState();
+
+            if (!variant || !variant.sizes || Object.keys(variant.sizes).length === 0) {
+                const defaultSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+                defaultSizes.forEach(s => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'mavin-size-box';
+                    btn.innerText = s;
+                    btn.onclick = () => {
+                        sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        selectedSize = s;
+                        if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
+                        updateCartButtonState();
+                    };
+                    sizeContainer.appendChild(btn);
+                });
+                return;
+            }
+
+            Object.entries(variant.sizes).forEach(([s, q]) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'mavin-size-box';
+                btn.innerText = s;
+
+                if (q <= 0) {
+                    btn.disabled = true;
+                    btn.title = 'Sold Out';
+                } else {
+                    btn.onclick = () => {
+                        sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        selectedSize = s;
+                        if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
+                        updateCartButtonState();
+                    };
+                }
+                sizeContainer.appendChild(btn);
+            });
+        }
+
+        const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
+
+        if (hasVariants) {
+            colorWrapper.style.display = 'block';
+            colorContainer.innerHTML = '';
+
+            product.variants.forEach((v, index) => {
+                const thumb = document.createElement('button');
+                thumb.type = 'button';
+                thumb.className = 'mavin-color-thumb' + (index === 0 ? ' active' : '');
+                const thumbImg = v.image || firstImage;
+                thumb.innerHTML = `<img src="${thumbImg}" alt="${v.color}">`;
+
+                thumb.onclick = () => {
+                    colorContainer.querySelectorAll('.mavin-color-thumb').forEach(b => b.classList.remove('active'));
+                    thumb.classList.add('active');
+                    selectedColor = v.color;
+                    if (colorLabel) colorLabel.textContent = v.color;
+
+                    const mainImg = document.getElementById('main-img-view');
+                    if (mainImg && v.image) {
+                        mainImg.style.opacity = '0';
+                        setTimeout(() => {
+                            mainImg.src = v.image;
+                            mainImg.style.opacity = '1';
+                        }, 180);
+                    }
+
+                    renderSizesForVariant(v);
+                };
+
+                if (index === 0) {
+                    selectedColor = v.color;
+                    if (colorLabel) colorLabel.textContent = v.color;
+                    renderSizesForVariant(v);
+                }
+                colorContainer.appendChild(thumb);
+            });
+        } else {
+            // Legacy / Standard Products
+            const colors = product.colors ? product.colors.split(',').map(c => c.trim()).filter(c => c !== '') : [];
+            if (colors.length > 0) {
+                colorWrapper.style.display = 'block';
+                colorContainer.innerHTML = '';
+                colors.forEach((c, idx) => {
+                    const thumb = document.createElement('button');
+                    thumb.type = 'button';
+                    thumb.className = 'mavin-color-thumb' + (idx === 0 ? ' active' : '');
+                    const imgForColor = images[idx] || firstImage;
+                    thumb.innerHTML = `<img src="${imgForColor}" alt="${c}">`;
+
+                    thumb.onclick = () => {
+                        colorContainer.querySelectorAll('.mavin-color-thumb').forEach(b => b.classList.remove('active'));
+                        thumb.classList.add('active');
+                        selectedColor = c;
+                        if (colorLabel) colorLabel.textContent = c;
+                    };
+                    if (idx === 0) {
+                        selectedColor = c;
+                        if (colorLabel) colorLabel.textContent = c;
+                    }
+                    colorContainer.appendChild(thumb);
+                });
+            }
+
+            const sizes = product.size ? product.size.split(',').map(s => s.trim()).filter(s => s !== '') : ['S', 'M', 'L', 'XL', 'XXL'];
+            sizeContainer.innerHTML = '';
+            sizes.forEach(s => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'mavin-size-box';
+                btn.innerText = s;
+                btn.onclick = () => {
+                    sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedSize = s;
+                    if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
+                    updateCartButtonState();
+                };
+                sizeContainer.appendChild(btn);
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 6. MAIN MEDIA VIEW (MAVIN STREAMLINED HERO)
+        // ─────────────────────────────────────────────────────────────────────
         if (product.video_url && product.video_url.trim() !== '') {
-            // ── Video mode ──────────────────────────────────────────────────
             mediaMain.innerHTML = `
                 <video autoplay muted loop playsinline src="${product.video_url}"
-                    style="width:100%; object-fit:cover;">
+                    style="width:100%; aspect-ratio:3/4; object-fit:cover;">
                 </video>
             `;
         } else {
-            // ── Image / gallery mode ─────────────────────────────────────────
             mediaMain.innerHTML = `
                 <div style="position: relative; width: 100%; height: 100%; overflow: hidden;">
                     <img id="main-img-view"
                         src="${firstImage}"
                         alt="${product.name}"
-                        style="width:100%; height:100%; object-fit:cover; transition: opacity 0.3s ease-in-out;">
-                    ${images.length > 1 ? `
-                    <button id="slider-prev" style="
-                        position: absolute; top: 50%; left: 10px;
-                        transform: translateY(-50%);
-                        background: rgba(0,0,0,0.5); color: #fff;
-                        border: none; width: 40px; height: 40px;
-                        border-radius: 50%; cursor: pointer;
-                        display: flex; align-items: center; justify-content: center;
-                        font-size: 1.5rem; transition: 0.3s; opacity: 0.7;">‹</button>
-                    <button id="slider-next" style="
-                        position: absolute; top: 50%; right: 10px;
-                        transform: translateY(-50%);
-                        background: rgba(0,0,0,0.5); color: #fff;
-                        border: none; width: 40px; height: 40px;
-                        border-radius: 50%; cursor: pointer;
-                        display: flex; align-items: center; justify-content: center;
-                        font-size: 1.5rem; transition: 0.3s; opacity: 0.7;">›</button>
-                    ` : ''}
+                        style="width:100%; aspect-ratio:3/4; object-fit:cover; transition: opacity 0.25s ease-in-out;">
                 </div>
             `;
-
-            if (images.length > 1) {
-                let currentIndex  = 0;
-                let sliderInterval;
-
-                // ── Cross-fade swap ──────────────────────────────────────────
-                const updateImage = (index) => {
-                    currentIndex = index;
-                    const mainImg = document.getElementById('main-img-view');
-
-                    // Fade out (150 ms)
-                    mainImg.style.transition = 'opacity 0.15s ease-in-out';
-                    mainImg.style.opacity    = '0';
-
-                    setTimeout(() => {
-                        mainImg.src = images[currentIndex];
-                        // Fade back in (300 ms)
-                        mainImg.style.transition = 'opacity 0.3s ease-in-out';
-                        mainImg.style.opacity    = '1';
-                    }, 150);
-
-                    // Update thumbnail border highlight
-                    if (gallery) {
-                        Array.from(gallery.children).forEach((child, i) => {
-                            child.style.borderColor = (i === currentIndex)
-                                ? 'var(--burgundy)'
-                                : 'transparent';
-                        });
-                    }
-                };
-
-                const nextImage = () => updateImage((currentIndex + 1) % images.length);
-                const prevImage = () => updateImage((currentIndex - 1 + images.length) % images.length);
-
-                // Auto-slide at 3.5 s for a premium, unhurried feel
-                const resetTimer = () => {
-                    clearInterval(sliderInterval);
-                    sliderInterval = setInterval(nextImage, 3500);
-                };
-
-                const nextBtn = document.getElementById('slider-next');
-                const prevBtn = document.getElementById('slider-prev');
-                if (nextBtn) nextBtn.onclick = () => { nextImage(); resetTimer(); };
-                if (prevBtn) prevBtn.onclick = () => { prevImage(); resetTimer(); };
-
-                // Build thumbnails
-                images.forEach((imgSrc, idx) => {
-                    const thumb = document.createElement('img');
-                    thumb.src   = imgSrc;
-                    thumb.alt   = `${product.name} view ${idx + 1}`;
-                    thumb.style.cssText = `
-                        width: 80px; height: 100px; object-fit: cover;
-                        cursor: pointer;
-                        border: 2px solid ${idx === 0 ? 'var(--burgundy)' : 'transparent'};
-                        transition: border 0.3s;
-                        border-radius: 4px;
-                    `;
-                    thumb.onclick = () => { updateImage(idx); resetTimer(); };
-                    if (gallery) gallery.appendChild(thumb);
-                });
-
-                // Kick off auto-slide
-                resetTimer();
-            }
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // 8. QUANTITY SELECTOR
-        // ─────────────────────────────────────────────────────────────────────
-        let selectedQty  = 1;
-        const qtyVal     = document.getElementById('qty-val');
-        const qtyMinus   = document.getElementById('qty-minus');
-        const qtyPlus    = document.getElementById('qty-plus');
+        // Expand image on click
+        const expandBtn = document.getElementById('expandMediaBtn');
+        if (expandBtn) {
+            expandBtn.onclick = () => {
+                const mainImg = document.getElementById('main-img-view');
+                if (mainImg) window.open(mainImg.src, '_blank');
+            };
+        }
 
-        if (qtyMinus) {
-            qtyMinus.addEventListener('click', () => {
-                if (selectedQty > 1) {
-                    selectedQty--;
-                    if (qtyVal) qtyVal.innerText = selectedQty;
+        // Accordion Interaction (Mavin + / -)
+        document.querySelectorAll('.mavin-accordion-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const row = btn.parentElement;
+                const wasActive = row.classList.contains('active');
+                document.querySelectorAll('.mavin-accordion-row').forEach(r => r.classList.remove('active'));
+                if (!wasActive) row.classList.add('active');
+            });
+        });
+
+        // Learn more trigger scrolls to accordion
+        const learnMore = document.getElementById('learnMoreTrigger');
+        if (learnMore) {
+            learnMore.addEventListener('click', (e) => {
+                e.preventDefault();
+                const descRow = document.querySelector('.mavin-accordion-row');
+                if (descRow) {
+                    descRow.classList.add('active');
+                    descRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
         }
-        if (qtyPlus) {
-            qtyPlus.addEventListener('click', () => {
-                selectedQty++;
-                if (qtyVal) qtyVal.innerText = selectedQty;
+
+        // Size Guide Modal
+        const sizeGuideModal = document.getElementById('sizeGuideModal');
+        const openSizeGuide = document.getElementById('openSizeGuide');
+        const closeSizeGuide = document.getElementById('closeSizeGuide');
+
+        if (openSizeGuide && sizeGuideModal) {
+            openSizeGuide.addEventListener('click', () => {
+                sizeGuideModal.classList.add('open');
+            });
+        }
+        if (closeSizeGuide && sizeGuideModal) {
+            closeSizeGuide.addEventListener('click', () => {
+                sizeGuideModal.classList.remove('open');
+            });
+            sizeGuideModal.addEventListener('click', (e) => {
+                if (e.target === sizeGuideModal) sizeGuideModal.classList.remove('open');
             });
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // 9. ADD TO CART
+        // 7. ADD TO CART ACTION
         // ─────────────────────────────────────────────────────────────────────
-        const cartBtn = document.getElementById('add-to-cart-btn');
         if (cartBtn) {
             cartBtn.addEventListener('click', () => {
-                // Validation
+                const errorMsg = document.getElementById('product-error-msg');
                 if (!selectedSize) {
-                    showError('Please select a size before adding to cart.');
+                    if (errorMsg) {
+                        errorMsg.textContent = 'يرجى اختيار المقاس أولاً لإضافة المنتج إلى السلة (Please select a size)';
+                        errorMsg.style.display = 'block';
+                    }
                     return;
                 }
-                if (colors.length > 0 && !selectedColor) {
-                    showError('Please select a color before adding to cart.');
-                    return;
-                }
+                if (errorMsg) errorMsg.style.display = 'none';
 
-                // Persist to localStorage
                 let cart = JSON.parse(localStorage.getItem('drogla_cart')) || [];
                 const existing = cart.find(
                     item => item.id === product.id
@@ -417,7 +407,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                          && item.color === selectedColor
                 );
                 if (existing) {
-                    existing.quantity += selectedQty;
+                    existing.quantity += 1;
                 } else {
                     cart.push({
                         id:       product.id,
@@ -426,32 +416,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                         image:    firstImage,
                         size:     selectedSize,
                         color:    selectedColor || '',
-                        quantity: selectedQty
+                        quantity: 1
                     });
                 }
                 localStorage.setItem('drogla_cart', JSON.stringify(cart));
                 updateCartBadge();
 
-                // ── Premium visual feedback ──────────────────────────────────
-                const btn          = document.getElementById('add-to-cart-btn');
-                const originalText = btn.innerText;
-                const originalBg   = btn.style.background   || '';
-                const originalColor = btn.style.color       || '';
-                const originalBorder = btn.style.borderColor || '';
-
-                btn.style.transition  = 'all 0.4s ease';
-                btn.innerText         = '✓ Added to Bag';
-                btn.style.background  = 'var(--burgundy-deep)';
-                btn.style.color       = '#fff';
-                btn.style.borderColor = 'var(--burgundy-deep)';
-
+                // Button Feedback
+                const originalText = cartBtn.textContent;
+                cartBtn.textContent = '✓ ADDED TO BAG';
+                cartBtn.style.background = '#2e7d32';
                 setTimeout(() => {
-                    btn.style.transition  = 'all 0.4s ease';
-                    btn.innerText         = originalText;
-                    btn.style.background  = originalBg;
-                    btn.style.color       = originalColor;
-                    btn.style.borderColor = originalBorder;
-                }, 2000);
+                    updateCartButtonState();
+                    cartBtn.style.background = '';
+                }, 1800);
             });
         }
 
