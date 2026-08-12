@@ -48,53 +48,45 @@
 
 <body>
 
+  <!-- BNPL BAR -->
+  <div class="bnpl-bar">
+    <strong>Buy Now, Pay Later — Klarna & Afterpay</strong>
+  </div>
 
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-inner" id="marq">
+      <span class="marquee-item">!ITEMS - FREE SHIPPING <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+      <span class="marquee-item">!GUARANTEED RETURNS & EXCHANGES <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+      <span class="marquee-item">!ITEMS - FREE SHIPPING <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+      <span class="marquee-item">!GUARANTEED RETURNS & EXCHANGES <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+      <span class="marquee-item">!ITEMS - FREE SHIPPING <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+      <span class="marquee-item">!GUARANTEED RETURNS & EXCHANGES <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+    </div>
+  </div>
 
   <!-- NAV -->
   <nav id="nav">
+    <div class="nav-left">
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
     <a href="#" class="nav-logo">Drogla</a>
-    <ul class="nav-links">
-      <li class="nav-item">
-        <a href="#">MEN ⌄</a>
-        <div class="mega-menu">
-          <div class="mega-col">
-            <span class="mega-title">TOPS</span>
-            <a href="shop.html?cat=men-tops" class="mega-link">SHOP ALL TOPS</a>
-            <a href="shop.html?cat=men-tshirts" class="mega-link">T-SHIRTS</a>
-          </div>
-          <div class="mega-col">
-            <span class="mega-title">BOTTOMS</span>
-            <a href="shop.html?cat=men-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
-          </div>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a href="#">WOMEN ⌄</a>
-        <div class="mega-menu">
-          <div class="mega-col">
-            <span class="mega-title">TOPS</span>
-            <a href="shop.html?cat=women-tops" class="mega-link">SHOP ALL TOPS</a>
-            <a href="shop.html?cat=women-tshirts" class="mega-link">T-SHIRTS</a>
-          </div>
-          <div class="mega-col">
-            <span class="mega-title">BOTTOMS</span>
-            <a href="shop.html?cat=women-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
-          </div>
-        </div>
-      </li>
-      <li class="nav-item"><a href="shop.html">Collection</a></li>
-      <li class="nav-item"><a href="#value">The Value</a></li>
-    </ul>
     <div class="nav-right">
       <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
           stroke-linejoin="round">
           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
         </svg></button>
-      <a href="cart.html" class="nav-cart" id="cartBtn">Bag (<span id="cart-count">0</span>)</a>
-      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
-        <span></span><span></span><span></span>
-      </button>
+      <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+          <path d="M3 6h18"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="nav-cart-badge" id="cart-count">0</span>
+      </a>
     </div>
   </nav>
 
@@ -139,57 +131,24 @@
     <span class="cart-fab-badge" id="cart-fab-count">0</span>
   </a> 
   <!-- HERO -->
-  <section class="hero">
-    <video class="hero-video" autoplay muted loop playsinline>
-      <source src="video/bg.mp4" type="video/mp4" />
-    </video>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <!-- Desktop content -->
-      <div class="hero-desktop-content">
-        <p class="hero-eyebrow">New Collection — 2026</p>
-        <h1 class="hero-title">The <em>Drogla</em><br />Collection</h1>
-        <p class="hero-sub">Crafted for those who move between worlds.<br />Grit encoded in every thread.</p>
-        <div class="hero-ctas">
-          <a href="shop.html" class="btn-light">Shop Now</a>
-          <a href="#value" class="btn-outline-light">About The Value</a>
-        </div>
-      </div>
-      <!-- Mobile pill button only -->
-      <a href="shop.html" class="btn-hero-pill">Shop Collection</a>
+  <section class="hero mavin-hero">
+    <div class="hero-bg-wrap">
+      <img src="img/hero-bg.jpg" alt="Drogla Restock" class="hero-bg-img" />
+      <div class="hero-bg-overlay"></div>
     </div>
-    <div class="hero-scroll">
-      <span class="scroll-label">Scroll</span>
-      <div class="scroll-line"></div>
+    
+    <div class="hero-mavin-content">
+      <p class="hero-mavin-eyebrow">STEALTH COMPRESSION TEE</p>
+      <h1 class="hero-mavin-title">RESTOCK</h1>
+      <p class="hero-mavin-sub">!Stealth Compressions RESTOCKED</p>
+      <div class="hero-mavin-ctas">
+        <a href="shop.html" class="btn-mavin-outline">Shop All</a>
+        <a href="shop.html?cat=stealth" class="btn-mavin-solid">Shop Stealth</a>
+      </div>
     </div>
   </section>
 
-  <!-- BNPL BAR -->
-  <div class="bnpl-bar">
-    <span>Free shipping over 1000 EGP</span>
-    <span>·</span>
-    <strong>Buy Now, Pay Later — Klarna & Afterpay</strong>
-    <span>·</span>
-    <span>Global delivery</span>
-  </div>
 
-  <!-- MARQUEE -->
-  <div class="marquee-wrap">
-    <div class="marquee-inner" id="marq">
-      <span class="marquee-item">New Collection 2026</span>
-      <span class="marquee-item"><strong>//</strong> Digital Grit</span>
-      <span class="marquee-item">The Value is Open</span>
-      <span class="marquee-item"><strong>//</strong> Oversized Tee — Burgundy</span>
-      <span class="marquee-item">Wide-Leg Track Pant — Black</span>
-      <span class="marquee-item"><strong>//</strong> Limited Drop</span>
-      <span class="marquee-item">New Collection 2026</span>
-      <span class="marquee-item"><strong>//</strong> Digital Grit</span>
-      <span class="marquee-item">The Value is Open</span>
-      <span class="marquee-item"><strong>//</strong> Oversized Tee — Burgundy</span>
-      <span class="marquee-item">Wide-Leg Track Pant — Black</span>
-      <span class="marquee-item"><strong>//</strong> Limited Drop</span>
-    </div>
-  </div>
 
   <!-- COLLECTION -->
   <section id="collection">
@@ -209,13 +168,7 @@
   <!-- THE VALUE -->
   <section class="value-section" id="value">
     <div class="value-inner">
-      <div class="value-visual fade-up">
-        <div class="value-frame"></div>
-        <video class="value-video" autoplay muted loop playsinline>
-          <source src="video/bb.mp4" type="video/mp4" />
-        </video>
-        <div class="value-badge-float">Premium Quality</div>
-      </div>
+      <!-- The Visual video removed per request -->
       <div class="value-content fade-up" style="transition-delay:.15s">
         <p class="s-label">Our Promise</p>
         <h2 class="s-title">The <em>Value</em></h2>
@@ -344,20 +297,19 @@
             card.style.transitionDelay = `${idx * 0.1}s`;
             card.innerHTML = `
                   <div class="card-img-wrap">
-                    ${idx === 0 ? '<div class="badge-new card-badge">New</div>' : ''}
+                    ${idx === 0 ? '<div class="badge-new card-badge">NEW</div>' : ''}
                     <div class="card-img-placeholder">
                       ${mediaHTML}
                     </div>
-                    <div class="card-actions">
-                      <button class="btn-add">Explore</button>
-                    </div>
+                    <button class="card-quick-add" aria-label="Quick explore">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </button>
                   </div>
                   <div class="card-info">
-                    <p class="card-cat">${p.category || 'Apparel'}</p>
                     <p class="card-name">${p.name}</p>
+                    <p class="card-cat">${p.category || 'Apparel'}</p>
                     <div class="card-foot">
                       <span class="card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
-                      <span class="card-stock">In Stock</span>
                     </div>
                   </div>
                 `;

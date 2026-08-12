@@ -323,6 +323,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     const drawerTitle = document.getElementById('drawerTitle');
     const addProductForm = document.getElementById('add-product-form');
     
+    const variantsContainer = document.getElementById('variants-container');
+    const addVariantBtn = document.getElementById('add-variant-btn');
+    
+    window.addVariantRow = function(data = null) {
+        if (!variantsContainer) return;
+        const row = document.createElement('div');
+        row.style = 'background: #fff; border: 1px solid var(--border-color); padding: 12px; border-radius: 4px; display: flex; flex-direction: column; gap: 10px; position: relative;';
+        
+        let sizesStr = '';
+        if (data && data.sizes) {
+            sizesStr = Object.entries(data.sizes).map(([s,q]) => `${s}:${q}`).join(', ');
+        }
+        
+        row.innerHTML = `
+            <button type="button" onclick="this.parentElement.remove()" style="position: absolute; right: 8px; top: 8px; background: none; border: none; color: #e53935; cursor: pointer; font-size: 1.2rem; line-height: 1;">&times;</button>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-right: 20px;">
+                <div>
+                    <label style="font-size: 0.6rem;">Color Name</label>
+                    <input type="text" class="v-color" placeholder="e.g. Black" required value="${data ? (data.color || '') : ''}">
+                </div>
+                <div>
+                    <label style="font-size: 0.6rem;">Image URL (for this color)</label>
+                    <input type="url" class="v-image" placeholder="https://..." value="${data ? (data.image || '') : ''}">
+                </div>
+            </div>
+            <div>
+                <label style="font-size: 0.6rem;">Sizes & Stock (e.g. S:10, M:5, L:0)</label>
+                <input type="text" class="v-sizes" placeholder="S:10, M:5" required value="${sizesStr}">
+            </div>
+        `;
+        variantsContainer.appendChild(row);
+    }
+    
+    if (addVariantBtn) {
+        addVariantBtn.addEventListener('click', () => addVariantRow());
+    }
+
     function openDrawer(editMode = false) {
         productDrawerOverlay.classList.add('open');
         productDrawer.classList.add('open');
@@ -333,6 +370,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             addProductForm.reset();
             document.getElementById('p-id').value = '';
             document.getElementById('p-image').value = '';
+            if (variantsContainer) variantsContainer.innerHTML = '';
+            addVariantRow(); // add one empty variant by default
             renderPreviews();
         } else {
             drawerTitle.innerText = 'Modify Product Details';
@@ -470,9 +509,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('p-gender').value = g;
         document.getElementById('p-type').value = t;
         
-        document.getElementById('p-size').value = p.size;
+        document.getElementById('p-size').value = p.size || '';
         document.getElementById('p-color').value = p.colors || '';
         document.getElementById('p-desc').value = p.description || '';
+        
+        if (variantsContainer) {
+            variantsContainer.innerHTML = '';
+            if (p.variants && Array.isArray(p.variants) && p.variants.length > 0) {
+                p.variants.forEach(v => addVariantRow(v));
+            } else {
+                addVariantRow(); // fallback
+            }
+        }
         
         renderPreviews();
         openDrawer(true);
@@ -485,15 +533,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.disabled = true;
         btn.innerText = 'Saving changes...';
         
+        // Collect variants
+        const variants = [];
+        if (variantsContainer) {
+            const variantElements = variantsContainer.children;
+            for (let i = 0; i < variantElements.length; i++) {
+                const v = variantElements[i];
+                const color = v.querySelector('.v-color').value;
+                const image = v.querySelector('.v-image').value;
+                const sizeStr = v.querySelector('.v-sizes').value;
+                
+                const sizesObj = {};
+                sizeStr.split(',').forEach(part => {
+                    const [s, q] = part.split(':');
+                    if (s && q) sizesObj[s.trim()] = parseInt(q.trim()) || 0;
+                });
+                
+                variants.push({ color, image, sizes: sizesObj });
+            }
+        }
+
         const product = {
             name: document.getElementById('p-name').value,
             price: parseFloat(document.getElementById('p-price').value),
             image: document.getElementById('p-image').value,
             video_url: document.getElementById('p-video').value,
             category: document.getElementById('p-gender').value + ' ' + document.getElementById('p-type').value,
-            size: document.getElementById('p-size').value,
-            colors: document.getElementById('p-color').value,
-            description: document.getElementById('p-desc').value
+            size: document.getElementById('p-size').value, // legacy
+            colors: document.getElementById('p-color').value, // legacy
+            description: document.getElementById('p-desc').value,
+            variants: variants
         };
 
         const editId = document.getElementById('p-id').value;
@@ -701,6 +770,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </td>
                 <td style="font-weight: 600;">EGP ${parseFloat(o.total_price).toFixed(2)}</td>
                 <td>${statusBadge}</td>
+                <td>
+                    <select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)" style="padding: 4px 8px; font-size: 0.65rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--off-white); cursor: pointer;">
+                        <option value="Pending" ${(!o.status || o.status === 'Pending') ? 'selected' : ''}>Pending</option>
+                        <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                        <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                    </select>
+                </td>
                 <td>
                     <div class="actions-cell" style="justify-content: flex-end;">
                         <button class="action-btn view-order-btn" data-id="${o.id}" title="Inspect Receipt">
@@ -964,4 +1041,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             setTimeout(() => msg.style.display = 'none', 3000);
         }
     });
+    window.updateOrderStatus = async function(orderId, newStatus) {
+        try {
+            const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+            if (error) {
+                alert('Failed to update status: ' + error.message);
+            } else {
+                // Update local data and optionally show a toast
+                const order = ordersData.find(o => o.id == orderId);
+                if (order) order.status = newStatus;
+            }
+        } catch(err) {
+            console.error('Error updating status', err);
+        }
+    };
 });

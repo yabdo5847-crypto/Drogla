@@ -95,22 +95,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         card.innerHTML = `
             <div class="card-img-wrap">
-                ${isFirst && !catFilter ? '<div class="badge-new card-badge">New</div>' : ''}
+                ${isFirst && !catFilter ? '<div class="badge-new card-badge">NEW</div>' : ''}
                 <div class="card-img-placeholder">
                     ${mediaHTML}
                 </div>
-                <div class="card-actions">
-                    <button class="btn-add">Explore</button>
-                </div>
+                <button class="card-quick-add" aria-label="Quick explore">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </button>
             </div>
             <div class="card-info">
-                <p class="card-cat">${p.category || 'Apparel'}</p>
                 <p class="card-name">${p.name}</p>
+                <p class="card-cat">${p.category || 'Apparel'}</p>
                 <div class="card-foot">
                     <span class="card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
-                    <span class="card-stock ${p.stock && p.stock < 5 ? 'low' : ''}">
-                        ${p.stock && p.stock < 5 ? p.stock + ' Left' : 'In Stock'}
-                    </span>
                 </div>
             </div>`;
 
@@ -134,8 +131,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // ── pill filter ──
             let pillMatch = true;
-            if (pill === 'men')      pillMatch = category.startsWith('men');
+            if (pill === 'men')          pillMatch = category.startsWith('men');
             else if (pill === 'women')   pillMatch = category.startsWith('women');
+            else if (pill === 'unisex')  pillMatch = category.startsWith('unisex');
             else if (pill === 't-shirts') pillMatch = category.includes('t-shirt');
             else if (pill === 'bottoms') pillMatch = category.includes('bottom');
 
@@ -195,7 +193,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             let gender = '';
             let type   = '';
 
-            if (catFilter.includes('women'))       gender = 'Women';
+            if (catFilter.includes('unisex'))      gender = 'Unisex';
+            else if (catFilter.includes('women'))  gender = 'Women';
             else if (catFilter.includes('men'))    gender = 'Men';
 
             if (catFilter.includes('tshirts'))         type = 'T-Shirts';

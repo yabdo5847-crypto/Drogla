@@ -66,45 +66,19 @@
 
 
     <!-- NAV -->
-    <nav id="nav">
-      <a href="index.html" class="nav-logo">Drogla</a>
-      <ul class="nav-links">
-        <li class="nav-item">
-          <a href="#">MEN ⌄</a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <span class="mega-title">TOPS</span>
-              <a href="shop.html?cat=men-tops" class="mega-link">SHOP ALL TOPS</a>
-              <a href="shop.html?cat=men-tshirts" class="mega-link">T-SHIRTS</a>
-            </div>
-            <div class="mega-col">
-              <span class="mega-title">BOTTOMS</span>
-              <a href="shop.html?cat=men-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
-            </div>
-          </div>
-        </li>
-        <li class="nav-item">
-          <a href="#">WOMEN ⌄</a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <span class="mega-title">TOPS</span>
-              <a href="shop.html?cat=women-tops" class="mega-link">SHOP ALL TOPS</a>
-              <a href="shop.html?cat=women-tshirts" class="mega-link">T-SHIRTS</a>
-            </div>
-            <div class="mega-col">
-              <span class="mega-title">BOTTOMS</span>
-              <a href="shop.html?cat=women-bottoms" class="mega-link">SHOP ALL BOTTOMS</a>
-            </div>
-          </div>
-        </li>
-        <li class="nav-item"><a href="shop.html">Collection</a></li>
-      </ul>
-      <div class="nav-right">
-        <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
-        <a href="cart.html" class="nav-cart" id="cartBtn">Bag (<span id="cart-count">0</span>)</a>
+        <nav id="nav">
+      <div class="nav-left">
         <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
           <span></span><span></span><span></span>
         </button>
+      </div>
+      <a href="index.html" class="nav-logo">Drogla</a>
+      <div class="nav-right">
+        <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg></button>
+        <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="nav-cart-badge" id="cart-count">0</span>
+        </a>
       </div>
     </nav>
 
@@ -151,6 +125,7 @@
                 <button class="filter-pill active" data-filter="all">ALL</button>
                 <button class="filter-pill" data-filter="men">MEN</button>
                 <button class="filter-pill" data-filter="women">WOMEN</button>
+                <button class="filter-pill" data-filter="unisex">UNISEX</button>
                 <button class="filter-pill" data-filter="t-shirts">T-SHIRTS</button>
                 <button class="filter-pill" data-filter="bottoms">BOTTOMS</button>
             </div>
@@ -217,3 +192,4 @@
     </script>
 </body>
 </html>
+

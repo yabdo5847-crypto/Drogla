@@ -128,83 +128,134 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
 
         // ─────────────────────────────────────────────────────────────────────
-        // 5. SIZE SELECTOR
+        // 5 & 6. COLOR AND SIZE SELECTORS (WITH VARIANTS SUPPORT)
         // ─────────────────────────────────────────────────────────────────────
         const sizeContainer = document.getElementById('size-container');
-        const sizes = product.size
-            ? product.size.split(',').map(s => s.trim()).filter(s => s !== '')
-            : [];
-
+        const colorWrapper = document.getElementById('color-wrapper');
+        const colorContainer = document.getElementById('color-container');
+        
         let selectedSize = null;
+        let selectedColor = null;
 
-        if (sizes.length === 0) {
-            sizeContainer.innerHTML = '<span style="color:#fff;">One Size</span>';
-            selectedSize = 'One Size';
-        } else {
-            sizes.forEach((s) => {
+        const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
+        
+        function renderSizesForVariant(variant) {
+            sizeContainer.innerHTML = '';
+            selectedSize = null;
+            if (!variant || !variant.sizes || Object.keys(variant.sizes).length === 0) {
+                sizeContainer.innerHTML = '<span style="color:#fff;">One Size</span>';
+                selectedSize = 'One Size';
+                return;
+            }
+            
+            Object.entries(variant.sizes).forEach(([s, q]) => {
                 const btn = document.createElement('button');
                 btn.className = 'size-btn';
-
-                const activateSize = () => {
-                    sizeContainer.querySelectorAll('.size-btn').forEach(b => {
-                        b.classList.remove('active');
-                        b.style.boxShadow = '';
-                    });
-                    btn.classList.add('active');
-                    btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                    selectedSize = s;
-                };
-
-                // Auto-select if only one size
-                if (sizes.length === 1) {
-                    btn.classList.add('active');
-                    btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                    selectedSize = s;
-                }
-
                 btn.innerText = s;
-                btn.onclick   = activateSize;
+                
+                if (q <= 0) {
+                    btn.style.opacity = '0.3';
+                    btn.style.textDecoration = 'line-through';
+                    btn.disabled = true;
+                    btn.title = 'Out of Stock';
+                } else {
+                    btn.onclick = () => {
+                        sizeContainer.querySelectorAll('.size-btn').forEach(b => {
+                            b.classList.remove('active');
+                            b.style.boxShadow = '';
+                        });
+                        btn.classList.add('active');
+                        btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
+                        selectedSize = s;
+                    };
+                }
                 sizeContainer.appendChild(btn);
             });
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // 6. COLOR SELECTOR
-        // ─────────────────────────────────────────────────────────────────────
-        const colorWrapper    = document.getElementById('color-wrapper');
-        const colorContainer  = document.getElementById('color-container');
-        const colors = product.colors
-            ? product.colors.split(',').map(c => c.trim()).filter(c => c !== '')
-            : [];
-        let selectedColor = null;
-
-        if (colors.length > 0) {
+        if (hasVariants) {
             colorWrapper.style.display = 'block';
-            colors.forEach((c) => {
+            
+            product.variants.forEach((v, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'size-btn';
-
-                const activateColor = () => {
+                btn.innerText = v.color;
+                
+                btn.onclick = () => {
                     colorContainer.querySelectorAll('.size-btn').forEach(b => {
                         b.classList.remove('active');
                         b.style.boxShadow = '';
                     });
                     btn.classList.add('active');
                     btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                    selectedColor = c;
+                    selectedColor = v.color;
+                    
+                    const mainImg = document.getElementById('main-img-view');
+                    if (mainImg && v.image) {
+                        mainImg.style.opacity = '0';
+                        setTimeout(() => {
+                            mainImg.src = v.image;
+                            mainImg.style.opacity = '1';
+                        }, 200);
+                    }
+                    
+                    renderSizesForVariant(v);
                 };
-
-                // Auto-select if only one color
-                if (colors.length === 1) {
+                
+                if (index === 0) {
                     btn.classList.add('active');
                     btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
-                    selectedColor = c;
+                    selectedColor = v.color;
+                    renderSizesForVariant(v);
+                    
+                    setTimeout(() => {
+                        const mainImg = document.getElementById('main-img-view');
+                        if (mainImg && v.image && !product.video_url) {
+                            mainImg.src = v.image;
+                        }
+                    }, 50);
                 }
-
-                btn.innerText = c;
-                btn.onclick   = activateColor;
                 colorContainer.appendChild(btn);
             });
+        } else {
+            // --- Legacy Fallback Logic ---
+            const sizes = product.size ? product.size.split(',').map(s => s.trim()).filter(s => s !== '') : [];
+            if (sizes.length === 0) {
+                sizeContainer.innerHTML = '<span style="color:#fff;">One Size</span>';
+                selectedSize = 'One Size';
+            } else {
+                sizes.forEach((s) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'size-btn';
+                    btn.innerText = s;
+                    btn.onclick = () => {
+                        sizeContainer.querySelectorAll('.size-btn').forEach(b => { b.classList.remove('active'); b.style.boxShadow = ''; });
+                        btn.classList.add('active');
+                        btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
+                        selectedSize = s;
+                    };
+                    if (sizes.length === 1) btn.onclick();
+                    sizeContainer.appendChild(btn);
+                });
+            }
+
+            const colors = product.colors ? product.colors.split(',').map(c => c.trim()).filter(c => c !== '') : [];
+            if (colors.length > 0) {
+                colorWrapper.style.display = 'block';
+                colors.forEach((c) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'size-btn';
+                    btn.innerText = c;
+                    btn.onclick = () => {
+                        colorContainer.querySelectorAll('.size-btn').forEach(b => { b.classList.remove('active'); b.style.boxShadow = ''; });
+                        btn.classList.add('active');
+                        btn.style.boxShadow = '0 0 0 2px var(--burgundy)';
+                        selectedColor = c;
+                    };
+                    if (colors.length === 1) btn.onclick();
+                    colorContainer.appendChild(btn);
+                });
+            }
         }
 
         // ─────────────────────────────────────────────────────────────────────
