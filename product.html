@@ -1,611 +1,462 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="512x512" href="images/favicon.png" />
-    <link rel="apple-touch-icon" href="images/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="View product details on Drogla. Premium Digital Grit streetwear. Crafted for those who move between worlds." />
-    <meta name="keywords" content="Drogla product, streetwear, fashion, premium quality, digital grit" />
-    <meta name="author" content="Drogla" />
-    <meta name="robots" content="index, follow" />
-    
-    <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="product" />
-    <meta property="og:url" content="https://drogla.com/product.html" />
-    <meta property="og:title" content="Product | DROGLA" />
-    <meta property="og:description" content="View product details on Drogla. Premium Digital Grit streetwear." />
-    <meta property="og:image" content="https://drogla.com/images/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="Drogla" />
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Product | DROGLA" />
-    <meta name="twitter:description" content="Premium Digital Grit streetwear by Drogla." />
-    <meta name="twitter:image" content="https://drogla.com/images/og-image.png" />
-    
-    <title>Product | DROGLA</title>
-    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="css/home.css">
-<script>
-    if (localStorage.getItem('drogla_theme') === 'dark') {
-        document.documentElement.classList.add('dark-mode');
-        document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="512x512" href="images/favicon.png">
+  <link rel="apple-touch-icon" href="images/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View product details on DROGLA. Premium Digital Grit streetwear.">
+  <meta name="keywords" content="Drogla product, streetwear, fashion, premium quality">
+  <meta name="author" content="Drogla">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="product">
+  <meta property="og:url" content="https://drogla.com/product">
+  <meta property="og:title" content="Product | DROGLA">
+  <meta property="og:description" content="Premium Digital Grit streetwear by DROGLA.">
+  <meta property="og:image" content="https://drogla.com/images/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Product | DROGLA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="css/drogla.css">
+  <!-- Compatibility layer & Product fine-tuning -->
+  <style>
+    .mavin-size-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 4px;
+      text-align: center;
+      background: var(--bg-alt);
+      border: 1px solid var(--border-mid);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
     }
-</script>
-    <style>
-        /* ── Desktop ── */
-        .shop-container { padding: 140px 3rem 6rem; min-height: 80vh; }
-        #loader { text-align: center; padding: 2rem; color: var(--text-muted); display: none; }
-        #loader.active { display: block; }
+    body.dark-mode .mavin-size-box { background: #222121; border-color: #333; }
+    .mavin-size-box:hover { background: var(--clr-cream); border-color: var(--clr-accent); }
+    body.dark-mode .mavin-size-box:hover { background: #333; border-color: #555; }
+    .mavin-size-box.active { background: var(--clr-near-black) !important; color: #fff !important; border-color: var(--clr-near-black) !important; }
+    body.dark-mode .mavin-size-box.active { background: #fff !important; color: #000 !important; border-color: #fff !important; }
+    .mavin-size-box:disabled { opacity: 0.3; text-decoration: line-through; cursor: not-allowed; }
 
-        /* ── Product gallery thumbnails ── */
-        #product-gallery {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        #product-gallery::-webkit-scrollbar { display: none; }
-        #product-gallery img,
-        #product-gallery video {
-            width: 80px;
-            height: 100px;
-            object-fit: cover;
-            flex-shrink: 0;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: border-color 0.2s;
-        }
-        #product-gallery img.active,
-        #product-gallery video.active {
-            border-color: var(--burgundy);
-        }
+    .mavin-accordion-row { border-bottom: 1px solid var(--border-mid); }
+    .mavin-accordion-btn {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 0;
+      background: none;
+      border: none;
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .mavin-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; font-size: var(--text-sm); color: var(--text-muted); line-height: 1.65; }
+    .mavin-accordion-row.active .mavin-accordion-body { max-height: 280px; padding-bottom: 0.8rem; }
 
-        /* ── Qty selector ── */
-        .qty-selector { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
-        #qty-minus, #qty-plus {
-            background: transparent;
-            border: 1px solid rgba(110,108,105,0.3);
-            color: var(--text-main);
-            width: 42px;
-            height: 42px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: border-color 0.2s;
-            touch-action: manipulation;
-        }
-        #qty-minus:hover, #qty-plus:hover { border-color: var(--burgundy); }
-        #qty-val { font-weight: 600; font-size: 1.1rem; min-width: 24px; text-align: center; }
+    /* Gallery thumbnails */
+    #product-gallery { display: flex; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-3); overflow-x: auto; padding-bottom: var(--sp-2); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    #product-gallery::-webkit-scrollbar { display: none; }
+    #product-gallery img, #product-gallery video { width: 72px; height: 90px; object-fit: cover; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; opacity: 0.7; }
+    #product-gallery img.active, #product-gallery video.active { border-color: var(--clr-near-black); opacity: 1; }
+    body.dark-mode #product-gallery img.active { border-color: var(--clr-off-white); }
 
-        /* ── Selector labels & section spacing ── */
-        .selector-label {
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-size: 0.6rem;
-            letter-spacing: 0.1em;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 8px;
-        }
-        .size-section {
-            margin-bottom: 28px;
-        }
-        .qty-section {
-            margin-bottom: 30px;
-        }
-
-        /* ── Product skeleton states ── */
-        .product-skeleton-img { width:100%; aspect-ratio:3/4; background:var(--cream); animation:shimmer 1.6s infinite linear; }
-        @keyframes shimmer { 0%{background-position:-1200px 0} 100%{background-position:1200px 0} }
-        .product-skeleton-img { background:linear-gradient(90deg,var(--cream) 25%,rgba(92,26,26,0.06) 50%,var(--cream) 75%); background-size:1200px 100%; }
-
-        /* ── MOBILE (≤ 768px) ── */
-        @media (max-width: 768px) {
-            .shop-container {
-                padding: 80px 1rem 5rem;
-                min-height: unset;
-            }
-            .single-product {
-                flex-direction: column;
-                gap: 1.5rem;
-                margin-top: 1.2rem;
-            }
-            .product-media {
-                width: 100%;
-                flex: none;
-            }
-            /* Main image full-width */
-            .product-media > #product-media-main img,
-            .product-media > #product-media-main video {
-                width: 100%;
-                max-height: 85vw;
-                object-fit: cover;
-                object-position: center top;
-                display: block;
-            }
-            /* Thumbnails smaller on mobile */
-            #product-gallery img,
-            #product-gallery video {
-                width: 64px;
-                height: 80px;
-            }
-            /* Details section — unstick, full width */
-            .product-details {
-                position: static !important;
-                width: 100%;
-                flex: none;
-                padding-bottom: 4rem;
-            }
-            .product-details h1 {
-                font-size: clamp(1.6rem, 6.5vw, 2.2rem);
-                margin-bottom: 12px;
-            }
-            .product-details .price {
-                font-size: 1.2rem;
-                margin-bottom: 20px;
-            }
-            .product-details .desc {
-                font-size: 0.78rem;
-                line-height: 1.75;
-                margin-bottom: 20px;
-            }
-            /* Section spacing on mobile */
-            .size-section { margin-bottom: 18px; }
-            .qty-section { margin-bottom: 18px; }
-
-            /* Larger touch targets for size/color buttons */
-            .size-btn {
-                padding: 12px 18px;
-                font-size: 0.65rem;
-                min-height: 44px;
-                min-width: 44px;
-            }
-            /* Larger qty buttons */
-            #qty-minus, #qty-plus {
-                width: 48px;
-                height: 48px;
-            }
-            /* Hide floating cart FAB on product details page to prevent covering options */
-            .cart-fab {
-                display: none !important;
-            }
-
-            /* Sticky full-width Add to Bag */
-            .add-to-cart-btn {
-                padding: 1.15rem 1rem;
-                font-size: 0.65rem;
-                letter-spacing: 0.18em;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 100;
-                margin-top: 0;
-                box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
-            }
-        }
-
-        /* ── SMALL MOBILE (≤ 480px) ── */
-        @media (max-width: 480px) {
-            .cart-fab { display: none !important; }
-            .shop-container { padding: 74px 0.85rem 6rem; }
-            .product-details { padding-bottom: 6rem !important; }
-            .product-details h1 { font-size: clamp(1.5rem, 7vw, 2rem); }
-            .product-details .price { font-size: 1.1rem; }
-            #product-gallery img,
-            #product-gallery video { width: 56px; height: 70px; }
-            .size-btn { padding: 10px 14px; }
-        }
-    </style>
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    /* Mobile fine-tuning */
+    @media (max-width: 768px) {
+      .dg-product-layout { display: flex; flex-direction: column; gap: var(--sp-6); }
+      .dg-product-details { text-align: center; }
+      .dg-product-title, .dg-product-subtitle { text-align: center; }
+      .dg-product-price-row { justify-content: center; gap: var(--sp-6); }
+      .dg-product-features { text-align: center; }
+      .dg-color-header { justify-content: center; gap: var(--sp-2); }
+      .dg-color-thumbs { justify-content: center; }
+      .dg-size-header { justify-content: center; gap: var(--sp-4); }
+      .dg-size-tip { text-align: center; }
+      #product-gallery img, #product-gallery video { width: 60px; height: 76px; }
+      #add-to-cart-btn, .dg-atc-btn { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.25); z-index: 100; border-radius: 0; }
+      .cart-fab, .dg-fab { display: none !important; }
+    }
+  </style>
+  <script>if(localStorage.getItem('drogla_theme')==='dark'){document.documentElement.classList.add('dark-mode');document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('dark-mode'));}</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <!-- MARQUEE (Top Announcement Strip) -->
-  <div class="marquee-wrap">
-    <div class="marquee-inner" id="marq">
-      <span class="marquee-item">!ITEMS - FREE SHIPPING ON ORDERS OVER 1500 EGP <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!GUARANTEED RETURNS &amp; EXCHANGES WITHIN 14 DAYS <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!CASH ON DELIVERY &amp; INSTAPAY ACCEPTED <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!100% HEAVYWEIGHT COMBED COTTON (260 GSM) <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+  <!-- ── ANNOUNCEMENT BAR ── -->
+  <div class="dg-bar">
+    <div class="dg-bar-track" id="marq">
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
     </div>
   </div>
 
-  <!-- NAV -->
-  <nav id="nav">
-    <!-- Left Utilities (Cart, User, Egypt, Theme) & Mobile Hamburger -->
-    <div class="nav-left">
-      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+  <!-- ── NAV ── -->
+  <nav class="dg-nav" id="nav">
+    <div class="dg-nav-left">
+      <button class="dg-hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
-
-      <div class="nav-util-desktop">
-        <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag" title="Shopping Bag">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-            <path d="M3 6h18"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
-          </svg>
-          <span class="nav-cart-badge" id="cart-count">0</span>
+      <div class="dg-nav-util-desktop">
+        <a href="cart.html" class="dg-nav-icon" aria-label="View Bag" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="dg-badge" id="cart-count">0</span>
         </a>
-        <a href="admin.html" class="nav-user-icon" aria-label="Account" title="Account / Admin Console">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
+        <a href="admin.html" class="dg-nav-icon" aria-label="Account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </a>
-        <span class="nav-country-tag">مصر</span>
-        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme" title="Toggle Theme">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-          </svg>
+        <span class="dg-country">مصر</span>
+        <button id="theme-toggle" class="dg-theme-btn" aria-label="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
         </button>
       </div>
     </div>
-
-    <!-- Center Brand Logo -->
-    <a href="index.html" class="nav-logo">Drogla</a>
-
-    <!-- Right Categories Menu (PC) & Mobile Utilities -->
-    <div class="nav-right">
-      <ul class="nav-menu-desktop">
-        <li class="nav-item">
-          <a href="index.html#faq" class="nav-link">استبدال واسترجاع</a>
-        </li>
-        <li class="nav-item nav-has-dropdown">
-          <a href="shop.html?cat=women-tops" class="nav-link">
-            WOMEN <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+    <a href="index.html" class="dg-logo">DROGLA</a>
+    <div class="dg-nav-right">
+      <ul class="dg-nav-menu">
+        <li class="dg-nav-item"><a href="index.html#faq" class="dg-nav-link">Returns</a></li>
+        <li class="dg-nav-item" style="position:relative;">
+          <a href="shop.html?cat=women-tops" class="dg-nav-link">WOMEN
+            <svg class="dg-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
           </a>
-          <div class="nav-dropdown-menu">
-            <a href="shop.html?cat=women-tops" class="dropdown-link">Shop All Tops (توبات)</a>
-            <a href="shop.html?cat=women-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
-            <a href="shop.html?cat=women-shirts" class="dropdown-link">Shirts (قمصان)</a>
-            <a href="shop.html?cat=women-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
+          <div class="dg-dropdown">
+            <a href="shop.html?cat=women-tops" class="dg-dropdown-link">Shop All Tops</a>
+            <a href="shop.html?cat=women-tshirts" class="dg-dropdown-link">T-Shirts</a>
+            <a href="shop.html?cat=women-bottoms" class="dg-dropdown-link">Bottoms &amp; Pants</a>
           </div>
         </li>
-        <li class="nav-item nav-has-dropdown">
-          <a href="shop.html?cat=men-tops" class="nav-link">
-            الرجال <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        <li class="dg-nav-item" style="position:relative;">
+          <a href="shop.html?cat=men-tops" class="dg-nav-link">MEN
+            <svg class="dg-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
           </a>
-          <div class="nav-dropdown-menu">
-            <a href="shop.html?cat=men-tops" class="dropdown-link">Shop All Tops (توبات)</a>
-            <a href="shop.html?cat=men-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
-            <a href="shop.html?cat=men-shirts" class="dropdown-link">Shirts (قمصان)</a>
-            <a href="shop.html?cat=men-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
+          <div class="dg-dropdown">
+            <a href="shop.html?cat=men-tops" class="dg-dropdown-link">Shop All Tops</a>
+            <a href="shop.html?cat=men-tshirts" class="dg-dropdown-link">T-Shirts</a>
+            <a href="shop.html?cat=men-bottoms" class="dg-dropdown-link">Bottoms &amp; Pants</a>
           </div>
         </li>
-        <li class="nav-item">
-          <a href="shop.html" class="nav-link nav-link-highlight">SUMMER COLLECTION</a>
-        </li>
+        <li class="dg-nav-item"><a href="shop.html" class="dg-nav-link dg-nav-link--highlight">NEW COLLECTION</a></li>
       </ul>
-
-      <div class="nav-util-mobile">
-        <button id="theme-toggle-mobile" class="theme-btn" aria-label="Toggle Theme">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-          </svg>
+      <div class="dg-nav-mobile-utils">
+        <button id="theme-toggle-mobile" class="dg-theme-btn" aria-label="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
         </button>
-        <a href="cart.html" class="nav-cart-icon" id="cartBtnMobile" aria-label="View Bag">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-            <path d="M3 6h18"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
-          </svg>
-          <span class="nav-cart-badge" id="cart-count-mobile-badge">0</span>
+        <a href="cart.html" class="dg-nav-icon" aria-label="Bag" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="dg-badge" id="cart-count-mobile-badge">0</span>
         </a>
       </div>
     </div>
   </nav>
 
-  <!-- MOBILE DRAWER -->
-  <div class="mobile-nav-drawer" id="mobileDrawer">
-    <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  <!-- ── MOBILE DRAWER ── -->
+  <div class="dg-drawer" id="mobileDrawer">
+    <button class="dg-drawer-close" id="mobileClose" aria-label="Close menu">
+      <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
     </button>
-    <ul class="mobile-nav-links">
-      <li><span>Men</span>
-        <ul class="mobile-nav-submenu">
+    <ul class="dg-drawer-links">
+      <li>
+        <span>Men</span>
+        <ul class="dg-drawer-sub">
           <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
           <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
           <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
         </ul>
       </li>
-      <li><span>Women</span>
-        <ul class="mobile-nav-submenu">
+      <li>
+        <span>Women</span>
+        <ul class="dg-drawer-sub">
           <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
           <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
           <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
         </ul>
       </li>
-      <li><a href="shop.html">Collection</a></li>
+      <li><a href="shop.html">New Collection</a></li>
+      <li><a href="index.html#faq">Returns</a></li>
     </ul>
-    <div class="mobile-nav-bottom">
-      <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
+    <div class="dg-drawer-footer">
+      <a href="cart.html" class="dg-drawer-bag">Bag (<span id="cart-count-mobile">0</span>)</a>
     </div>
   </div>
 
-  <!-- FLOATING CART FAB (MOBILE) -->
-  <a href="cart.html" class="cart-fab" id="cartFab" aria-label="View Bag">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    <span class="cart-fab-badge" id="cart-fab-count">0</span>
-  </a>
+  <!-- PAGE WRAPPER -->
+  <div class="dg-page">
+    <div style="padding: var(--sp-8) var(--container-pad) var(--sp-20);">
 
-  <div class="shop-container">
-      <div id="loader" class="loader active">Loading details...</div>
+      <!-- Breadcrumb -->
+      <nav class="dg-breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="shop.html">Shop</a>
+        <span aria-hidden="true">›</span>
+        <span id="breadcrumb-product-name">Product</span>
+      </nav>
 
-      <div class="single-product fade-up" id="single-product" style="display: none;">
+      <!-- Loader -->
+      <div id="loader" style="text-align:center; padding:2rem; color:var(--text-muted); display:none;">Loading details...</div>
 
-          <!-- LEFT: MAIN MEDIA CARD (MAVIN STYLE) -->
-          <div class="product-media">
-              <div class="product-media-container" id="product-media-wrap">
-                  <div id="product-media-main">
-                      <!-- Main image / video injected here -->
-                  </div>
-                  <!-- Floating Bottom Badges -->
-                  <div class="media-model-badge" id="media-model-badge">Model is 188cm Wearing XL</div>
-                  <button type="button" class="media-expand-btn" id="expandMediaBtn" aria-label="Expand image" title="Full size view">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="15 3 21 3 21 9"></polyline>
-                          <polyline points="9 21 3 21 3 15"></polyline>
-                          <line x1="21" y1="3" x2="14" y2="10"></line>
-                          <line x1="3" y1="21" x2="10" y2="14"></line>
-                      </svg>
-                  </button>
-              </div>
+      <!-- Product layout -->
+      <div class="dg-product-layout dg-fade" id="single-product" style="display:none;">
+
+        <!-- LEFT: Media -->
+        <div class="dg-product-media">
+          <div class="dg-product-main-wrap" id="product-media-wrap">
+            <div id="product-media-main"></div>
+            <div class="dg-model-badge" id="media-model-badge">Model is 188cm Wearing XL</div>
+            <button type="button" class="dg-expand-btn" id="expandMediaBtn" aria-label="Expand image">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+            </button>
+          </div>
+          <!-- Gallery thumbnails -->
+          <div id="product-gallery"></div>
+        </div>
+
+        <!-- RIGHT: Details -->
+        <div class="dg-product-details">
+
+          <!-- Title -->
+          <div style="margin-bottom:0.75rem;">
+            <h1 class="dg-product-title" id="product-name">...</h1>
+            <div class="dg-product-subtitle" id="product-fit-subtitle">Oversized Fit</div>
           </div>
 
-          <!-- RIGHT: PRODUCT DETAILS (MAVIN EXACT SPEC) -->
-          <div class="product-details">
-              
-              <!-- Title & Fit Subtitle -->
-              <div class="mavin-title-box">
-                  <h1 id="product-name">...</h1>
-                  <div class="mavin-fit-subtitle" id="product-fit-subtitle">Oversized Fit</div>
-              </div>
-
-              <!-- Rating & Price Row -->
-              <div class="mavin-price-rating-row">
-                  <div class="mavin-rating-tag">
-                      <span class="mavin-rating-star">★</span>
-                      <span>(12) 4.0</span>
-                  </div>
-                  <div class="mavin-price-box">
-                      <span class="mavin-sale-price" id="product-price">...</span>
-                      <span class="mavin-old-price" id="product-old-price"></span>
-                  </div>
-              </div>
-
-              <!-- Features Summary -->
-              <div class="mavin-features-box">
-                  <span id="product-features-text">FEATURES • Premium heavyweight cotton for a structured and durable feel • Soft, breathable, and long-lasting fabric • SIZE &amp; FIT • Oversized Fit • MATERIALS &amp; CARE ...</span>
-                  <a href="#desc-accordion" class="mavin-learn-more" id="learnMoreTrigger">Learn more</a>
-              </div>
-
-              <!-- Colorway Selection (Image Thumbnails Row) -->
-              <div id="color-wrapper" style="display: none;">
-                  <div class="mavin-color-header">
-                      <span id="selected-color-label">WHITE</span>
-                      <strong>COLOR</strong>
-                  </div>
-                  <div id="color-container" class="mavin-color-thumbnails">
-                      <!-- Image color thumbnails injected here -->
-                  </div>
-              </div>
-
-              <!-- Size Selection Bar -->
-              <div class="mavin-size-section">
-                  <div class="mavin-size-header">
-                      <button type="button" class="mavin-size-link" id="sizeRecommendBtn">Size recommendation ✓</button>
-                      <button type="button" class="mavin-size-link" id="openSizeGuide">Size chart 📏</button>
-                      <span class="mavin-selected-size-label" id="mavin-size-badge">SELECT SIZE</span>
-                  </div>
-                  
-                  <div id="size-container" class="mavin-size-grid">
-                      <!-- Size buttons injected here -->
-                  </div>
-
-                  <div class="mavin-size-tip">
-                      <span><strong>size down</strong> ,Customers say it runs large <span style="color:#00875a; font-weight:bold;">✔</span></span>
-                  </div>
-              </div>
-
-              <!-- CTA Button -->
-              <button class="mavin-cta-btn" id="add-to-cart-btn">SELECT A SIZE</button>
-
-              <!-- Validation Error Box -->
-              <div id="product-error-msg" style="display:none; color:#e53935; font-size:0.72rem; letter-spacing:0.08em; margin-bottom:14px; padding:10px 14px; background:rgba(229,57,53,0.08); border-radius:6px; border-left:3px solid #e53935;"></div>
-
-              <!-- Payment Methods Logos Badges -->
-              <div class="mavin-payments-row">
-                  <span class="mavin-pay-badge">WE Pay</span>
-                  <span class="mavin-pay-badge">Etisalat</span>
-                  <span class="mavin-pay-badge">Orange</span>
-                  <span class="mavin-pay-badge">Vodafone Cash</span>
-                  <span class="mavin-pay-badge">Apple Pay</span>
-                  <span class="mavin-pay-badge">Meeza</span>
-                  <span class="mavin-pay-badge">InstaPay</span>
-                  <span class="mavin-pay-badge">Mastercard</span>
-                  <span class="mavin-pay-badge">Visa</span>
-              </div>
-
-              <!-- Standard Shipping Timeline Card -->
-              <div class="mavin-shipping-card">
-                  <div class="mavin-shipping-title">Standard Shipping</div>
-                  <div class="mavin-timeline-grid">
-                      <div class="mavin-timeline-step">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
-                          <span class="mavin-step-name">Order placed</span>
-                          <span class="mavin-step-date" id="step-order-date">Wed, 12 Aug</span>
-                      </div>
-                      <div class="mavin-timeline-step">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
-                          <span class="mavin-step-name">Dispatched</span>
-                          <span class="mavin-step-date" id="step-dispatch-date">Thu, 13 Aug – Sat, 15 Aug</span>
-                      </div>
-                      <div class="mavin-timeline-step">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
-                          <span class="mavin-step-name">Delivered</span>
-                          <span class="mavin-step-date" id="step-delivery-date">Sat, 15 Aug – Tue, 18 Aug</span>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Quick Services 2x2 Row -->
-              <div class="mavin-services-grid">
-                  <div class="mavin-service-item">
-                      <span>Easy Returns &amp; Exchanges</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-                  </div>
-                  <div class="mavin-service-item">
-                      <span>Cash on Delivery</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v12.75M21.75 6h-.75a.75.75 0 00-.75.75v.75m1.5-1.5v12.75M16.5 7.5a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-                  </div>
-                  <div class="mavin-service-item">
-                      <span>Track Your Order</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
-                  </div>
-                  <div class="mavin-service-item">
-                      <span>Secure Checkout</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 003 12c0 6.627 5.373 12 12 12 6.627 0 12-5.373 12-12 0-2.108-.547-4.09-1.507-5.814M15 6.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                  </div>
-              </div>
-
-              <!-- Accordions -->
-              <div class="mavin-accordions" id="desc-accordion">
-                  <div class="mavin-accordion-row active">
-                      <button type="button" class="mavin-accordion-btn">
-                          <span>+ DESCRIPTION</span>
-                      </button>
-                      <div class="mavin-accordion-body" id="product-desc-body">
-                          <!-- Detailed desc injected here -->
-                      </div>
-                  </div>
-                  <div class="mavin-accordion-row">
-                      <button type="button" class="mavin-accordion-btn">
-                          <span>+ SIZE &amp; FIT</span>
-                      </button>
-                      <div class="mavin-accordion-body">
-                          <p>• Oversized Boxy silhouette with dropped shoulders.</p>
-                          <p>• Model is 188cm and is wearing size XL.</p>
-                          <p>• True to size for an authentic streetwear oversized fit. Size down for regular fit.</p>
-                      </div>
-                  </div>
-                  <div class="mavin-accordion-row">
-                      <button type="button" class="mavin-accordion-btn">
-                          <span>+ MATERIAL</span>
-                      </button>
-                      <div class="mavin-accordion-body">
-                          <p>• 100% Premium Egyptian Heavyweight Cotton (260 GSM).</p>
-                          <p>• High-density durable screenprint.</p>
-                          <p>• Cold machine wash (30°C) inside out. Do not tumble dry.</p>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Reviews Summary Banner -->
-              <div class="mavin-reviews-banner">
-                  <div class="mavin-reviews-stars">★★★★★ 4.6 ✔</div>
-                  <div class="mavin-reviews-text">4.6 من 5 نجوم بناءً على 3,990 مراجعة</div>
-                  <div class="mavin-reviews-verified">☑ تم التحقق</div>
-              </div>
-
+          <!-- Rating & Price row -->
+          <div class="dg-product-price-row">
+            <div class="dg-product-rating">
+              <span class="dg-product-rating-star">&#9733;</span>
+              <span>(12) 4.0</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:8px;">
+              <span class="dg-product-price" id="product-price">...</span>
+              <span class="dg-product-price--old" id="product-old-price"></span>
+            </div>
           </div>
-      </div>
-  </div>
+
+          <!-- Features summary -->
+          <div class="dg-product-features">
+            <span id="product-features-text">FEATURES &bull; Premium heavyweight cotton for a structured and durable feel &bull; Soft, breathable, and long-lasting fabric &bull; SIZE &amp; FIT &bull; Oversized Fit &bull; MATERIALS &amp; CARE ...</span>
+            <a href="#desc-accordion" class="dg-size-link" id="learnMoreTrigger" style="margin-left:6px;">Learn more</a>
+          </div>
+
+          <!-- Colorway Selection -->
+          <div id="color-wrapper" style="display:none;">
+            <div class="dg-color-header">
+              <span id="selected-color-label">WHITE</span>
+              <strong>COLOR</strong>
+            </div>
+            <div id="color-container" class="dg-color-thumbs"></div>
+          </div>
+
+          <!-- Size Selection -->
+          <div style="margin-bottom:1.2rem;">
+            <div class="dg-size-header">
+              <button type="button" class="dg-size-link" id="sizeRecommendBtn">Size recommendation ✓</button>
+              <button type="button" class="dg-size-link" id="openSizeGuide">Size chart 📏</button>
+              <span class="dg-size-selected" id="mavin-size-badge">SELECT SIZE</span>
+            </div>
+            <div id="size-container" class="dg-size-grid"></div>
+            <div class="dg-size-tip"><span><strong>size down</strong>, Customers say it runs large <span style="color:#2e7d32; font-weight:bold;">&#10004;</span></span></div>
+          </div>
+
+          <!-- CTA -->
+          <button class="dg-atc-btn" id="add-to-cart-btn">SELECT A SIZE</button>
+
+          <!-- Error msg -->
+          <div class="dg-product-error" id="product-error-msg"></div>
+
+          <!-- Payment badges -->
+          <div class="dg-pay-row">
+            <span class="dg-pay-badge">WE Pay</span>
+            <span class="dg-pay-badge">Etisalat</span>
+            <span class="dg-pay-badge">Orange</span>
+            <span class="dg-pay-badge">Vodafone Cash</span>
+            <span class="dg-pay-badge">Apple Pay</span>
+            <span class="dg-pay-badge">Meeza</span>
+            <span class="dg-pay-badge">InstaPay</span>
+            <span class="dg-pay-badge">Mastercard</span>
+            <span class="dg-pay-badge">Visa</span>
+          </div>
+
+          <!-- Shipping card -->
+          <div class="dg-shipping-card">
+            <div class="dg-shipping-title">Standard Shipping</div>
+            <div class="dg-shipping-steps">
+              <div class="dg-step">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+                <span class="dg-step-name">Order placed</span>
+                <span class="dg-step-date" id="step-order-date">Today</span>
+              </div>
+              <div class="dg-step">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+                <span class="dg-step-name">Dispatched</span>
+                <span class="dg-step-date" id="step-dispatch-date">1-3 Days</span>
+              </div>
+              <div class="dg-step">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                <span class="dg-step-name">Delivered</span>
+                <span class="dg-step-date" id="step-delivery-date">3-5 Days</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Services grid -->
+          <div class="dg-services">
+            <div class="dg-service"><span>Easy Returns &amp; Exchanges</span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
+            <div class="dg-service"><span>Cash on Delivery</span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v12.75M21.75 6h-.75a.75.75 0 00-.75.75v.75m1.5-1.5v12.75M16.5 7.5a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg></div>
+            <div class="dg-service"><span>Track Your Order</span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg></div>
+            <div class="dg-service"><span>Secure Checkout</span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 003 12c0 6.627 5.373 12 12 12 6.627 0 12-5.373 12-12 0-2.108-.547-4.09-1.507-5.814M15 6.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+          </div>
+
+          <!-- Accordions (mavin classes for JS compatibility) -->
+          <div class="mavin-accordions dg-accordions" id="desc-accordion">
+            <div class="mavin-accordion-row active">
+              <button type="button" class="mavin-accordion-btn"><span>+ DESCRIPTION</span></button>
+              <div class="mavin-accordion-body" id="product-desc-body"></div>
+            </div>
+            <div class="mavin-accordion-row">
+              <button type="button" class="mavin-accordion-btn"><span>+ SIZE &amp; FIT</span></button>
+              <div class="mavin-accordion-body">
+                <p>&#8226; Oversized Boxy silhouette with dropped shoulders.</p>
+                <p>&#8226; Model is 188cm and is wearing size XL.</p>
+                <p>&#8226; True to size for an authentic streetwear oversized fit. Size down for regular fit.</p>
+              </div>
+            </div>
+            <div class="mavin-accordion-row">
+              <button type="button" class="mavin-accordion-btn"><span>+ MATERIAL</span></button>
+              <div class="mavin-accordion-body">
+                <p>&#8226; 100% Premium Egyptian Heavyweight Cotton (260 GSM).</p>
+                <p>&#8226; High-density durable screenprint.</p>
+                <p>&#8226; Cold machine wash (30&#176;C) inside out. Do not tumble dry.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews -->
+          <div class="dg-reviews-banner">
+            <div class="dg-reviews-score">&#9733;&#9733;&#9733;&#9733;&#9733; 4.6</div>
+            <div class="dg-reviews-text">Based on 3,990 verified reviews</div>
+            <div class="dg-reviews-verified">&#9745; Verified</div>
+          </div>
+
+        </div><!-- /.dg-product-details -->
+      </div><!-- /.dg-product-layout -->
+    </div>
+  </div><!-- /.dg-page -->
 
   <!-- SIZE GUIDE MODAL -->
-  <div class="size-modal-backdrop" id="sizeGuideModal">
-      <div class="size-modal-box">
-          <button class="size-modal-close" id="closeSizeGuide">✕</button>
-          <h3 style="font-family:'Montserrat',sans-serif; font-size:1.1rem; font-weight:800; text-transform:uppercase; margin-bottom:0.5rem; color:var(--text-main);">📏 دليل المقاسات — SIZE GUIDE</h3>
-          <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:1.2rem;">جميع القياسات بالسنتيمتر (CM). القصة أوفرسايز (Oversized Boxy Fit) — اختر مقاسك المعتاد للحصول على المظهر العصري.</p>
-          <table class="size-modal-table">
-              <thead>
-                  <tr>
-                      <th>المقاس (Size)</th>
-                      <th>عرض الصدر (Chest)</th>
-                      <th>الطول (Length)</th>
-                      <th>عرض الكتف (Shoulder)</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr><td><strong>S</strong></td><td>56 cm</td><td>72 cm</td><td>52 cm</td></tr>
-                  <tr><td><strong>M</strong></td><td>59 cm</td><td>74 cm</td><td>54 cm</td></tr>
-                  <tr><td><strong>L</strong></td><td>62 cm</td><td>76 cm</td><td>56 cm</td></tr>
-                  <tr><td><strong>XL</strong></td><td>65 cm</td><td>78 cm</td><td>58 cm</td></tr>
-                  <tr><td><strong>XXL</strong></td><td>68 cm</td><td>80 cm</td><td>60 cm</td></tr>
-              </tbody>
-          </table>
-      </div>
+  <div class="dg-modal-backdrop" id="sizeGuideModal">
+    <div class="dg-modal-box">
+      <button class="dg-modal-close" id="closeSizeGuide">&#10005;</button>
+      <h3 style="font-family:var(--font-sans); font-size:1.1rem; font-weight:800; text-transform:uppercase; margin-bottom:0.5rem;">📏 SIZE GUIDE</h3>
+      <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:1.2rem;">All measurements in centimetres (CM). Oversized Boxy Fit &mdash; choose your usual size for the modern streetwear look.</p>
+      <table class="dg-size-table">
+        <thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Shoulder</th></tr></thead>
+        <tbody>
+          <tr><td><strong>S</strong></td><td>56 cm</td><td>72 cm</td><td>52 cm</td></tr>
+          <tr><td><strong>M</strong></td><td>59 cm</td><td>74 cm</td><td>54 cm</td></tr>
+          <tr><td><strong>L</strong></td><td>62 cm</td><td>76 cm</td><td>56 cm</td></tr>
+          <tr><td><strong>XL</strong></td><td>65 cm</td><td>78 cm</td><td>58 cm</td></tr>
+          <tr><td><strong>XXL</strong></td><td>68 cm</td><td>80 cm</td><td>60 cm</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-    <!-- FOOTER -->
-    <footer>
-      <div class="footer-top">
-        <div>
-          <span class="footer-brand-name">Drogla</span>
-          <p class="footer-brand-tag">Digital Grit streetwear.<br/>Bridging virtual aesthetics with physical urban durability since 2026.</p>
+  <!-- ── FOOTER ── -->
+  <footer class="dg-footer">
+    <div class="dg-footer-main">
+      <div>
+        <span class="dg-footer-brand-name">DROGLA</span>
+        <p class="dg-footer-tagline">Digital Grit streetwear.<br>Bridging virtual aesthetics with physical urban durability since 2026.</p>
+        <div class="dg-footer-socials">
+          <a href="#" class="dg-footer-social" aria-label="Instagram">IG</a>
+          <a href="#" class="dg-footer-social" aria-label="TikTok">TK</a>
+          <a href="#" class="dg-footer-social" aria-label="Twitter">TW</a>
+          <a href="#" class="dg-footer-social" aria-label="YouTube">YT</a>
         </div>
       </div>
-      <div class="footer-bottom">
-        <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Shop</p>
+        <ul>
+          <li><a href="shop.html">New Arrivals</a></li>
+          <li><a href="shop.html?cat=men-tops">Men</a></li>
+          <li><a href="shop.html?cat=women-tops">Women</a></li>
+          <li><a href="shop.html">All Products</a></li>
+        </ul>
       </div>
-    </footer>
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Help</p>
+        <ul>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="index.html#faq">Sizing Guide</a></li>
+          <li><a href="index.html#faq">Shipping &amp; Returns</a></li>
+          <li><a href="index.html#faq">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Brand</p>
+        <ul>
+          <li><a href="#">About DROGLA</a></li>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Lookbook</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="dg-footer-bottom">
+      <span class="dg-footer-copy">© 2026 DROGLA. All rights reserved.</span>
+      <div class="dg-footer-pay">
+        <span class="dg-pay-tag">Cash on Delivery</span>
+        <span class="dg-pay-tag">InstaPay</span>
+        <span class="dg-pay-tag">Vodafone Cash</span>
+        <span class="dg-pay-tag">Visa</span>
+        <span class="dg-pay-tag">Mastercard</span>
+      </div>
+    </div>
+  </footer>
 
-    <script src="js/supabase.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/product.js"></script>
-    <script>
-    // Hamburger menu
-    const hamburger = document.getElementById('hamburger');
-    const mobileDrawer = document.getElementById('mobileDrawer');
-    const mobileClose = document.getElementById('mobileClose');
-    function closeDrawer() {
-      hamburger.classList.remove('open');
-      mobileDrawer.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-    hamburger.addEventListener('click', () => {
-      const open = hamburger.classList.toggle('open');
-      mobileDrawer.classList.toggle('open', open);
-      document.body.style.overflow = open ? 'hidden' : '';
-    });
-    if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
-    mobileDrawer.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', closeDrawer);
-    });
+  <script src="js/supabase.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/product.js"></script>
+  <script>
+  // Hamburger + drawer
+  const hamburger = document.getElementById('hamburger');
+  const mobileDrawer = document.getElementById('mobileDrawer');
+  const mobileClose = document.getElementById('mobileClose');
+  function closeDrawer() { hamburger.classList.remove('open'); mobileDrawer.classList.remove('open'); document.body.style.overflow = ''; }
+  hamburger.addEventListener('click', () => { const open = hamburger.classList.toggle('open'); mobileDrawer.classList.toggle('open', open); document.body.style.overflow = open ? 'hidden' : ''; });
+  if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
+  mobileDrawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+  // Fade up
+  const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: .12 });
+  setTimeout(() => { document.querySelectorAll('.dg-fade').forEach(el => obs.observe(el)); }, 500);
+  // Mark body for sticky add-to-cart so FAB moves up
+  if (window.matchMedia('(max-width: 768px)').matches) { document.body.classList.add('has-sticky-btn'); }
+  // Breadcrumb auto-fill (called from product.js after product name loads)
+  window.setBreadcrumbName = function(name) {
+    const el = document.getElementById('breadcrumb-product-name');
+    if (el) el.textContent = name;
+  };
+  </script>
 
-
-
-    // Nav scroll
-    const nav=document.getElementById('nav');
-    window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
-    
-    // Fade up
-    const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
-    setTimeout(() => { document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el)); }, 500);
-
-    // Mark body for sticky add-to-cart so FAB moves up
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      document.body.classList.add('has-sticky-btn');
-    }
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // breadcrumb shown by product.js after name is set
-    });
-    </script>
 </body>
 </html>
-

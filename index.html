@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <!-- Favicon -->
-  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="512x512" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
   <meta name="google-site-verification" content="JORWp3O4ruzTiGLEolA9uF6uzqGYvpIfL3EKO3wZSVU" />
@@ -34,379 +34,540 @@
   <meta name="twitter:image" content="https://drogla.com/images/og-image.png" />
 
   <title>Drogla — New Collection 2026</title>
+
+  <!-- Google Fonts preconnect for speed -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="css/home.css">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="css/drogla.css" />
+
+  <!-- Dark mode: apply before paint to avoid flash -->
   <script>
     if (localStorage.getItem('drogla_theme') === 'dark') {
-      document.documentElement.classList.add('dark-mode'); // for future proofing
-      document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+      document.documentElement.classList.add('dark-mode');
+      document.addEventListener('DOMContentLoaded', () => document.body.classList.add('dark-mode'));
     }
   </script>
 </head>
 
 <body>
 
-  <!-- BNPL BAR -->
-  <div class="bnpl-bar">
-    <strong>Buy Now, Pay Later — Klarna & Afterpay</strong>
-  </div>
-
-  <!-- MARQUEE -->
-  <div class="marquee-wrap">
-    <div class="marquee-inner" id="marq">
-      <span class="marquee-item">!ITEMS - FREE SHIPPING <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!GUARANTEED RETURNS & EXCHANGES <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!ITEMS - FREE SHIPPING <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!GUARANTEED RETURNS & EXCHANGES <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!ITEMS - FREE SHIPPING <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!GUARANTEED RETURNS & EXCHANGES <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+  <!-- ════════════════════════════════════════
+       01. ANNOUNCEMENT BAR
+  ════════════════════════════════════════ -->
+  <div class="dg-bar">
+    <div class="dg-bar-track" id="marq">
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
     </div>
   </div>
 
-  <!-- NAV -->
-  <nav id="nav">
-    <!-- Left Utilities (Cart, User, Egypt, Theme) & Mobile Hamburger -->
-    <div class="nav-left">
-      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
-        <span></span><span></span><span></span>
+  <!-- ════════════════════════════════════════
+       02. PRIMARY NAVIGATION
+  ════════════════════════════════════════ -->
+  <nav class="dg-nav" id="nav">
+
+    <!-- LEFT: Hamburger + Desktop utilities -->
+    <div class="dg-nav-left">
+      <button class="dg-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
 
-      <div class="nav-util-desktop">
-        <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag" title="Shopping Bag">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-            <path d="M3 6h18"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
+      <div class="dg-nav-util-desktop">
+        <!-- Cart -->
+        <a href="cart.html" class="dg-nav-icon" id="cartBtn" aria-label="View Bag" title="Shopping Bag">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+            <path d="M3 6h18" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
-          <span class="nav-cart-badge" id="cart-count">0</span>
+          <span class="dg-nav-badge" id="cart-count">0</span>
         </a>
-        <a href="admin.html" class="nav-user-icon" aria-label="Account" title="Account / Admin Console">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
+
+        <!-- User / Admin -->
+        <a href="admin.html" class="dg-nav-icon" aria-label="Account" title="Account / Admin Console">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
           </svg>
         </a>
-        <span class="nav-country-tag">مصر</span>
-        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme" title="Toggle Theme">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+        <!-- Country tag -->
+        <span class="dg-country">&#x645;&#x635;&#x631;</span>
+
+        <!-- Theme toggle -->
+        <button id="theme-toggle" class="dg-nav-icon" aria-label="Toggle Theme" title="Toggle Theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
           </svg>
         </button>
       </div>
     </div>
 
-    <!-- Center Brand Logo -->
-    <a href="index.html" class="nav-logo">Drogla</a>
+    <!-- CENTER: Brand Logo -->
+    <a href="index.html" class="dg-logo">DROGLA</a>
 
-    <!-- Right Categories Menu (PC) & Mobile Utilities -->
-    <div class="nav-right">
-      <ul class="nav-menu-desktop">
-        <li class="nav-item">
-          <a href="#faq" class="nav-link">استبدال واسترجاع</a>
+    <!-- RIGHT: Desktop menu + Mobile utilities -->
+    <div class="dg-nav-right">
+      <ul class="dg-nav-menu">
+
+        <!-- Returns -->
+        <li class="dg-nav-item">
+          <a href="index.html#faq" class="dg-nav-link">Returns</a>
         </li>
-        <li class="nav-item nav-has-dropdown">
-          <a href="shop.html?cat=women-tops" class="nav-link">
-            WOMEN <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+
+        <!-- WOMEN dropdown -->
+        <li class="dg-nav-item dg-nav-item--dropdown" style="position:relative;">
+          <a href="shop.html?cat=women-tops" class="dg-nav-link">
+            WOMEN
+            <svg class="dg-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
           </a>
-          <div class="nav-dropdown-menu">
-            <a href="shop.html?cat=women-tops" class="dropdown-link">Shop All Tops (توبات)</a>
-            <a href="shop.html?cat=women-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
-            <a href="shop.html?cat=women-shirts" class="dropdown-link">Shirts (قمصان)</a>
-            <a href="shop.html?cat=women-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
+          <div class="dg-dropdown">
+            <a href="shop.html?cat=women-tops" class="dg-dropdown-link">Shop All Tops</a>
+            <a href="shop.html?cat=women-tshirts" class="dg-dropdown-link">T-Shirts</a>
+            <a href="shop.html?cat=women-shirts" class="dg-dropdown-link">Shirts</a>
+            <a href="shop.html?cat=women-bottoms" class="dg-dropdown-link">Bottoms &amp; Pants</a>
           </div>
         </li>
-        <li class="nav-item nav-has-dropdown">
-          <a href="shop.html?cat=men-tops" class="nav-link">
-            الرجال <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+
+        <!-- MEN dropdown -->
+        <li class="dg-nav-item dg-nav-item--dropdown" style="position:relative;">
+          <a href="shop.html?cat=men-tops" class="dg-nav-link">
+            MEN
+            <svg class="dg-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
           </a>
-          <div class="nav-dropdown-menu">
-            <a href="shop.html?cat=men-tops" class="dropdown-link">Shop All Tops (توبات)</a>
-            <a href="shop.html?cat=men-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
-            <a href="shop.html?cat=men-shirts" class="dropdown-link">Shirts (قمصان)</a>
-            <a href="shop.html?cat=men-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
+          <div class="dg-dropdown">
+            <a href="shop.html?cat=men-tops" class="dg-dropdown-link">Shop All Tops</a>
+            <a href="shop.html?cat=men-tshirts" class="dg-dropdown-link">T-Shirts</a>
+            <a href="shop.html?cat=men-shirts" class="dg-dropdown-link">Shirts</a>
+            <a href="shop.html?cat=men-bottoms" class="dg-dropdown-link">Bottoms &amp; Pants</a>
           </div>
         </li>
-        <li class="nav-item">
-          <a href="shop.html" class="nav-link nav-link-highlight">SUMMER COLLECTION</a>
+
+        <!-- New Collection highlight -->
+        <li class="dg-nav-item">
+          <a href="shop.html" class="dg-nav-link dg-nav-link--highlight">NEW COLLECTION</a>
         </li>
+
       </ul>
 
-      <div class="nav-util-mobile">
-        <button id="theme-toggle-mobile" class="theme-btn" aria-label="Toggle Theme">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Mobile utilities (visible on small screens only) -->
+      <div class="dg-nav-mobile-utils">
+        <button id="theme-toggle-mobile" class="dg-nav-icon" aria-label="Toggle Theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
           </svg>
         </button>
-        <a href="cart.html" class="nav-cart-icon" id="cartBtnMobile" aria-label="View Bag">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-            <path d="M3 6h18"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
+        <a href="cart.html" class="dg-nav-icon" id="cartBtnMobile" aria-label="View Bag">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+            <path d="M3 6h18" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
-          <span class="nav-cart-badge" id="cart-count-mobile-badge">0</span>
+          <span class="dg-nav-badge" id="cart-count-mobile-badge">0</span>
         </a>
       </div>
     </div>
+
   </nav>
 
-  <!-- MOBILE DRAWER -->
-  <div class="mobile-nav-drawer" id="mobileDrawer">
-    <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- ════════════════════════════════════════
+       03. MOBILE DRAWER
+  ════════════════════════════════════════ -->
+  <div class="dg-drawer" id="mobileDrawer">
+    <button class="dg-drawer-close" id="mobileClose" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
         <path d="M18 6 6 18" />
         <path d="m6 6 12 12" />
       </svg>
     </button>
-    <ul class="mobile-nav-links">
-      <li><span>Men</span>
-        <ul class="mobile-nav-submenu">
+
+    <ul class="dg-drawer-links">
+      <li>
+        <span>Men</span>
+        <ul class="dg-drawer-submenu">
           <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
           <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=men-shirts">Shirts</a></li>
           <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
         </ul>
       </li>
-      <li><span>Women</span>
-        <ul class="mobile-nav-submenu">
+      <li>
+        <span>Women</span>
+        <ul class="dg-drawer-submenu">
           <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
           <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=women-shirts">Shirts</a></li>
           <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
         </ul>
       </li>
       <li><a href="shop.html">Collection</a></li>
-      <li><a href="#faq" id="mobileFaqLink">FAQ</a></li>
+      <li><a href="index.html#faq" id="mobileFaqLink">FAQ</a></li>
     </ul>
-    <div class="mobile-nav-bottom">
-      <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
+
+    <div class="dg-drawer-footer">
+      <a href="cart.html" style="text-decoration:none; font-size:0.85rem; letter-spacing:.08em; text-transform:uppercase;">
+        Bag (<span id="cart-count-mobile">0</span>)
+      </a>
     </div>
   </div>
 
-  <!-- FLOATING CART FAB (MOBILE) -->
-  <a href="cart.html" class="cart-fab" id="cartFab" aria-label="View Bag">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-      <path d="M3 6h18" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </svg>
-    <span class="cart-fab-badge" id="cart-fab-count">0</span>
-  </a> 
-  <!-- HERO -->
-  <section class="hero mavin-hero">
-    <div class="hero-bg-wrap">
-      <img src="img/hero-bg.jpg" alt="Drogla Restock" class="hero-bg-img" />
-      <div class="hero-bg-overlay"></div>
+  <!-- ════════════════════════════════════════
+       05. HERO SECTION
+  ════════════════════════════════════════ -->
+  <section class="dg-hero" id="hero">
+    <div class="dg-hero-media">
+      <video class="dg-hero-media-video" autoplay muted loop playsinline poster="img/hero-bg.jpg">
+        <source src="video/hero-bg.mp4" type="video/mp4" />
+        <img src="img/hero-bg.jpg" alt="DROGLA — Digital Grit Streetwear" class="dg-hero-media-img" loading="eager" />
+      </video>
     </div>
-    
-    <div class="hero-mavin-content">
-      <p class="hero-mavin-eyebrow">STEALTH COMPRESSION TEE</p>
-      <h1 class="hero-mavin-title">RESTOCK</h1>
-      <p class="hero-mavin-sub">!Stealth Compressions RESTOCKED</p>
-      <div class="hero-mavin-ctas">
-        <a href="shop.html" class="btn-mavin-outline">Shop All</a>
-        <a href="shop.html?cat=stealth" class="btn-mavin-solid">Shop Stealth</a>
+    <div class="dg-hero-overlay"></div>
+    <div class="dg-hero-content">
+      <p class="dg-hero-eyebrow">STEALTH COMPRESSION TEE — SS26</p>
+      <h1 class="dg-hero-title">RESTOCK</h1>
+      <p class="dg-hero-sub">Stealth Compressions are back. Limited units.</p>
+      <div class="dg-hero-ctas">
+        <a href="shop.html" class="dg-btn dg-btn--outline-lt">Shop All</a>
+        <a href="shop.html?cat=stealth" class="dg-btn dg-btn--solid-lt">Shop Stealth</a>
       </div>
     </div>
   </section>
 
+  <!-- ════════════════════════════════════════
+       06. MANIFESTO SECTION
+  ════════════════════════════════════════ -->
+  <section class="dg-manifesto">
+    <div class="dg-manifesto-line">Digital Grit.<br />Urban Durability.</div>
+    <p class="dg-manifesto-sub">Crafted for those who move between worlds. Since 2026.</p>
+  </section>
 
-
-  <!-- COLLECTION -->
-  <section id="collection">
-    <div class="collection-hdr fade-up">
-      <div>
-        <p class="s-label">SS26</p>
-        <h2 class="s-title">New <em>Arrivals</em></h2>
-        <div class="s-rule"></div>
+  <!-- ════════════════════════════════════════
+       07. NEW ARRIVALS
+  ════════════════════════════════════════ -->
+  <section class="dg-section" id="collection">
+    <div class="dg-section-hdr dg-fade">
+      <div class="dg-section-hdr-left">
+        <span class="dg-eyebrow">SS26</span>
+        <h2 class="dg-heading">New <em style="font-family:'Cormorant Garamond',serif; font-weight:300; font-style:italic;">Arrivals</em></h2>
+        <div class="dg-rule"></div>
       </div>
-      <a href="shop.html" class="btn-text">View All →</a>
+      <a href="shop.html" class="dg-btn dg-btn--ghost">View All &#8594;</a>
     </div>
-    <div class="collection-grid" id="home-collection-grid">
-      <p style="color:var(--text-muted); font-size: 0.8rem; padding: 2rem 0;">Loading latest arrivals...</p>
+    <div class="dg-grid dg-grid--3" id="home-collection-grid">
+      <p style="color:var(--text-muted); font-size:0.8rem; grid-column:1/-1; padding:2rem 0;">Loading latest arrivals...</p>
     </div>
   </section>
 
-  <!-- FREQUENTLY ASKED QUESTIONS -->
-  <section class="faq-section" id="faq">
-    <div class="faq-container">
-      <div class="faq-hdr fade-up">
-        <p class="s-label">HELP &amp; SUPPORT</p>
-        <h2 class="faq-main-title">FREQUENTLY ASKED QUESTIONS</h2>
-        <div class="s-rule" style="margin: 1.2rem auto 0;"></div>
+  <!-- ════════════════════════════════════════
+       08. CATEGORY SHOWCASE
+  ════════════════════════════════════════ -->
+  <section class="dg-section dg-section--cream">
+    <div class="dg-section-hdr dg-fade">
+      <div class="dg-section-hdr-left">
+        <span class="dg-eyebrow">Collections</span>
+        <h2 class="dg-heading">Shop by Category</h2>
+        <div class="dg-rule"></div>
+      </div>
+    </div>
+    <div class="dg-categories dg-fade">
+
+      <a href="shop.html?cat=men-tops" class="dg-cat-card">
+        <img src="img/cat-men.jpg" alt="DROGLA Men Streetwear" class="dg-cat-img" loading="lazy">
+        <div class="dg-cat-overlay"></div>
+        <div class="dg-cat-content">
+          <span class="dg-cat-label">Explore</span>
+          <h3 class="dg-cat-title">Men</h3>
+          <span class="dg-cat-cta">Shop Collection</span>
+        </div>
+      </a>
+
+      <a href="shop.html?cat=women-tops" class="dg-cat-card">
+        <img src="img/cat-women.jpg" alt="DROGLA Women Streetwear" class="dg-cat-img" loading="lazy">
+        <div class="dg-cat-overlay"></div>
+        <div class="dg-cat-content">
+          <span class="dg-cat-label">Explore</span>
+          <h3 class="dg-cat-title">Women</h3>
+          <span class="dg-cat-cta">Shop Collection</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       09. EDITORIAL SECTION
+  ════════════════════════════════════════ -->
+  <section class="dg-editorial dg-fade">
+    <div class="dg-editorial-media">
+      <img src="img/hero-bg.jpg" alt="DROGLA — Built for the streets"
+        style="filter:grayscale(0.3) contrast(1.1);" />
+    </div>
+    <div class="dg-editorial-body">
+      <p class="dg-editorial-kicker">Our Philosophy</p>
+      <h2 class="dg-editorial-title">Built<br />For The<br />Streets.</h2>
+      <p class="dg-editorial-desc">DROGLA is not a fashion brand. It is a statement. Every garment is constructed for those who exist between worlds — digital culture and urban reality.</p>
+      <a href="shop.html" class="dg-btn dg-btn--outline-lt">Explore Collection</a>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       10. DROP / NEWSLETTER SECTION
+  ════════════════════════════════════════ -->
+  <section class="dg-drop">
+    <span class="dg-drop-eyebrow">Drop Alert</span>
+    <h2 class="dg-drop-title">Never Miss<br />A Drop.</h2>
+    <p class="dg-drop-sub">Join the DROGLA list. Be first to know about new releases and exclusive drops.</p>
+    <form class="dg-drop-form" id="newsletter-form" onsubmit="return false;">
+      <input type="email" class="dg-drop-input" placeholder="YOUR EMAIL ADDRESS" aria-label="Email address" />
+      <button type="submit" class="dg-drop-btn">Notify Me</button>
+    </form>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       11. FAQ SECTION
+  ════════════════════════════════════════ -->
+  <section class="dg-section" id="faq">
+    <div class="dg-faq-wrap">
+
+      <div class="dg-faq-hdr dg-fade">
+        <span class="dg-eyebrow">Help &amp; Support</span>
+        <h2 class="dg-heading">Frequently Asked Questions</h2>
+        <div class="dg-rule" style="margin:1.2rem auto 0;"></div>
       </div>
 
-      <div class="faq-accordion fade-up" style="transition-delay: .15s;">
-        <!-- Question 1 -->
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="faq-q-text">How long does it take for new orders to arrive?</span>
-            <span class="faq-chevron" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m6 9 6 6 6-6"/>
+      <div class="dg-faq-list dg-fade" style="transition-delay:.1s;">
+
+        <!-- Q1 -->
+        <div class="dg-faq-item">
+          <button class="dg-faq-q" type="button" aria-expanded="false">
+            <span class="dg-faq-q-text">How long does it take for new orders to arrive?</span>
+            <span class="dg-faq-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </span>
           </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">
+          <div class="dg-faq-a">
+            <div class="dg-faq-a-inner">
               <p>Orders within Cairo and Giza are typically delivered within 2 to 3 business days. For other governorates across Egypt, delivery takes 3 to 5 business days. Once your order is dispatched, you will receive real-time tracking updates via SMS and email.</p>
             </div>
           </div>
         </div>
 
-        <!-- Question 2 -->
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="faq-q-text">What is your return/exchange policy?</span>
-            <span class="faq-chevron" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m6 9 6 6 6-6"/>
+        <!-- Q2 -->
+        <div class="dg-faq-item">
+          <button class="dg-faq-q" type="button" aria-expanded="false">
+            <span class="dg-faq-q-text">What is your return/exchange policy?</span>
+            <span class="dg-faq-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </span>
           </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">
+          <div class="dg-faq-a">
+            <div class="dg-faq-a-inner">
               <p>We provide a 14-day return and exchange policy from the date of delivery. Items must be unworn, unwashed, and in their original packaging with all tags attached. Simply contact our support team to schedule a prompt return or exchange pickup.</p>
             </div>
           </div>
         </div>
 
-        <!-- Question 3 -->
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="faq-q-text">The item/size I want is out of stock, when will it restock?</span>
-            <span class="faq-chevron" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m6 9 6 6 6-6"/>
+        <!-- Q3 -->
+        <div class="dg-faq-item">
+          <button class="dg-faq-q" type="button" aria-expanded="false">
+            <span class="dg-faq-q-text">The item/size I want is out of stock, when will it restock?</span>
+            <span class="dg-faq-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </span>
           </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">
+          <div class="dg-faq-a">
+            <div class="dg-faq-a-inner">
               <p>Our apparel is crafted in limited batches to ensure exclusivity and uncompromising quality. Restocks for high-demand pieces are announced on our official Instagram page. Make sure to follow <strong>@drogla</strong> to catch the next drop.</p>
             </div>
           </div>
         </div>
 
-        <!-- Question 4 -->
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="faq-q-text">Do you have a sizing chart?</span>
-            <span class="faq-chevron" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m6 9 6 6 6-6"/>
+        <!-- Q4 -->
+        <div class="dg-faq-item">
+          <button class="dg-faq-q" type="button" aria-expanded="false">
+            <span class="dg-faq-q-text">Do you have a sizing chart?</span>
+            <span class="dg-faq-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </span>
           </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">
+          <div class="dg-faq-a">
+            <div class="dg-faq-a-inner">
               <p>Yes! Every product page features a detailed sizing chart with precise measurements in centimeters. Our streetwear pieces are designed with a relaxed, modern oversized fit unless otherwise noted.</p>
             </div>
           </div>
         </div>
 
-        <!-- Question 5 -->
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="faq-q-text">How can I contact you?</span>
-            <span class="faq-chevron" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m6 9 6 6 6-6"/>
+        <!-- Q5 -->
+        <div class="dg-faq-item">
+          <button class="dg-faq-q" type="button" aria-expanded="false">
+            <span class="dg-faq-q-text">How can I contact you?</span>
+            <span class="dg-faq-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </span>
           </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">
+          <div class="dg-faq-a">
+            <div class="dg-faq-a-inner">
               <p>You can reach our customer support team anytime via Instagram Direct Message (<strong>@drogla</strong>), WhatsApp, or through email. We are available daily to assist you with sizing advice, order status, and exchanges.</p>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+      </div><!-- /dg-faq-list -->
+    </div><!-- /dg-faq-wrap -->
   </section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-top">
+  <!-- ════════════════════════════════════════
+       12. FOOTER
+  ════════════════════════════════════════ -->
+  <footer class="dg-footer">
+    <div class="dg-footer-main">
+
       <div>
-        <span class="footer-brand-name">Drogla</span>
-        <p class="footer-brand-tag">Digital Grit streetwear.<br />Bridging virtual aesthetics with physical urban
-          durability since 2026.</p>
-        <div class="footer-socials">
-          <a href="#" class="footer-social">IG</a>
-          <a href="#" class="footer-social">TK</a>
-          <a href="#" class="footer-social">TW</a>
-          <a href="#" class="footer-social">YT</a>
+        <span class="dg-footer-brand-name">DROGLA</span>
+        <p class="dg-footer-tagline">Digital Grit streetwear.<br />Bridging virtual aesthetics with physical urban durability since 2026.</p>
+        <div class="dg-footer-socials">
+          <a href="#" class="dg-footer-social" aria-label="Instagram">IG</a>
+          <a href="#" class="dg-footer-social" aria-label="TikTok">TK</a>
+          <a href="#" class="dg-footer-social" aria-label="Twitter">TW</a>
+          <a href="#" class="dg-footer-social" aria-label="YouTube">YT</a>
         </div>
       </div>
-      <div class="footer-col">
-        <p class="footer-col-title">Shop</p>
+
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Shop</p>
         <ul>
           <li><a href="shop.html">New Arrivals</a></li>
-          <li><a href="shop.html">Tops</a></li>
-          <li><a href="shop.html">Bottoms</a></li>
+          <li><a href="shop.html?cat=men-tops">Men</a></li>
+          <li><a href="shop.html?cat=women-tops">Women</a></li>
+          <li><a href="shop.html">All Products</a></li>
         </ul>
       </div>
-      <div class="footer-col">
-        <p class="footer-col-title">Help</p>
+
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Help</p>
         <ul>
-          <li><a href="#faq">Sizing Guide</a></li>
-          <li><a href="#faq">Shipping & Returns</a></li>
-          <li><a href="#faq">FAQ</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="index.html#faq">Sizing Guide</a></li>
+          <li><a href="index.html#faq">Shipping &amp; Returns</a></li>
+          <li><a href="index.html#faq">Contact Us</a></li>
         </ul>
       </div>
+
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Brand</p>
+        <ul>
+          <li><a href="#">About DROGLA</a></li>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Lookbook</a></li>
+        </ul>
+      </div>
+
     </div>
-    <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
-      <div class="footer-pay">
-        <span class="pay-tag">Klarna</span>
-        <span class="pay-tag">Afterpay</span>
-        <span class="pay-tag">Visa</span>
-        <span class="pay-tag">Mastercard</span>
+
+    <div class="dg-footer-bottom">
+      <span class="dg-footer-copy">&#169; 2026 DROGLA. All rights reserved.</span>
+      <div class="dg-footer-pay">
+        <span class="dg-pay-tag">Cash on Delivery</span>
+        <span class="dg-pay-tag">InstaPay</span>
+        <span class="dg-pay-tag">Vodafone Cash</span>
+        <span class="dg-pay-tag">Visa</span>
+        <span class="dg-pay-tag">Mastercard</span>
       </div>
     </div>
   </footer>
 
+  <!-- ════════════════════════════════════════
+       13. SCRIPTS
+  ════════════════════════════════════════ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // Hamburger menu
+    // ── Hamburger / Mobile Drawer ──────────────────────────────────
     const hamburger = document.getElementById('hamburger');
     const mobileDrawer = document.getElementById('mobileDrawer');
     const mobileClose = document.getElementById('mobileClose');
+
     function closeDrawer() {
       hamburger.classList.remove('open');
       mobileDrawer.classList.remove('open');
       document.body.style.overflow = '';
     }
+
     hamburger.addEventListener('click', () => {
       const open = hamburger.classList.toggle('open');
       mobileDrawer.classList.toggle('open', open);
       document.body.style.overflow = open ? 'hidden' : '';
     });
+
     if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
-    // Close drawer on link click
-    mobileDrawer.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', closeDrawer);
+
+    // Close drawer when any drawer link is tapped
+    mobileDrawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
+
+    // ── Nav scroll shadow ─────────────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
     });
 
+    // ── Fade-in on scroll ─────────────────────────────────────────
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: .1 }
+    );
+    document.querySelectorAll('.dg-fade').forEach(el => obs.observe(el));
 
-
-    // Nav scroll
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60) });
-
-    // Fade up on scroll
-    const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }), { threshold: .12 });
-    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-
-    // Fetch Dynamic Products for Homepage
-    document.addEventListener('DOMContentLoaded', async () => {
+    // ── Fetch Dynamic Products for Homepage (latest 3) ────────────
+    (async () => {
       const grid = document.getElementById('home-collection-grid');
       if (!grid) return;
 
       try {
-        // Fetch top 3 products
         const { data: products, error } = await supabase
           .from('products')
           .select('*')
@@ -416,63 +577,60 @@
         if (error) throw error;
 
         if (products && products.length > 0) {
-          grid.innerHTML = ''; // clear loading text
+          grid.innerHTML = '';
           products.forEach((p, idx) => {
-            const firstImage = (p.image && p.image.split(',')[0].trim()) || 'https://placehold.co/800x1000/16161a/ffffff?text=DROGLA';
+            const firstImage = (p.image && p.image.split(',')[0].trim()) || 'https://placehold.co/800x1000/111010/f5f3f0?text=DROGLA';
             const isVideo = firstImage.match(/\.(mp4|webm)$/i);
 
             const mediaHTML = isVideo
-              ? `<video class="placeholder-video" autoplay muted loop playsinline><source src="${firstImage}" type="video/mp4"/></video>`
-              : `<img src="${firstImage}" alt="${p.name}" class="card-img">`;
+              ? `<video class="dg-card-video" autoplay muted loop playsinline><source src="${firstImage}" type="video/mp4"/></video>`
+              : `<img src="${firstImage}" alt="${p.name}" class="dg-card-img" loading="lazy">`;
 
             const card = document.createElement('a');
             card.href = `product.html?id=${p.id}`;
-            card.className = 'product-card fade-up visible';
+            card.className = 'dg-card dg-fade visible';
             card.style.transitionDelay = `${idx * 0.1}s`;
             card.innerHTML = `
-                  <div class="card-img-wrap">
-                    ${idx === 0 ? '<div class="badge-new card-badge">NEW</div>' : ''}
-                    <div class="card-img-placeholder">
-                      ${mediaHTML}
-                    </div>
-                    <button class="card-quick-add" aria-label="Quick explore">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                    </button>
-                  </div>
-                  <div class="card-info">
-                    <p class="card-name">${p.name}</p>
-                    <p class="card-cat">${p.category || 'Apparel'}</p>
-                    <div class="card-foot">
-                      <span class="card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
-                    </div>
-                  </div>
-                `;
-
-
-
+              <div class="dg-card-media">
+                ${idx === 0 ? '<div class="dg-card-badge dg-card-badge--new">NEW</div>' : ''}
+                ${mediaHTML}
+                <button class="dg-card-cta" aria-label="View product">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                    <path d="M3 6h18"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="dg-card-info">
+                <p class="dg-card-cat">${p.category || 'Apparel'}</p>
+                <p class="dg-card-name">${p.name}</p>
+                <div class="dg-card-prices">
+                  <span class="dg-card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
+                </div>
+              </div>`;
             grid.appendChild(card);
           });
         } else {
-          grid.innerHTML = '<p style="color:var(--text-muted); font-size: 0.8rem; padding: 2rem 0;">No products found in store.</p>';
+          grid.innerHTML = '<p style="color:var(--text-muted); font-size:0.8rem; padding:2rem 0; grid-column:1/-1;">No products found.</p>';
         }
       } catch (err) {
         console.error('Error fetching home products:', err);
-        grid.innerHTML = '<p style="color:var(--text-muted); font-size: 0.8rem; padding: 2rem 0;">Failed to load products.</p>';
+        grid.innerHTML = '<p style="color:var(--text-muted); font-size:0.8rem; padding:2rem 0; grid-column:1/-1;">Failed to load products.</p>';
       }
-    });
+    })();
 
-    // FAQ Accordion Toggle
-    document.querySelectorAll('.faq-question').forEach(button => {
+    // ── FAQ Accordion ─────────────────────────────────────────────
+    document.querySelectorAll('.dg-faq-q').forEach(button => {
       button.addEventListener('click', () => {
-        const item = button.closest('.faq-item');
+        const item = button.closest('.dg-faq-item');
         const isActive = item.classList.contains('active');
 
-        // Close all other items for clean single-open accordion behavior
-        document.querySelectorAll('.faq-item.active').forEach(openItem => {
+        // Close all other open items
+        document.querySelectorAll('.dg-faq-item.active').forEach(openItem => {
           if (openItem !== item) {
             openItem.classList.remove('active');
-            const otherBtn = openItem.querySelector('.faq-question');
-            if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+            openItem.querySelector('.dg-faq-q').setAttribute('aria-expanded', 'false');
           }
         });
 
@@ -482,6 +640,7 @@
       });
     });
   </script>
+
 </body>
 
 </html>

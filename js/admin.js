@@ -75,11 +75,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Check Supabase Auth Session
+  // Check Supabase Auth Session & Verify Admin Authorization
+  async function verifyAdminUser(user) {
+    if (!user) return false;
+    // 1. Check verified server-controlled app_metadata claim
+    if (user.app_metadata?.role === 'admin') {
+      return true;
+    }
+    // 2. Check if user ID is in admin_users table
+    try {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('id, role')
+        .eq('id', user.id)
+        .single();
+
+      if (!error && data && data.role === 'admin') {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false; // Strict: Deny by default
+  }
+
   try {
     const { data: { session }, error } = await supabase.auth.getSession();
-    if (session && !error) {
-      showDashboard();
+    if (session && !error && session.user) {
+      const isAdmin = await verifyAdminUser(session.user);
+      if (isAdmin) {
+        showDashboard();
+      } else {
+        await supabase.auth.signOut();
+        showLoginGate();
+        const errEl = document.getElementById('login-error');
+        if (errEl) {
+          errEl.textContent = 'Access Denied: Administrator permissions required.';
+          errEl.style.display = 'block';
+        }
+      }
     } else {
       showLoginGate();
     }
@@ -87,6 +121,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.warn('Session check fallback:', err);
     showLoginGate();
   }
+
+  // Realtime Auth State Listener (Auto-logout if session expires or signed out)
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_OUT' || !session) {
+      showLoginGate();
+    }
+  });
 
   // Login Form Submission
   const loginForm = document.getElementById('login-form');
@@ -109,6 +150,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (error) throw error;
+        if (data && data.user) {
+          const isAdmin = await verifyAdminUser(data.user);
+          if (!isAdmin) {
+            await supabase.auth.signOut();
+            throw new Error('Access Denied: Your account is not authorized as an administrator.');
+          }
+        }
         showDashboard();
       } catch (err) {
         errEl.textContent = err.message || 'Invalid credentials. Access Denied.';
@@ -802,16 +850,31 @@ function getVariantImagesData() {
     const origText = textEl.innerHTML;
     textEl.innerHTML = 'Uploading files to storage... please wait.';
 
+    const ALLOWED_ADMIN_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'video/mp4', 'video/webm'];
+    const MAX_ADMIN_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+
     const uploadedUrls = [];
 
     try {
       for (const file of Array.from(files)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        if (!ALLOWED_ADMIN_MIMES.includes(file.type.toLowerCase())) {
+          throw new Error(`File "${file.name}" has invalid format. Only JPEG, PNG, WEBP images and MP4/WEBM videos are allowed.`);
+        }
+        if (file.size > MAX_ADMIN_FILE_SIZE) {
+          throw new Error(`File "${file.name}" exceeds maximum allowed size of 15MB.`);
+        }
+
+        const rawExt = file.name.split('.').pop() || 'jpg';
+        const fileExt = rawExt.replace(/[^a-zA-Z0-9]/g, '').slice(0, 4);
+        const randomHash = Math.random().toString(36).substring(2, 9);
+        const fileName = `media-${Date.now()}-${randomHash}.${fileExt}`;
 
         const { data, error } = await supabase.storage
           .from('product-images')
-          .upload(fileName, file);
+          .upload(fileName, file, {
+            contentType: file.type,
+            upsert: false
+          });
 
         if (error) throw error;
 

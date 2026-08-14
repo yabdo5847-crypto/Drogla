@@ -1,493 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="512x512" href="images/favicon.png" />
-    <link rel="apple-touch-icon" href="images/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | DROGLA</title>
-    <meta name="description" content="Complete your DROGLA order securely. Fast shipping across Egypt.">
-    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="css/home.css">
-<script>
-    if (localStorage.getItem('drogla_theme') === 'dark') {
-        document.documentElement.classList.add('dark-mode');
-        document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="512x512" href="images/favicon.png">
+  <link rel="apple-touch-icon" href="images/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete your DROGLA order securely. Fast shipping across Egypt.">
+  <meta name="robots" content="noindex, follow">
+  <meta property="og:title" content="Checkout | DROGLA">
+  <title>Checkout | DROGLA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="css/drogla.css">
+  <style>
+    /* Scoped Checkout Page Design System */
+    .dg-checkout-layout {
+      display: flex;
+      gap: 3rem;
+      align-items: flex-start;
+      margin-top: 1rem;
     }
-</script>
-    <style>
-        /* ── Breadcrumb ── */
-        .checkout-breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 2.5rem;
-            font-size: 0.62rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
-        .checkout-breadcrumb a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .checkout-breadcrumb a:hover { color: var(--burgundy); }
-        .checkout-breadcrumb .crumb-current {
-            color: var(--text-main);
-            font-weight: 600;
-        }
+    .dg-checkout-main { flex: 1.35; min-width: 0; }
+    .dg-checkout-side { flex: 0.75; position: sticky; top: 100px; }
 
-        /* ── Two-column layout ── */
-        .checkout-columns {
-            display: flex;
-            gap: 4rem;
-            align-items: flex-start;
-        }
-        .checkout-main-col {
-            flex: 1.4;
-            min-width: 0;
-        }
-        .checkout-page-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 300;
-            margin-bottom: 2rem;
-            letter-spacing: -0.01em;
-            color: var(--text-main);
-        }
+    /* Order Summary Card (Mobile) */
+    .dg-order-summary-card {
+      background: #ffffff;
+      border: 1px solid var(--border-mid, #e8e5df);
+      padding: 1.4rem 1.6rem;
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+    }
+    body.dark-mode .dg-order-summary-card {
+      background: #141313;
+      border-color: #282626;
+    }
 
-        /* ── Side summary panel ── */
-        .checkout-side-summary {
-            flex: 0.6;
-            position: sticky;
-            top: 120px;
-        }
-        .checkout-side-summary-inner {
-            background: var(--cream);
-            padding: 2.5rem;
-            border-top: 2px solid var(--burgundy);
-        }
-        .side-summary-label {
-            font-size: 0.6rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-        #checkout-items-preview {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(92,26,26,0.08);
-            padding-bottom: 1.5rem;
-        }
-        .side-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
-            margin-bottom: 0.7rem;
-        }
-        .side-row span:first-child { color: var(--text-muted); }
-        .side-row span:last-child { font-weight: 600; }
-        .side-row-shipping span:last-child {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 400;
-        }
-        .side-total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            border-top: 1px solid rgba(92,26,26,0.08);
-            padding-top: 1.2rem;
-        }
-        .side-total-label {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1rem;
-            font-weight: 300;
-            color: var(--text-main);
-        }
-        .side-total-value {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem;
-            font-weight: 300;
-            color: var(--burgundy);
-        }
+    .dg-order-summary-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-mid, #e8e5df);
+      margin-bottom: 1rem;
+    }
+    body.dark-mode .dg-order-summary-head { border-bottom-color: #262424; }
 
-        /* ── Order summary card (inline, above form) ── */
-        .order-summary {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: rgba(92,26,26,0.04);
-            border-top: 2px solid var(--burgundy);
-        }
-        .order-summary h3 {
-            font-weight: 300;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            color: var(--text-main);
-        }
-        .order-summary .shipping-line {
-            color: var(--text-muted);
-            font-size: 0.78rem;
-            margin-top: 6px;
-        }
-        .order-summary .final-total {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-top: 10px;
-            font-family: 'Montserrat', sans-serif;
-            color: var(--burgundy);
-        }
+    .dg-order-summary-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text, #111010);
+    }
+    .dg-order-summary-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted, #706e6b);
+      font-weight: 600;
+      background: rgba(0,0,0,0.04);
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+    body.dark-mode .dg-order-summary-tag {
+      background: rgba(255,255,255,0.06);
+      color: #aaa;
+    }
 
-        /* ── Form section labels ── */
-        .form-section-label {
-            font-size: 0.6rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin: 2rem 0 1.2rem;
-            padding-bottom: 0.6rem;
-            border-bottom: 1px solid rgba(92,26,26,0.1);
-        }
+    .dg-order-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+      font-size: 0.85rem;
+      color: var(--text-muted, #706e6b);
+    }
+    .dg-order-summary-row strong {
+      color: var(--text, #111010);
+      font-weight: 600;
+    }
+    body.dark-mode .dg-order-summary-row strong { color: #f5f3f0; }
 
-        /* ── Payment instructions box ── */
-        #payment-instructions {
-            background: rgba(92,26,26,0.05);
-            border: 1px solid var(--burgundy);
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        #payment-text {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: var(--text-main);
-            margin: 0 0 15px 0;
-        }
+    .dg-order-summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-sans, 'Montserrat', sans-serif);
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text, #111010);
+      border-top: 1px solid var(--border-mid, #e8e5df);
+      padding-top: 0.9rem;
+      margin-top: 0.8rem;
+    }
+    body.dark-mode .dg-order-summary-total {
+      border-top-color: #262424;
+      color: #f5f3f0;
+    }
 
-        /* ── Proof dropzone ── */
-        #proof-dropzone {
-            border: 2px dashed rgba(110,108,105,0.4);
-            padding: 25px 20px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: border-color 0.25s;
-        }
-        #proof-dropzone:hover { border-color: var(--burgundy); }
-        #proof-text { color: var(--text-muted); font-size: 0.82rem; margin: 0; }
-        #proof-preview { margin-top: 12px; }
-        #proof-img {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 4px;
-            border: 1px solid var(--burgundy);
-            object-fit: contain;
-            display: block;
-        }
-        #proof-remove {
-            display: block;
-            margin-top: 8px;
-            background: transparent;
-            border: 1px solid #e53935;
-            color: #e53935;
-            padding: 6px 14px;
-            cursor: pointer;
-            border-radius: 3px;
-            font-size: 0.78rem;
-            font-family: 'Montserrat', sans-serif;
-            transition: all 0.2s;
-        }
-        #proof-remove:hover { background: #e53935; color: #fff; }
+    /* Section Label Header */
+    .dg-form-section-head {
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text, #111010);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-mid, #e8e5df);
+      margin-bottom: 1.3rem;
+    }
+    body.dark-mode .dg-form-section-head {
+      border-bottom-color: #262424;
+      color: #f5f3f0;
+    }
+    .dg-form-section-head span {
+      font-family: var(--font-serif, serif);
+      font-style: italic;
+      color: var(--clr-accent, #5c1a1a);
+      font-size: 1rem;
+    }
 
-        /* ── Checkout message ── */
-        #checkout-msg {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 0.88rem;
-        }
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 1.35rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted, #666360);
+    }
+    body.dark-mode .form-group label { color: #9c9892; }
 
-        /* ── Side summary visibility ── */
-        .checkout-side-summary { display: block; }
-        @media (max-width: 900px) { .checkout-side-summary { display: none; } }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: #ffffff;
+      border: 1px solid var(--border-mid, #dedbd5);
+      border-radius: 2px;
+      color: var(--text, #111010);
+      font-family: var(--font-sans, 'Montserrat', sans-serif);
+      font-size: 0.88rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--text, #111010);
+      box-shadow: 0 0 0 2px rgba(17,16,16,0.06);
+    }
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group textarea,
+    body.dark-mode .form-group select {
+      background: #141313;
+      border-color: #2e2c2c;
+      color: #f5f3f0;
+    }
+    body.dark-mode .form-group input:focus,
+    body.dark-mode .form-group textarea:focus,
+    body.dark-mode .form-group select:focus {
+      border-color: #f5f3f0;
+      box-shadow: 0 0 0 2px rgba(245,243,240,0.1);
+    }
 
-        /* ────────────────────────────
-           MOBILE  (≤ 768px)
-        ──────────────────────────── */
-        @media (max-width: 768px) {
-            .admin-container {
-                padding: 88px 0.9rem 3rem !important;
-            }
-            .checkout-columns {
-                flex-direction: column;
-                gap: 0;
-            }
-            .checkout-main-col { flex: none; width: 100%; }
-            .checkout-page-title {
-                font-size: clamp(1.8rem, 8vw, 2.8rem);
-                margin-bottom: 1.5rem;
-            }
-            .checkout-form {
-                max-width: 100% !important;
-                padding: 1.4rem 1rem !important;
-                margin: 0 !important;
-            }
-            .order-summary {
-                padding: 1rem;
-                margin-bottom: 1.5rem;
-            }
-            .order-summary h3 { font-size: 0.92rem; }
-            .order-summary .shipping-line { font-size: 0.75rem; }
-            .order-summary .final-total { font-size: 1rem; }
-            .form-group { margin-bottom: 20px; }
-            .form-group label { font-size: 0.62rem; margin-bottom: 8px; }
-            .form-group input,
-            .form-group textarea,
-            .form-group select {
-                padding: 14px 12px !important;
-                font-size: 16px !important;
-                border-radius: 2px;
-            }
-            .form-group textarea { min-height: 80px; }
-            #payment-instructions { padding: 12px; }
-            #payment-text { font-size: 0.82rem; }
-            #proof-dropzone { padding: 18px 12px; }
-            #proof-text { font-size: 0.78rem; }
-            .submit-btn {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 80;
-                padding: 1.15rem 1rem !important;
-                font-size: 0.65rem;
-                letter-spacing: 0.18em;
-                border-radius: 0;
-                box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
-            }
-            #checkout-form { padding-bottom: 5rem; }
-        }
+    /* Payment Instructions */
+    .dg-pay-instructions {
+      background: rgba(92,26,26,0.04);
+      border-left: 3px solid var(--clr-accent, #5c1a1a);
+      padding: 1.25rem;
+      border-radius: 2px;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--text, #111010);
+    }
+    body.dark-mode .dg-pay-instructions {
+      background: rgba(92,26,26,0.12);
+      color: #f5f3f0;
+    }
 
-        /* ────────────────────────────
-           SMALL MOBILE  (≤ 480px)
-        ──────────────────────────── */
-        @media (max-width: 480px) {
-            .admin-container { padding: 80px 0.75rem 3rem !important; }
-            .checkout-form { padding: 1rem 0.75rem !important; }
-            .checkout-page-title { font-size: clamp(1.6rem, 9vw, 2.4rem); }
-            .order-summary h3 { font-size: 0.88rem; }
-            .order-summary .final-total { font-size: 0.95rem; }
-            .form-group input,
-            .form-group textarea,
-            .form-group select { padding: 13px 10px !important; }
-        }
-    </style>
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    /* Proof Dropzone */
+    .dg-dropzone {
+      border: 1.5px dashed var(--border-mid, #dedbd5);
+      background: var(--bg-alt, #faf8f5);
+      padding: 1.6rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.2s ease;
+    }
+    body.dark-mode .dg-dropzone {
+      background: #181717;
+      border-color: #333030;
+    }
+    .dg-dropzone:hover {
+      border-color: var(--clr-accent, #5c1a1a);
+      background: rgba(92,26,26,0.03);
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 1.15rem 1.5rem;
+      background: #111010;
+      color: #ffffff;
+      border: 1px solid #111010;
+      font-family: var(--font-sans, 'Montserrat', sans-serif);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border-radius: 2px;
+      margin-top: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-sizing: border-box;
+    }
+    .submit-btn:hover {
+      background: var(--clr-accent, #5c1a1a);
+      border-color: var(--clr-accent, #5c1a1a);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    body.dark-mode .submit-btn {
+      background: #f5f3f0;
+      color: #111010;
+      border-color: #f5f3f0;
+    }
+    body.dark-mode .submit-btn:hover {
+      background: var(--clr-accent, #5c1a1a);
+      color: #ffffff;
+      border-color: var(--clr-accent, #5c1a1a);
+    }
+    .submit-btn:disabled {
+      background: #999 !important;
+      border-color: #999 !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+    }
+
+    /* Desktop Side Summary */
+    .dg-checkout-summary-panel {
+      background: #ffffff;
+      border: 1px solid var(--border-mid, #e8e5df);
+      padding: 1.8rem;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    body.dark-mode .dg-checkout-summary-panel {
+      background: #141313;
+      border-color: #282626;
+    }
+
+    @media (max-width: 900px) {
+      .dg-checkout-side { display: none; }
+    }
+    @media (max-width: 768px) {
+      .dg-checkout-layout { flex-direction: column; gap: 0; }
+    }
+    @media (max-width: 480px) {
+      .form-group input, .form-group textarea, .form-group select { font-size: 16px !important; }
+    }
+  </style>
+  <script>
+    if (localStorage.getItem('drogla_theme') === 'dark') {
+      document.documentElement.classList.add('dark-mode');
+      document.addEventListener('DOMContentLoaded', () => document.body.classList.add('dark-mode'));
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
+  <!-- ── ANNOUNCEMENT BAR ── -->
+  <div class="dg-bar">
+    <div class="dg-bar-track" id="marq">
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
+    </div>
+  </div>
 
-    <!-- NAV -->
-        <nav id="nav">
-      <div class="nav-left">
-        <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
-          <span></span><span></span><span></span>
+  <!-- ── NAV (minimal checkout nav) ── -->
+  <nav class="dg-nav" id="nav">
+    <div class="dg-nav-left">
+      <button class="dg-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="dg-nav-util-desktop">
+        <a href="cart.html" class="dg-nav-icon" aria-label="View Bag" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="dg-badge" id="cart-count">0</span>
+        </a>
+        <span class="dg-country">مصر</span>
+        <button id="theme-toggle" class="dg-theme-btn" aria-label="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
         </button>
       </div>
-      <a href="index.html" class="nav-logo">Drogla</a>
-      <div class="nav-right">
-        <button id="theme-toggle" class="theme-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg></button>
-        <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          <span class="nav-cart-badge" id="cart-count">0</span>
+    </div>
+    <a href="index.html" class="dg-logo">DROGLA</a>
+    <div class="dg-nav-right">
+      <!-- Minimal checkout nav — no full menu -->
+      <div class="dg-nav-mobile-utils">
+        <button id="theme-toggle-mobile" class="dg-theme-btn" aria-label="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <a href="cart.html" class="dg-nav-icon" aria-label="Bag" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="dg-badge" id="cart-count-mobile-badge">0</span>
         </a>
       </div>
-    </nav>
-
-    <!-- MOBILE DRAWER -->
-    <div class="mobile-nav-drawer" id="mobileDrawer">
-      <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-      <ul class="mobile-nav-links">
-        <li><span>Men</span>
-          <ul class="mobile-nav-submenu">
-            <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
-            <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
-            <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
-          </ul>
-        </li>
-        <li><span>Women</span>
-          <ul class="mobile-nav-submenu">
-            <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
-            <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
-            <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
-          </ul>
-        </li>
-        <li><a href="shop.html">Collection</a></li>
-      </ul>
-      <div class="mobile-nav-bottom">
-        <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
-      </div>
     </div>
+  </nav>
 
-    <!-- FLOATING CART FAB (MOBILE) -->
-    <a href="cart.html" class="cart-fab" id="cartFab" aria-label="View Bag">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      <span class="cart-fab-badge" id="cart-fab-count">0</span>
-    </a>
+  <!-- ── MOBILE DRAWER ── -->
+  <div class="dg-drawer" id="mobileDrawer">
+    <button class="dg-drawer-close" id="mobileClose" aria-label="Close menu">
+      <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <ul class="dg-drawer-links">
+      <li>
+        <span>Men</span>
+        <ul class="dg-drawer-sub">
+          <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
+          <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=men-bottoms">Bottoms &amp; Pants</a></li>
+        </ul>
+      </li>
+      <li>
+        <span>Women</span>
+        <ul class="dg-drawer-sub">
+          <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
+          <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=women-bottoms">Bottoms &amp; Pants</a></li>
+        </ul>
+      </li>
+      <li><a href="shop.html">New Collection</a></li>
+      <li><a href="index.html#faq">Returns</a></li>
+    </ul>
+    <div class="dg-drawer-footer">
+      <a href="cart.html" class="dg-drawer-bag">Back to Bag</a>
+    </div>
+  </div>
 
-    <div class="admin-container fade-up visible">
+  <!-- ── CHECKOUT CONTENT ── -->
+  <div class="dg-page">
+    <div style="padding: var(--sp-8) var(--container-pad) var(--sp-24); max-width: var(--container-max); margin: 0 auto;">
 
       <!-- Breadcrumb -->
-      <div class="checkout-breadcrumb">
+      <nav class="dg-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: var(--sp-6);">
         <a href="index.html">Home</a>
-        <span>›</span>
+        <span aria-hidden="true">›</span>
         <a href="cart.html">Bag</a>
-        <span>›</span>
-        <span class="crumb-current">Checkout</span>
+        <span aria-hidden="true">›</span>
+        <span>Checkout</span>
+      </nav>
+
+      <!-- Section Title -->
+      <div class="dg-section-hdr-left" style="margin-bottom: var(--sp-8);">
+        <span class="dg-eyebrow">FINAL STEP</span>
+        <h1 class="dg-heading" style="margin-bottom: 0.35rem;">Order <em style="font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;">Checkout</em></h1>
+        <div class="dg-rule"></div>
       </div>
 
-      <!-- Two-column layout -->
-      <div class="checkout-columns">
+      <!-- Two-column checkout layout -->
+      <div class="dg-checkout-layout">
 
-        <!-- ── Left: form column ── -->
-        <div class="checkout-main-col">
-          <h1 class="checkout-page-title">Checkout</h1>
+        <!-- ── Left: Form ── -->
+        <div class="dg-checkout-main">
 
           <div class="checkout-form">
 
-            <!-- Order Summary card (inline / mobile) -->
-            <div class="order-summary">
-                <h3>Order Summary: EGP <span id="checkout-total">0.00</span></h3>
-                <p class="shipping-line">+ EGP <span id="shipping-cost">0.00</span> Shipping</p>
-                <p class="final-total">Final Total: EGP <span id="final-total">0.00</span></p>
+            <!-- Mobile Order Summary Card -->
+            <div class="dg-order-summary-card">
+              <div class="dg-order-summary-head">
+                <span class="dg-order-summary-title">Order Summary</span>
+                <span class="dg-order-summary-tag">256-Bit SSL Encrypted</span>
+              </div>
+              <div class="dg-order-summary-row">
+                <span>Subtotal</span>
+                <strong>EGP <span id="checkout-total">0.00</span></strong>
+              </div>
+              <div class="dg-order-summary-row" id="checkout-discount-row" style="display:none; color:var(--clr-accent, #5c1a1a);">
+                <span id="checkout-discount-label" style="font-weight:700;">Bundle Discount</span>
+                <strong style="color:var(--clr-accent, #5c1a1a);">-EGP <span id="checkout-discount">0.00</span></strong>
+              </div>
+              <div class="dg-order-summary-row">
+                <span>Estimated Shipping</span>
+                <span id="shipping-line-wrap">+ EGP <span id="shipping-cost">0.00</span></span>
+              </div>
+              <div class="dg-order-summary-total">
+                <span>Final Total</span>
+                <span>EGP <span id="final-total">0.00</span></span>
+              </div>
             </div>
-
-            <!-- Contact section label -->
-            <p class="form-section-label">Contact &amp; Delivery</p>
 
             <form id="checkout-form">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="c-name" autocomplete="name" required>
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="c-email" autocomplete="email" required>
-                </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" id="c-phone" autocomplete="tel" required>
-                </div>
-                <div class="form-group">
-                    <label>Governorate (Shipping)</label>
-                    <select id="c-gov" required>
-                        <option value="" disabled selected>Loading Governorates...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Detailed Address (Street, Building, Apt)</label>
-                    <textarea id="c-address" rows="3" autocomplete="street-address" required></textarea>
-                </div>
+              <div class="dg-form-section-head"><span>01</span> Contact &amp; Delivery Details</div>
 
-                <!-- Payment section label -->
-                <p class="form-section-label">Payment</p>
+              <div class="form-group">
+                <label for="c-name">Full Name</label>
+                <input type="text" id="c-name" placeholder="Enter your full name" autocomplete="name" required>
+              </div>
+              <div class="form-group">
+                <label for="c-email">Email Address</label>
+                <input type="email" id="c-email" placeholder="name@example.com" autocomplete="email" required>
+              </div>
+              <div class="form-group">
+                <label for="c-phone">Phone Number</label>
+                <input type="tel" id="c-phone" placeholder="01XXXXXXXXX" autocomplete="tel" required>
+              </div>
+              <div class="form-group">
+                <label for="c-gov">Governorate (Shipping Area)</label>
+                <select id="c-gov" required>
+                  <option value="" disabled selected>Select Governorate...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="c-address">Detailed Shipping Address</label>
+                <textarea id="c-address" rows="3" placeholder="Building number, Street, Floor, Apartment" autocomplete="street-address" required></textarea>
+              </div>
 
-                <div class="form-group">
-                    <label>Payment Method</label>
-                    <select id="c-payment" required>
-                        <option value="Cash on Delivery">Cash on Delivery (الدفع عند الاستلام)</option>
-                        <option value="Vodafone Cash">Vodafone Cash</option>
-                        <option value="InstaPay">InstaPay</option>
-                    </select>
+              <div class="dg-form-section-head" style="margin-top: 2rem;"><span>02</span> Payment Method</div>
+
+              <div class="form-group">
+                <label for="payment-select">Select Payment Option</label>
+                <select id="payment-select" required>
+                  <option value="Cash on Delivery" selected>Cash on Delivery (الدفع عند الاستلام)</option>
+                  <option value="Vodafone Cash">Vodafone Cash (فودافون كاش)</option>
+                  <option value="InstaPay">InstaPay (إنستاباي)</option>
+                </select>
+              </div>
+
+              <!-- Manual payment details card -->
+              <div id="manual-payment-info" class="dg-pay-instructions" style="display:none;">
+                <p id="payment-instructions-text" style="font-weight: 500;"></p>
+                <div class="form-group" style="margin-top:var(--sp-4); margin-bottom:0;">
+                  <label id="sender-phone-label" for="c-sender-phone">Your Wallet / Account Phone (رقم المحفظة المحول منها)</label>
+                  <input type="tel" id="c-sender-phone" placeholder="010XXXXXXXX">
                 </div>
-
-                <!-- Payment instructions (shown dynamically) -->
-                <div id="payment-instructions" style="display: none;">
-                    <p id="payment-text"></p>
+                <div class="form-group" style="margin-top:var(--sp-4); margin-bottom:0;">
+                  <label>Transfer Screenshot (صورة إثبات التحويل)</label>
+                  <div id="proof-dropzone" class="dg-dropzone">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto var(--sp-2); display:block;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    <p id="proof-text" style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Drop screenshot here or click to upload</p>
+                  </div>
+                  <input type="file" id="proof-file-input" accept="image/*" style="display:none;">
+                  <div id="proof-preview" style="display:none; margin-top: 0.8rem;">
+                    <img id="proof-img" alt="Transfer proof preview" style="max-height: 140px; border-radius: 4px; border: 1px solid var(--border-mid);">
+                    <button type="button" id="proof-remove" class="dg-proof-remove">Remove Image</button>
+                  </div>
                 </div>
+              </div>
 
-                <!-- Transfer proof (shown for Vodafone / InstaPay) -->
-                <div id="transfer-proof-section" style="display: none;">
-                    <div class="form-group">
-                        <label>Phone Number You Transferred From (رقم التحويل)</label>
-                        <input type="tel" id="c-sender-phone" placeholder="e.g., 01012345678" autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label>Transfer Screenshot (صورة إثبات التحويل)</label>
-                        <div id="proof-dropzone">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                            <p id="proof-text">Drop screenshot here or click to upload</p>
-                        </div>
-                        <input type="file" id="proof-file-input" accept="image/*" style="display: none;">
-                        <div id="proof-preview" style="display: none;">
-                            <img id="proof-img" alt="Transfer proof preview">
-                            <button type="button" id="proof-remove">Remove</button>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn" id="place-order-btn">Place Order</button>
-                <div id="checkout-msg" style="display: none;"></div>
+              <button type="submit" class="submit-btn" id="place-order-btn">
+                <span>Place Order</span>
+                <span aria-hidden="true">→</span>
+              </button>
+              <div id="checkout-msg" style="display:none; margin-top: 1rem; padding: 1rem; border-radius: 3px; font-size: 0.85rem; text-align: center;"></div>
             </form>
+
           </div><!-- /.checkout-form -->
-        </div><!-- /.checkout-main-col -->
+        </div><!-- /.dg-checkout-main -->
 
-        <!-- ── Right: sticky summary panel (desktop only) ── -->
-        <div class="checkout-side-summary">
-          <div class="checkout-side-summary-inner">
-            <p class="side-summary-label">Order Summary</p>
+        <!-- ── Right: Sticky order summary (desktop only) ── -->
+        <div class="dg-checkout-side">
+          <div class="dg-checkout-summary-panel">
+            <p class="dg-summary-label">Order Summary</p>
 
-            <div id="checkout-items-preview">
-              <!-- dynamically populated from localStorage cart -->
+            <div id="checkout-items-preview" class="dg-checkout-order-mini">
+              <!-- populated from localStorage -->
             </div>
 
-            <div class="side-row">
+            <div class="dg-summary-row">
               <span>Subtotal</span>
-              <span>EGP <span id="checkout-total-side">0.00</span></span>
+              <strong>EGP <span id="checkout-total-side">0.00</span></strong>
             </div>
-            <div class="side-row side-row-shipping">
+            <div class="dg-summary-row" id="checkout-discount-side-row" style="display:none; color:var(--clr-accent); font-weight:700;">
+              <span id="checkout-discount-side-label">Bundle Discount (10%)</span>
+              <span>-EGP <span id="checkout-discount-side">0.00</span></span>
+            </div>
+            <div class="dg-summary-row">
               <span>Shipping</span>
               <span>+ EGP <span id="shipping-cost-side">0.00</span></span>
             </div>
-            <div class="side-total-row">
-              <span class="side-total-label">Total</span>
-              <span class="side-total-value">EGP <span id="final-total-side">0.00</span></span>
+            <div class="dg-summary-total">
+              <span class="dg-summary-total-label">Total</span>
+              <span class="dg-summary-total-value">EGP <span id="final-total-side">0.00</span></span>
             </div>
           </div>
-        </div><!-- /.checkout-side-summary -->
+        </div><!-- /.dg-checkout-side -->
 
-      </div><!-- /.checkout-columns -->
-    </div><!-- /.admin-container -->
+      </div><!-- /.dg-checkout-layout -->
+    </div>
+  </div>
 
-    <!-- FOOTER -->
-    <footer>
-      <div class="footer-top">
-        <div>
-          <span class="footer-brand-name">Drogla</span>
-          <p class="footer-brand-tag">Digital Grit streetwear.<br/>Bridging virtual aesthetics with physical urban durability since 2026.</p>
-        </div>
+  <!-- ── FOOTER (minimal for checkout funnel) ── -->
+  <footer class="dg-footer">
+    <div class="dg-footer-bottom">
+      <span class="dg-footer-copy">© 2026 DROGLA. All rights reserved.</span>
+      <div class="dg-footer-pay">
+        <span class="dg-pay-tag">Cash on Delivery</span>
+        <span class="dg-pay-tag">InstaPay</span>
+        <span class="dg-pay-tag">Vodafone Cash</span>
+        <span class="dg-pay-tag">Visa</span>
+        <span class="dg-pay-tag">Mastercard</span>
       </div>
-      <div class="footer-bottom">
-        <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
-      </div>
-    </footer>
+    </div>
+  </footer>
 
-    <script src="js/supabase.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/checkout.js"></script>
-    <script>
-    // ── Hamburger menu ──
+  <script src="js/supabase.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/checkout.js"></script>
+  <script>
+    // ── Hamburger ──
     const hamburger = document.getElementById('hamburger');
     const mobileDrawer = document.getElementById('mobileDrawer');
     const mobileClose = document.getElementById('mobileClose');
@@ -502,20 +554,18 @@
       document.body.style.overflow = open ? 'hidden' : '';
     });
     if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
-    mobileDrawer.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', closeDrawer);
-    });
+    mobileDrawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
 
     // ── Nav scroll ──
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
 
-    // ── Mark body for sticky submit button so FAB moves up ──
+    // ── Sticky submit on mobile ──
     if (window.matchMedia('(max-width: 768px)').matches) {
       document.body.classList.add('has-sticky-btn');
     }
 
-    // ── Populate side order summary panel from localStorage ──
+    // ── Populate side panel from localStorage ──
     (function populateSidePanel() {
       const cartData = JSON.parse(localStorage.getItem('drogla_cart')) || [];
       const previewEl = document.getElementById('checkout-items-preview');
@@ -523,46 +573,36 @@
       let previewTotal = 0;
       cartData.forEach(item => {
         previewTotal += item.price * item.quantity;
-        previewEl.innerHTML += `<div style="display:flex;gap:12px;align-items:center;">
-          <img src="${item.image}" style="width:44px;height:56px;object-fit:cover;border-radius:2px;" alt="${item.name}">
-          <div style="flex:1;min-width:0;">
-            <p style="font-size:0.72rem;font-weight:600;color:var(--text-main);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</p>
-            <p style="font-size:0.62rem;color:var(--text-muted);letter-spacing:0.05em;">x${item.quantity} · ${item.size}</p>
-          </div>
-          <span style="font-size:0.72rem;font-weight:500;white-space:nowrap;">EGP ${(item.price * item.quantity).toFixed(2)}</span>
-        </div>`;
+        previewEl.innerHTML += `
+          <div class="dg-order-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="dg-order-item-meta">
+              <p class="dg-order-item-name">${item.name}</p>
+              <p class="dg-order-item-qty">x${item.quantity} · ${item.size}</p>
+            </div>
+            <span class="dg-order-item-price">EGP ${(item.price * item.quantity).toFixed(2)}</span>
+          </div>`;
       });
       const totalSideEl = document.getElementById('checkout-total-side');
       if (totalSideEl) totalSideEl.innerText = previewTotal.toFixed(2);
     })();
 
-    // ── Sync side panel shipping & final total when governorate changes ──
-    // checkout.js already updates #shipping-cost and #final-total;
-    // we observe the governorate select to mirror values to the side panel.
+    // ── Sync side panel totals when governorate changes ──
     (function syncSidePanel() {
       const govSelect = document.getElementById('c-gov');
       if (!govSelect) return;
-
       function mirrorTotals() {
-        const shipping = document.getElementById('shipping-cost');
-        const finalTot = document.getElementById('final-total');
+        const shipping   = document.getElementById('shipping-cost');
+        const finalTot   = document.getElementById('final-total');
         const shippingSide = document.getElementById('shipping-cost-side');
-        const finalSide   = document.getElementById('final-total-side');
+        const finalSide  = document.getElementById('final-total-side');
         if (shipping && shippingSide) shippingSide.innerText = shipping.innerText;
         if (finalTot && finalSide)   finalSide.innerText   = finalTot.innerText;
       }
-
-      govSelect.addEventListener('change', () => {
-        // Allow checkout.js to run first, then mirror
-        setTimeout(mirrorTotals, 50);
-      });
-
-      // Also mirror on DOMContentLoaded in case checkout.js pre-fills values
+      govSelect.addEventListener('change', () => setTimeout(mirrorTotals, 50));
       document.addEventListener('DOMContentLoaded', () => setTimeout(mirrorTotals, 200));
-      // And mirror now (if scripts already ran)
       setTimeout(mirrorTotals, 300);
     })();
-    </script>
+  </script>
 </body>
 </html>
-

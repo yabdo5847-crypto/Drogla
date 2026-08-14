@@ -1,1 +1,23 @@
-/* /index.html 200
+# ── 301 Permanent Redirects: Strip .html extensions from browser URLs ──
+/index.html        /                 301!
+/admin.html        /control          301!
+/shop.html         /shop             301!
+/product.html      /product          301!
+/cart.html         /cart             301!
+/checkout.html     /checkout         301!
+
+# ── 200 Internal Rewrites: Serve underlying HTML files for clean URLs ──
+/control           /admin.html       200
+/shop              /shop.html        200
+/cart              /cart.html        200
+/checkout          /checkout.html    200
+/product/:id       /product.html?id=:id  200
+/product           /product.html     200
+
+# ── Block sensitive paths (.git, .env, .sql) ──
+/.git/*             /                 404!
+/.env*              /                 404!
+/*.sql              /                 404!
+
+# ── Fallback Catch-All ──
+/*                 /index.html       200

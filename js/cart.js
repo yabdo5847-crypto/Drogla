@@ -3,101 +3,129 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function getCart() {
-    return JSON.parse(localStorage.getItem('drogla_cart')) || [];
+    try {
+        return JSON.parse(localStorage.getItem('drogla_cart')) || [];
+    } catch (e) {
+        return [];
+    }
 }
 
 function saveCart(cart) {
     localStorage.setItem('drogla_cart', JSON.stringify(cart));
+    if (window.updateCartBadge) window.updateCartBadge();
+    if (typeof window.renderCartDrawer === 'function') window.renderCartDrawer();
 }
 
 function recalculateTotal(cart) {
+    const subtotalEl = document.getElementById('subtotal-price');
     const totalEl = document.getElementById('total-price');
-    if (!totalEl) return;
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    totalEl.innerText = total.toFixed(2);
+    const discountRow = document.getElementById('discount-row');
+    const discountLabel = document.getElementById('discount-label');
+    const discountAmountEl = document.getElementById('discount-amount');
+    const promoNudge = document.getElementById('promo-nudge');
+    const totalMirrorEl = document.getElementById('total-price-mirror');
+    const bagCount = document.getElementById('bag-count');
+
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // Bundle Discount: 2 items = 10%, 3+ items = 15%
+    let discountPercent = 0;
+    if (totalQty >= 3) {
+        discountPercent = 15;
+    } else if (totalQty === 2) {
+        discountPercent = 10;
+    }
+
+    const discountAmount = subtotal * (discountPercent / 100);
+    const finalTotal = subtotal - discountAmount;
+
+    if (bagCount) bagCount.textContent = totalQty + ' Item' + (totalQty !== 1 ? 's' : '');
+    if (subtotalEl) subtotalEl.innerText = subtotal.toFixed(2);
+    if (totalEl) totalEl.innerText = finalTotal.toFixed(2);
+    if (totalMirrorEl) totalMirrorEl.innerText = finalTotal.toFixed(2);
+
+    if (discountRow) {
+        if (discountPercent > 0) {
+            discountRow.style.display = 'flex';
+            if (discountLabel) discountLabel.innerText = `Bundle Discount (${discountPercent}%)`;
+            if (discountAmountEl) discountAmountEl.innerText = discountAmount.toFixed(2);
+        } else {
+            discountRow.style.display = 'none';
+        }
+    }
+
+    if (promoNudge) {
+        if (totalQty === 1) {
+            promoNudge.style.display = 'block';
+            promoNudge.innerHTML = '🔥 <strong>Add 1 more item</strong> to get <strong>10% OFF</strong> your order!';
+        } else if (totalQty === 2) {
+            promoNudge.style.display = 'block';
+            promoNudge.innerHTML = '🎉 <strong>10% discount applied!</strong> Add 1 more item for <strong>15% OFF</strong>!';
+        } else if (totalQty >= 3) {
+            promoNudge.style.display = 'block';
+            promoNudge.innerHTML = '🚀 <strong>15% Bundle Discount applied!</strong> Maximum savings reached.';
+        } else {
+            promoNudge.style.display = 'none';
+        }
+    }
 }
 
 function renderCart() {
     const cart = getCart();
     const container = document.getElementById('cart-container');
     const summary = document.getElementById('cart-summary');
-    const totalEl = document.getElementById('total-price');
 
     if (!container) return;
 
     if (cart.length === 0) {
         container.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; gap: 24px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="rgba(110,108,105,0.4)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                <p style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; color: var(--text-main); letter-spacing: 0.05em; margin: 0;">Your bag is empty</p>
-                <p style="font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin: 0;">Discover our latest pieces</p>
-                <a href="shop.html" style="
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 10px;
-                    margin-top: 10px;
-                    padding: 14px 40px;
-                    background: var(--burgundy);
-                    color: #fff;
-                    font-family: 'Montserrat', sans-serif;
-                    font-size: 0.7rem;
-                    font-weight: 500;
-                    letter-spacing: 0.2em;
-                    text-transform: uppercase;
-                    text-decoration: none;
-                    border: 1px solid var(--burgundy);
-                    transition: background 0.3s, color 0.3s, transform 0.2s;
-                    cursor: pointer;
-                " onmouseover="this.style.background='transparent';this.style.color='var(--burgundy)';" onmouseout="this.style.background='var(--burgundy)';this.style.color='#fff';">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                    Explore Collection
-                </a>
+            <div style="text-align:center; padding:5rem 1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#c4c0b8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.25rem;">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                    <path d="M3 6h18"></path>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <p style="font-size:1rem; color:var(--text-muted); margin-bottom:1.5rem; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">Your bag is empty</p>
+                <a href="shop.html" class="dg-checkout-btn" style="width:auto; padding:0.85rem 2.5rem; font-size:0.75rem;">Explore Collection →</a>
             </div>
         `;
         if (summary) summary.style.display = 'none';
+        const bagCount = document.getElementById('bag-count');
+        if (bagCount) bagCount.textContent = '0 Items';
         return;
     }
 
     // Build the cart list
-    container.innerHTML = '<div class="cart-list" style="display:flex; flex-direction:column; gap:12px;"></div>';
-    const list = container.querySelector('.cart-list');
+    container.innerHTML = '<div class="dg-cart-list"></div>';
+    const list = container.querySelector('.dg-cart-list');
 
     cart.forEach((item, index) => {
         const itemEl = document.createElement('div');
-        itemEl.className = 'cart-item';
-        itemEl.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:var(--cream); padding:24px 28px; border-left: 3px solid transparent; transition: border-left 0.3s, box-shadow 0.3s;';
+        itemEl.className = 'dg-cart-item';
 
         itemEl.innerHTML = `
-            <div class="cart-item-info" style="display:flex; align-items:center; gap:24px; flex:1;">
-                <img src="${item.image || 'https://placehold.co/80x100/f5f0eb/5c1a1a?text=DROGLA'}" alt="${item.name}" style="width:80px; height:100px; object-fit:cover; border-radius:2px;">
-                <div>
-                    <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:400; margin-bottom:4px; color:var(--text-main); letter-spacing:0.02em;">${item.name}</h4>
-                    <p style="color:var(--text-muted); font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:8px;">Size: ${item.size}${item.color ? ' · ' + item.color : ''}</p>
-                    <p style="font-size:0.82rem; font-weight:500; color:var(--text-main);">EGP ${parseFloat(item.price).toFixed(2)}</p>
-                </div>
+            <img src="${item.image || 'https://placehold.co/90x115/111010/f5f3f0?text=DROGLA'}" alt="${item.name}" class="dg-cart-item-img">
+            <div class="dg-cart-item-meta">
+                <h3 class="dg-cart-item-name">${item.name}</h3>
+                <div class="dg-cart-item-size">Size: ${item.size}${item.color ? ' · ' + item.color : ''}</div>
+                <div class="dg-cart-item-price">EGP ${parseFloat(item.price).toFixed(2)}</div>
             </div>
-            <div style="display:flex; align-items:center; gap:24px;">
-                <div style="display:flex; align-items:center; gap:12px; border:1px solid rgba(92,26,26,0.12); padding: 4px 8px;">
-                    <button class="qty-minus" data-index="${index}" style="background:none; border:none; cursor:pointer; color:var(--text-muted); width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; transition:color 0.2s;" aria-label="Decrease">−</button>
-                    <span class="qty-display" style="font-size:0.85rem; font-weight:600; min-width:20px; text-align:center; color:var(--text-main);">${item.quantity}</span>
-                    <button class="qty-plus" data-index="${index}" style="background:none; border:none; cursor:pointer; color:var(--text-muted); width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; transition:color 0.2s;" aria-label="Increase">+</button>
+            <div class="dg-cart-item-actions">
+                <div class="dg-cart-stepper">
+                    <button type="button" class="dg-cart-step-btn qty-minus" data-index="${index}" aria-label="Decrease quantity">−</button>
+                    <span class="dg-cart-step-qty qty-display">${item.quantity}</span>
+                    <button type="button" class="dg-cart-step-btn qty-plus" data-index="${index}" aria-label="Increase quantity">+</button>
                 </div>
-                <span class="item-subtotal" style="font-size:0.88rem; font-weight:600; min-width:80px; text-align:right; color:var(--text-main);">EGP ${(item.price * item.quantity).toFixed(2)}</span>
-                <button class="remove-btn" data-index="${index}" style="background:none; border:none; cursor:pointer; color:rgba(110,108,105,0.4); transition:color 0.2s; display:flex; padding:4px;" title="Remove item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <span class="dg-cart-item-subtotal item-subtotal">EGP ${(item.price * item.quantity).toFixed(2)}</span>
+                <button type="button" class="dg-cart-remove-btn remove-btn" data-index="${index}" title="Remove item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
         `;
-
-        // Hover effect: highlight left border
-        itemEl.addEventListener('mouseenter', () => {
-            itemEl.style.borderLeft = '3px solid var(--burgundy)';
-            itemEl.style.boxShadow = '0 2px 12px rgba(92,26,26,0.07)';
-        });
-        itemEl.addEventListener('mouseleave', () => {
-            itemEl.style.borderLeft = '3px solid transparent';
-            itemEl.style.boxShadow = 'none';
-        });
 
         list.appendChild(itemEl);
     });
@@ -106,24 +134,24 @@ function renderCart() {
     recalculateTotal(cart);
     if (summary) summary.style.display = 'block';
 
-    // ── Event listeners ──────────────────────────────────────────────────────
-
+    // ── Event listeners ──
     // Qty minus
     container.querySelectorAll('.qty-minus').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+            const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
             const cart = getCart();
             if (cart[idx].quantity > 1) {
                 cart[idx].quantity -= 1;
                 saveCart(cart);
-                updateCartBadge();
-
-                // Update qty display & subtotal in-place (no full re-render)
                 const itemEl = list.children[idx];
                 itemEl.querySelector('.qty-display').textContent = cart[idx].quantity;
                 itemEl.querySelector('.item-subtotal').textContent =
                     `EGP ${(cart[idx].price * cart[idx].quantity).toFixed(2)}`;
                 recalculateTotal(cart);
+            } else {
+                cart.splice(idx, 1);
+                saveCart(cart);
+                renderCart();
             }
         });
     });
@@ -131,13 +159,10 @@ function renderCart() {
     // Qty plus
     container.querySelectorAll('.qty-plus').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+            const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
             const cart = getCart();
             cart[idx].quantity += 1;
             saveCart(cart);
-            updateCartBadge();
-
-            // Update qty display & subtotal in-place (no full re-render)
             const itemEl = list.children[idx];
             itemEl.querySelector('.qty-display').textContent = cart[idx].quantity;
             itemEl.querySelector('.item-subtotal').textContent =
@@ -149,12 +174,11 @@ function renderCart() {
     // Remove
     container.querySelectorAll('.remove-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+            const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
             const cart = getCart();
             cart.splice(idx, 1);
             saveCart(cart);
-            updateCartBadge();
-            renderCart(); // full re-render to fix indices
+            renderCart();
         });
     });
 }

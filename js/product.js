@@ -1,3 +1,13 @@
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // ─────────────────────────────────────────────────────────────────────────
     // 1. SKELETON LOADING STATE — shown immediately before any fetch
@@ -52,10 +62,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 2. URL PARAM PARSING
+    // 2. URL PARAM PARSING (Supports ?id=123 and /product/123)
     // ─────────────────────────────────────────────────────────────────────────
-    const urlParams  = new URLSearchParams(window.location.search);
-    const productId  = urlParams.get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    let productId = urlParams.get('id');
+
+    if (!productId) {
+        // Fallback: Check path segments for /product/:id
+        const pathSegments = window.location.pathname.split('/').filter(Boolean);
+        const prodIdx = pathSegments.indexOf('product');
+        if (prodIdx !== -1 && pathSegments[prodIdx + 1]) {
+            productId = decodeURIComponent(pathSegments[prodIdx + 1]);
+        }
+    }
 
     if (!productId) {
         const loader = document.getElementById('loader');
@@ -131,7 +150,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const descBody = document.getElementById('product-desc-body');
         if (descBody) {
-            descBody.innerHTML = `<p>${product.description ? product.description.replace(/\n/g, '<br>') : '• Premium heavyweight cotton (260 GSM) for a structured streetwear silhouette.<br>• Soft, breathable, pre-shrunk combed fabric for all-day comfort.<br>• Oversized boxy drape with reinforced neckband and twin needle stitching.'}</p>`;
+            const defaultDesc = '• Premium heavyweight cotton (260 GSM) for a structured streetwear silhouette.<br>• Soft, breathable, pre-shrunk combed fabric for all-day comfort.<br>• Oversized boxy drape with reinforced neckband and twin needle stitching.';
+            descBody.innerHTML = `<p>${product.description ? escapeHtml(product.description).replace(/\n/g, '<br>') : defaultDesc}</p>`;
         }
 
         // Dynamic Shipping Dates
@@ -420,7 +440,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                 }
                 localStorage.setItem('drogla_cart', JSON.stringify(cart));
-                updateCartBadge();
+                if (window.updateCartBadge) window.updateCartBadge();
+                if (window.openCartDrawer) window.openCartDrawer();
 
                 // Button Feedback
                 const originalText = cartBtn.textContent;

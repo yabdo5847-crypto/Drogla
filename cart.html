@@ -1,211 +1,474 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="512x512" href="images/favicon.png" />
-    <link rel="apple-touch-icon" href="images/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart | DROGLA</title>
-    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="css/home.css">
-<script>
-    if (localStorage.getItem('drogla_theme') === 'dark') {
-        document.documentElement.classList.add('dark-mode');
-        document.addEventListener("DOMContentLoaded", () => document.body.classList.add('dark-mode'));
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="512x512" href="images/favicon.png">
+  <link rel="apple-touch-icon" href="images/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your DROGLA bag. Review your items and proceed to checkout.">
+  <meta name="robots" content="noindex, follow">
+  <meta property="og:title" content="Bag | DROGLA">
+  <meta property="og:description" content="Review your DROGLA bag and checkout.">
+  <title>Bag | DROGLA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="css/drogla.css">
+  <style>
+    /* Scoped Cart Page Polish */
+    .dg-cart-layout {
+      display: flex;
+      gap: 2.5rem;
+      align-items: flex-start;
+      margin-top: 1rem;
     }
-</script>
-    <style>
-        .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; margin-bottom: 3rem; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.05em;}
-        @media(max-width:768px) {
-          .cart-two-col { flex-direction: column !important; }
-          .cart-two-col > div:last-child { position:static !important; }
-        }
-    </style>
+    .dg-cart-main { flex: 1.4; min-width: 0; }
+    .dg-cart-side { flex: 0.7; position: sticky; top: 100px; }
+
+    .dg-cart-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-mid, #e8e5df);
+      margin-bottom: 1.5rem;
+    }
+    .dg-cart-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      margin: 0;
+      color: var(--text, #111010);
+    }
+    .dg-cart-count {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted, #706e6b);
+      font-weight: 600;
+    }
+
+    .dg-cart-list { display: flex; flex-direction: column; }
+    
+    .dg-cart-item {
+      display: grid;
+      grid-template-columns: 88px 1fr auto;
+      gap: 1.25rem;
+      align-items: center;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border-mid, #e8e5df);
+    }
+    body.dark-mode .dg-cart-item {
+      border-bottom-color: #262424;
+    }
+
+    .dg-cart-item-img {
+      width: 88px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 3px;
+      background: var(--clr-cream, #f2efe9);
+    }
+
+    .dg-cart-item-meta {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .dg-cart-item-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text, #111010);
+      margin: 0 0 4px;
+      line-height: 1.3;
+    }
+    body.dark-mode .dg-cart-item-name { color: #f5f3f0; }
+
+    .dg-cart-item-size {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted, #706e6b);
+      margin-bottom: 6px;
+    }
+    .dg-cart-item-price {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text, #111010);
+    }
+    body.dark-mode .dg-cart-item-price { color: #f5f3f0; }
+
+    .dg-cart-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .dg-cart-stepper {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border-mid, #dedbd5);
+      border-radius: 2px;
+      background: transparent;
+    }
+    body.dark-mode .dg-cart-stepper { border-color: #333030; }
+
+    .dg-cart-step-btn {
+      background: none;
+      border: none;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text, #111010);
+      font-size: 0.95rem;
+      transition: background 0.15s;
+    }
+    body.dark-mode .dg-cart-step-btn { color: #f5f3f0; }
+    .dg-cart-step-btn:hover { background: var(--clr-cream, #f2efe9); }
+    body.dark-mode .dg-cart-step-btn:hover { background: #252323; }
+
+    .dg-cart-step-qty {
+      min-width: 26px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text, #111010);
+    }
+    body.dark-mode .dg-cart-step-qty { color: #f5f3f0; }
+
+    .dg-cart-item-subtotal {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text, #111010);
+      min-width: 85px;
+      text-align: right;
+    }
+    body.dark-mode .dg-cart-item-subtotal { color: #f5f3f0; }
+
+    .dg-cart-remove-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted, #8c8984);
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s;
+    }
+    .dg-cart-remove-btn:hover { color: #c92a2a; }
+
+    /* Summary Box */
+    .dg-cart-summary {
+      background: #ffffff;
+      border: 1px solid var(--border-mid, #e8e5df);
+      padding: 1.8rem;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    body.dark-mode .dg-cart-summary {
+      background: #141313;
+      border-color: #282626;
+    }
+
+    .dg-checkout-btn, .checkout-btn {
+      display: flex !important;
+      width: 100% !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      padding: 1.05rem 1.5rem !important;
+      background: #111010 !important;
+      color: #ffffff !important;
+      font-size: 0.8rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.16em !important;
+      text-transform: uppercase !important;
+      border: 1px solid #111010 !important;
+      cursor: pointer !important;
+      transition: all 0.25s ease !important;
+      text-decoration: none !important;
+      border-radius: 2px !important;
+      box-sizing: border-box !important;
+    }
+    body.dark-mode .dg-checkout-btn, body.dark-mode .checkout-btn {
+      background: #f5f3f0 !important;
+      color: #111010 !important;
+      border-color: #f5f3f0 !important;
+    }
+    .dg-checkout-btn:hover, .checkout-btn:hover {
+      background: #5c1a1a !important;
+      border-color: #5c1a1a !important;
+      color: #ffffff !important;
+    }
+
+    @media (max-width: 768px) {
+      .dg-cart-layout {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .dg-cart-side {
+        position: static;
+        width: 100%;
+      }
+      .dg-cart-item {
+        grid-template-columns: 80px 1fr;
+        gap: 1rem;
+        align-items: start;
+        padding: 1.2rem 0;
+      }
+      .dg-cart-item-img {
+        width: 80px;
+        height: 102px;
+      }
+      .dg-cart-item-actions {
+        grid-column: 1 / -1;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.5rem;
+      }
+    }
+  </style>
+  <script>
+    if (localStorage.getItem('drogla_theme') === 'dark') {
+      document.documentElement.classList.add('dark-mode');
+      document.addEventListener('DOMContentLoaded', () => document.body.classList.add('dark-mode'));
+    }
+  </script>
+</head>
 <body>
 
-  <!-- MARQUEE (Top Announcement Strip) -->
-  <div class="marquee-wrap">
-    <div class="marquee-inner" id="marq">
-      <span class="marquee-item">!ITEMS - FREE SHIPPING ON ORDERS OVER 1500 EGP <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!GUARANTEED RETURNS &amp; EXCHANGES WITHIN 14 DAYS <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!CASH ON DELIVERY &amp; INSTAPAY ACCEPTED <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
-      <span class="marquee-item">!100% HEAVYWEIGHT COMBED COTTON (260 GSM) <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+  <!-- ── ANNOUNCEMENT BAR ── -->
+  <div class="dg-bar">
+    <div class="dg-bar-track" id="marq">
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
+      <span class="dg-bar-item">BUY 2 GET 10% OFF • BUY 3+ GET 15% OFF</span>
+      <span class="dg-bar-item">اشتري قطعتين بخصم 10% • 3 قطع أو أكثر بخصم 15%</span>
+      <span class="dg-bar-item">FREE SHIPPING OVER 1500 EGP</span>
+      <span class="dg-bar-item">14-DAY RETURNS &amp; EXCHANGES</span>
+      <span class="dg-bar-item">CASH ON DELIVERY &amp; INSTAPAY</span>
+      <span class="dg-bar-item">100% HEAVYWEIGHT COTTON — 260 GSM</span>
     </div>
   </div>
 
-  <!-- NAV -->
-  <nav id="nav">
-      <!-- Left Utilities (Cart, User, Egypt, Theme) & Mobile Hamburger -->
-      <div class="nav-left">
-        <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
-          <span></span><span></span><span></span>
-        </button>
-
-        <div class="nav-util-desktop">
-          <a href="cart.html" class="nav-cart-icon" id="cartBtn" aria-label="View Bag" title="Shopping Bag">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-              <path d="M3 6h18"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            <span class="nav-cart-badge" id="cart-count">0</span>
-          </a>
-          <a href="admin.html" class="nav-user-icon" aria-label="Account" title="Account / Admin Console">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-          </a>
-          <span class="nav-country-tag">مصر</span>
-          <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme" title="Toggle Theme">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Center Brand Logo -->
-      <a href="index.html" class="nav-logo">Drogla</a>
-
-      <!-- Right Categories Menu (PC) & Mobile Utilities -->
-      <div class="nav-right">
-        <ul class="nav-menu-desktop">
-          <li class="nav-item">
-            <a href="index.html#faq" class="nav-link">استبدال واسترجاع</a>
-          </li>
-          <li class="nav-item nav-has-dropdown">
-            <a href="shop.html?cat=women-tops" class="nav-link">
-              WOMEN <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-            </a>
-            <div class="nav-dropdown-menu">
-              <a href="shop.html?cat=women-tops" class="dropdown-link">Shop All Tops (توبات)</a>
-              <a href="shop.html?cat=women-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
-              <a href="shop.html?cat=women-shirts" class="dropdown-link">Shirts (قمصان)</a>
-              <a href="shop.html?cat=women-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
-            </div>
-          </li>
-          <li class="nav-item nav-has-dropdown">
-            <a href="shop.html?cat=men-tops" class="nav-link">
-              الرجال <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-            </a>
-            <div class="nav-dropdown-menu">
-              <a href="shop.html?cat=men-tops" class="dropdown-link">Shop All Tops (توبات)</a>
-              <a href="shop.html?cat=men-tshirts" class="dropdown-link">T-Shirts (تيشيرتات)</a>
-              <a href="shop.html?cat=men-shirts" class="dropdown-link">Shirts (قمصان)</a>
-              <a href="shop.html?cat=men-bottoms" class="dropdown-link">Bottoms &amp; Pants (بناطيل)</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a href="shop.html" class="nav-link nav-link-highlight">SUMMER COLLECTION</a>
-          </li>
-        </ul>
-
-        <div class="nav-util-mobile">
-          <button id="theme-toggle-mobile" class="theme-btn" aria-label="Toggle Theme">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-            </svg>
-          </button>
-          <a href="cart.html" class="nav-cart-icon" id="cartBtnMobile" aria-label="View Bag">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-              <path d="M3 6h18"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            <span class="nav-cart-badge" id="cart-count-mobile-badge">0</span>
-          </a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- MOBILE DRAWER -->
-    <div class="mobile-nav-drawer" id="mobileDrawer">
-      <button class="mobile-nav-close" id="mobileClose" aria-label="Close menu">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  <!-- ── NAV ── -->
+  <nav class="dg-nav" id="nav">
+    <div class="dg-nav-left">
+      <button class="dg-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
       </button>
-      <ul class="mobile-nav-links">
-        <li><span>Men</span>
-          <ul class="mobile-nav-submenu">
-            <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
-            <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
-            <li><a href="shop.html?cat=men-bottoms">Shop All Bottoms</a></li>
-          </ul>
-        </li>
-        <li><span>Women</span>
-          <ul class="mobile-nav-submenu">
-            <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
-            <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
-            <li><a href="shop.html?cat=women-bottoms">Shop All Bottoms</a></li>
-          </ul>
-        </li>
-        <li><a href="shop.html">Collection</a></li>
-      </ul>
-      <div class="mobile-nav-bottom">
-        <a href="cart.html" class="nav-cart" style="text-decoration:none;">Bag (<span id="cart-count-mobile">0</span>)</a>
+      <!-- Desktop utils -->
+      <div class="dg-nav-util-desktop">
+        <a href="cart.html" class="dg-nav-icon" aria-label="View Bag" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="dg-badge" id="cart-count">0</span>
+        </a>
+        <a href="admin.html" class="dg-nav-icon" aria-label="Account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <span class="dg-country">مصر</span>
+        <button id="theme-toggle" class="dg-theme-btn" aria-label="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
       </div>
     </div>
-
-    <div class="admin-container fade-up visible">
-      <!-- Breadcrumb -->
-      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:2.5rem; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted);">
-        <a href="index.html" style="color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Home</a>
-        <span>›</span>
-        <a href="shop.html" style="color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Collection</a>
-        <span>›</span>
-        <span style="color:var(--text-main); font-weight:600;">Your Bag</span>
+    <a href="index.html" class="dg-logo">DROGLA</a>
+    <div class="dg-nav-right">
+      <ul class="dg-nav-menu">
+        <li class="dg-nav-item"><a href="index.html#faq" class="dg-nav-link">Returns</a></li>
+        <li class="dg-nav-item" style="position:relative;">
+          <a href="shop.html?cat=women-tops" class="dg-nav-link">WOMEN
+            <svg class="dg-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
+          <div class="dg-dropdown">
+            <a href="shop.html?cat=women-tops" class="dg-dropdown-link">Shop All Tops</a>
+            <a href="shop.html?cat=women-tshirts" class="dg-dropdown-link">T-Shirts</a>
+            <a href="shop.html?cat=women-bottoms" class="dg-dropdown-link">Bottoms &amp; Pants</a>
+          </div>
+        </li>
+        <li class="dg-nav-item" style="position:relative;">
+          <a href="shop.html?cat=men-tops" class="dg-nav-link">MEN
+            <svg class="dg-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
+          <div class="dg-dropdown">
+            <a href="shop.html?cat=men-tops" class="dg-dropdown-link">Shop All Tops</a>
+            <a href="shop.html?cat=men-tshirts" class="dg-dropdown-link">T-Shirts</a>
+            <a href="shop.html?cat=men-bottoms" class="dg-dropdown-link">Bottoms &amp; Pants</a>
+          </div>
+        </li>
+        <li class="dg-nav-item"><a href="shop.html" class="dg-nav-link dg-nav-link--highlight">NEW COLLECTION</a></li>
+      </ul>
+      <!-- Mobile utils -->
+      <div class="dg-nav-mobile-utils">
+        <button id="theme-toggle-mobile" class="dg-theme-btn" aria-label="Toggle theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <a href="cart.html" class="dg-nav-icon" aria-label="Bag" style="position:relative;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="dg-badge" id="cart-count-mobile-badge">0</span>
+        </a>
       </div>
+    </div>
+  </nav>
 
-      <div class="cart-two-col" style="display:flex; gap:3.5rem; align-items:flex-start;">
+  <!-- ── MOBILE DRAWER ── -->
+  <div class="dg-drawer" id="mobileDrawer">
+    <button class="dg-drawer-close" id="mobileClose" aria-label="Close menu">
+      <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <ul class="dg-drawer-links">
+      <li>
+        <span>Men</span>
+        <ul class="dg-drawer-sub">
+          <li><a href="shop.html?cat=men-tops">Shop All Tops</a></li>
+          <li><a href="shop.html?cat=men-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=men-bottoms">Bottoms &amp; Pants</a></li>
+        </ul>
+      </li>
+      <li>
+        <span>Women</span>
+        <ul class="dg-drawer-sub">
+          <li><a href="shop.html?cat=women-tops">Shop All Tops</a></li>
+          <li><a href="shop.html?cat=women-tshirts">T-Shirts</a></li>
+          <li><a href="shop.html?cat=women-bottoms">Bottoms &amp; Pants</a></li>
+        </ul>
+      </li>
+      <li><a href="shop.html">New Collection</a></li>
+      <li><a href="index.html#faq">Returns</a></li>
+    </ul>
+    <div class="dg-drawer-footer">
+      <a href="cart.html" class="dg-drawer-bag">Bag (<span id="cart-count-mobile">0</span>)</a>
+    </div>
+  </div>
+
+  <!-- ── PAGE CONTENT ── -->
+  <div class="dg-page">
+    <div style="padding: var(--sp-8) var(--container-pad) var(--sp-20); max-width: var(--container-max); margin: 0 auto;">
+
+      <!-- Breadcrumb -->
+      <nav class="dg-breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <a href="shop.html">Shop</a>
+        <span>›</span>
+        <span>Your Bag</span>
+      </nav>
+
+      <div class="dg-cart-layout">
+
         <!-- Left: Items -->
-        <div style="flex:1.4;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2rem; border-bottom:1px solid rgba(92,26,26,0.08); padding-bottom:1.5rem;">
-            <h1 style="font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,3.2rem); font-weight:300; letter-spacing:-0.01em; color:var(--text-main);">Your Bag</h1>
-            <span id="bag-count" style="font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted);"></span>
+        <div class="dg-cart-main">
+          <div class="dg-cart-head">
+            <h1 class="dg-cart-title">Your Bag</h1>
+            <span class="dg-cart-count" id="bag-count"></span>
           </div>
           <div id="cart-container"></div>
         </div>
-        <!-- Right: Summary -->
-        <div style="flex:0.6; position:sticky; top:120px;">
-          <div id="cart-summary" class="cart-summary-box" style="display:none;">
-            <div style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:1.5rem; font-weight:600; border-bottom:1px solid rgba(92,26,26,0.08); padding-bottom:1rem;">Order Summary</div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem; font-size:0.78rem;">
-              <span style="color:var(--text-muted);">Subtotal</span>
-              <span style="font-weight:600;">EGP <span id="total-price">0.00</span></span>
+
+        <!-- Right: Summary (desktop sticky) -->
+        <div class="dg-cart-side">
+          <div id="cart-summary" class="dg-cart-summary" style="display:none;">
+            <p class="dg-summary-label">Order Summary</p>
+            <div class="dg-summary-row">
+              <span>Subtotal</span>
+              <strong>EGP <span id="subtotal-price">0.00</span></strong>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem; font-size:0.78rem;">
-              <span style="color:var(--text-muted);">Shipping</span>
-              <span style="color:var(--text-muted); font-size:0.7rem; letter-spacing:0.05em;">Calculated at checkout</span>
+            <div class="dg-summary-row" id="discount-row" style="display:none; color: var(--clr-accent);">
+              <span id="discount-label">Bundle Discount (10%)</span>
+              <strong>-EGP <span id="discount-amount">0.00</span></strong>
             </div>
-            <div style="border-top:1px solid rgba(92,26,26,0.08); margin:1.5rem 0; padding-top:1.5rem; display:flex; justify-content:space-between; align-items:baseline;">
-              <span style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:300;">Estimated Total</span>
-              <span style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; color:var(--text-main);">EGP <span id="total-price-summary">0.00</span></span>
+            <div class="dg-summary-row">
+              <span>Shipping</span>
+              <span style="font-size:var(--text-xs);">Calculated at checkout</span>
             </div>
-            <a href="checkout.html" class="checkout-btn" style="margin-top:0.5rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; letter-spacing:0.2em; text-decoration:none;">Proceed to Checkout ›</a>
-            <a href="shop.html" style="display:block; text-align:center; margin-top:1.2rem; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--burgundy)'" onmouseout="this.style.color='var(--text-muted)'">Continue Shopping</a>
+            <div class="dg-summary-total">
+              <span class="dg-summary-total-label">Estimated Total</span>
+              <span class="dg-summary-total-value">EGP <span id="total-price">0.00</span></span>
+            </div>
+            <span id="total-price-mirror" style="display:none;">0.00</span>
+            <div id="promo-nudge" style="margin: 0.75rem 0 1rem; padding: 10px 14px; background: rgba(92,26,26,0.06); border-left: 3px solid var(--clr-accent); font-size: 0.75rem; color: var(--text); line-height: 1.4; display: none;"></div>
+            <a href="checkout.html" class="dg-checkout-btn">Proceed to Checkout →</a>
+            <a href="shop.html" style="display:block; text-align:center; margin-top:1.2rem; font-size:var(--text-xs); letter-spacing:var(--ls-wider); text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color 0.2s;"
+               onmouseover="this.style.color='var(--clr-accent)'" onmouseout="this.style.color='var(--text-muted)'">
+              Continue Shopping
+            </a>
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.7rem; color:var(--text-muted); margin-top:1.2rem; text-align:center;">
+              <span>🔒</span>
+              <span>Secure Checkout · 14-Day Returns · Free Shipping > 1500 EGP</span>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- FOOTER -->
-    <footer>
-      <div class="footer-top">
-        <div>
-          <span class="footer-brand-name">Drogla</span>
-          <p class="footer-brand-tag">Digital Grit streetwear.<br/>Bridging virtual aesthetics with physical urban durability since 2026.</p>
+      </div><!-- /.dg-cart-layout -->
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer class="dg-footer">
+    <div class="dg-footer-main">
+      <div>
+        <span class="dg-footer-brand-name">DROGLA</span>
+        <p class="dg-footer-tagline">Digital Grit streetwear.<br>Bridging virtual aesthetics with physical urban durability since 2026.</p>
+        <div class="dg-footer-socials">
+          <a href="#" class="dg-footer-social" aria-label="Instagram">IG</a>
+          <a href="#" class="dg-footer-social" aria-label="TikTok">TK</a>
+          <a href="#" class="dg-footer-social" aria-label="Twitter">TW</a>
+          <a href="#" class="dg-footer-social" aria-label="YouTube">YT</a>
         </div>
       </div>
-      <div class="footer-bottom">
-        <span class="footer-copy">© 2026 Drogla. All rights reserved.</span>
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Shop</p>
+        <ul>
+          <li><a href="shop.html">New Arrivals</a></li>
+          <li><a href="shop.html?cat=men-tops">Men</a></li>
+          <li><a href="shop.html?cat=women-tops">Women</a></li>
+          <li><a href="shop.html">All Products</a></li>
+        </ul>
       </div>
-    </footer>
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Help</p>
+        <ul>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="index.html#faq">Sizing Guide</a></li>
+          <li><a href="index.html#faq">Shipping &amp; Returns</a></li>
+          <li><a href="index.html#faq">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="dg-footer-col">
+        <p class="dg-footer-col-title">Brand</p>
+        <ul>
+          <li><a href="#">About DROGLA</a></li>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Lookbook</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="dg-footer-bottom">
+      <span class="dg-footer-copy">© 2026 DROGLA. All rights reserved.</span>
+      <div class="dg-footer-pay">
+        <span class="dg-pay-tag">Cash on Delivery</span>
+        <span class="dg-pay-tag">InstaPay</span>
+        <span class="dg-pay-tag">Vodafone Cash</span>
+        <span class="dg-pay-tag">Visa</span>
+        <span class="dg-pay-tag">Mastercard</span>
+      </div>
+    </div>
+  </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/cart.js"></script>
-    <script>
-    // Hamburger menu
+  <script src="js/main.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    // Hamburger
     const hamburger = document.getElementById('hamburger');
     const mobileDrawer = document.getElementById('mobileDrawer');
     const mobileClose = document.getElementById('mobileClose');
@@ -220,25 +483,29 @@
       document.body.style.overflow = open ? 'hidden' : '';
     });
     if (mobileClose) mobileClose.addEventListener('click', closeDrawer);
-    mobileDrawer.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', closeDrawer);
-    });
-
-
+    mobileDrawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
 
     // Nav scroll
-    const nav=document.getElementById('nav');
-    window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
 
-    // Mirror total-price into total-price-summary
-    (function() {
+    // Mirror total price to the summary value display
+    (function mirrorTotal() {
       const src = document.getElementById('total-price');
-      const mirror = document.getElementById('total-price-summary');
+      const mirror = document.getElementById('total-price-mirror');
       if (!src || !mirror) return;
-      const observer = new MutationObserver(() => { mirror.textContent = src.textContent; });
-      observer.observe(src, { childList: true, characterData: true, subtree: true });
+      const sync = () => { mirror.textContent = src.textContent; };
+      new MutationObserver(sync).observe(src, { childList: true, characterData: true, subtree: true });
+      sync();
     })();
-    </script>
+
+    // Update bag count label
+    document.addEventListener('DOMContentLoaded', () => {
+      const cart = JSON.parse(localStorage.getItem('drogla_cart')) || [];
+      const count = cart.reduce((s, i) => s + i.quantity, 0);
+      const bagCount = document.getElementById('bag-count');
+      if (bagCount) bagCount.textContent = count + ' Item' + (count !== 1 ? 's' : '');
+    });
+  </script>
 </body>
 </html>
-

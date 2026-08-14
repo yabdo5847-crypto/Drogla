@@ -5,6 +5,16 @@
              URL-param pre-filtering, Supabase fetch, cursor FX
    ============================================================ */
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     // ── DOM refs ────────────────────────────────────────────
@@ -12,8 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loader     = document.getElementById('loader');
     const noResults  = document.getElementById('no-results');
     const searchInput = document.getElementById('shopSearchInput');
-    const pills       = document.querySelectorAll('.filter-pill');
+    const pills       = document.querySelectorAll('.filter-pill, .dg-pill');
     const shopTitle   = document.getElementById('shop-title');
+    const sortSelect  = document.getElementById('shopSortSelect');
 
     // ── URL params ──────────────────────────────────────────
     const urlParams  = new URLSearchParams(window.location.search);
@@ -29,11 +40,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const ring = document.getElementById('ring');
 
     // ================================================================
-    // 1.  Page title based on URL cat param
+    // 1.  Page title based on URL cat param (XSS-safe)
     // ================================================================
-    if (catFilter) {
-        const formattedTitle = catFilter.replace('-', ' ').toUpperCase();
-        shopTitle.innerHTML  = `${formattedTitle} <em>Collection</em>`;
+    if (catFilter && shopTitle) {
+        const cleanCat = String(catFilter).replace(/[^a-zA-Z0-9\-_ ]/g, '').slice(0, 50);
+        const formattedTitle = cleanCat.replace(/-/g, ' ').toUpperCase();
+        shopTitle.innerHTML = `${escapeHtml(formattedTitle)} <em>Collection</em>`;
     }
 
     // ================================================================
@@ -85,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             : `<img src="${firstImage}" alt="${p.name}" class="card-img">`;
 
         const card       = document.createElement('a');
-        card.href        = `product.html?id=${p.id}`;
+        card.href = `product.html?id=${p.id}`;
         card.className   = 'product-card fade-up visible';
         card.style.transitionDelay = `${(idx % 3) * 0.1}s`;
 
@@ -151,6 +163,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (noResults) {
             noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }
+
+        // update count label
+        if (typeof window.updateProductCount === 'function') {
+            window.updateProductCount(visibleCount);
+        } else {
+            const countEl = document.getElementById('product-count-label');
+            if (countEl) countEl.textContent = visibleCount + ' PRODUCT' + (visibleCount !== 1 ? 'S' : '');
+        }
     }
 
     // ================================================================
@@ -171,6 +191,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (searchInput) {
         searchInput.addEventListener('input', () => {
             searchQuery = searchInput.value;
+            applyFilters();
+        });
+    }
+
+    // ================================================================
+    // 7b. Sort handler
+    // ================================================================
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            const val = sortSelect.value;
+            if (val === 'price-asc') {
+                allProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+            } else if (val === 'price-desc') {
+                allProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+            } else {
+                // newest: re-sort by original order (by id desc)
+                allProducts.sort((a, b) => b.id - a.id);
+            }
             applyFilters();
         });
     }
