@@ -613,7 +613,10 @@ window.openEditProduct = async function (pid) {
     { slug: 'women-shirts', name: 'Women Shirts', name_ar: 'قمصان حريمي', gender: 'women' },
     { slug: 'women-bottoms', name: 'Women Bottoms', name_ar: 'بناطيل حريمي', gender: 'women' },
     { slug: 'stealth', name: 'Stealth Drop', name_ar: 'مجموعة ستيلث', gender: 'unisex' },
-    { slug: 'hoodies', name: 'Hoodies & Sweatshirts', name_ar: 'هوديز وسويت شيرت', gender: 'unisex' }
+    { slug: 'hoodies', name: 'Hoodies & Sweatshirts', name_ar: 'هوديز وسويت شيرت', gender: 'unisex' },
+    { slug: 'unisex-tops', name: 'Unisex Tops', name_ar: 'توبات للجنسين', gender: 'unisex' },
+    { slug: 'unisex-tshirts', name: 'Unisex T-Shirts', name_ar: 'تيشيرتات للجنسين', gender: 'unisex' },
+    { slug: 'unisex-bottoms', name: 'Unisex Bottoms', name_ar: 'بناطيل للجنسين', gender: 'unisex' }
   ];
 
   const catsToUse = allCategories.length > 0 ? allCategories : defaultCats;
@@ -658,7 +661,28 @@ window.openEditProduct = async function (pid) {
   document.getElementById('m-name-ar').value = p ? (p.name_ar || '') : '';
   document.getElementById('m-price').value = p ? p.price : '';
   document.getElementById('m-old-price').value = p && p.old_price ? p.old_price : '';
-  document.getElementById('m-cat').value = p ? (p.category || catsToUse[0].slug) : catsToUse[0].slug;
+  if (p && p.category) {
+    let catVal = p.category;
+    // Check if the value exists in the options
+    const exists = Array.from(catSelect.options).some(opt => opt.value === catVal);
+    if (!exists) {
+      // Create a custom option under Unisex so it doesn't get lost
+      const opt = document.createElement('option');
+      opt.value = catVal;
+      opt.textContent = `${catVal} (Custom)`;
+      
+      // Try to append to Unisex group, else just append
+      let unisexGroup = Array.from(catSelect.querySelectorAll('optgroup')).find(g => g.label.toLowerCase().includes('unisex'));
+      if (unisexGroup) {
+        unisexGroup.appendChild(opt);
+      } else {
+        catSelect.appendChild(opt);
+      }
+    }
+    catSelect.value = catVal;
+  } else {
+    catSelect.value = catsToUse[0].slug;
+  }
   document.getElementById('m-fit-type').value = p && p.fit_type ? p.fit_type : 'Oversized';
   document.getElementById('m-badge').value = p && p.badge ? p.badge : '';
   document.getElementById('m-desc').value = p ? (p.description || '') : '';
