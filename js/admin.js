@@ -454,7 +454,7 @@ async function renderProducts() {
             onchange="setStockDirect('${p.id}', ${si}, this.value)"/>
           <button type="button" class="qty-inline-btn" onclick="adjustStock('${p.id}', ${si}, 1)">+</button>
         </div>
-        <span style="font-size:.68rem;color:var(--text-muted)">${parseFloat(sz.price || p.price).toFixed(0)} EGP</span>
+        <span style="font-size:.68rem;color:var(--text-muted)">${parseFloat(p.price || 0).toFixed(0)} EGP</span>
       </div>
     `).join('');
 
