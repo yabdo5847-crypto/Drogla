@@ -787,12 +787,18 @@ body {
 
 .size-row {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  flex-direction: column;
   background: var(--bg-secondary);
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
+  gap: 0.4rem;
+}
+
+.size-row-top {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .size-row-lbl {
@@ -807,9 +813,72 @@ body {
   flex: 1;
 }
 
-.size-row input {
+.size-row input[data-field] {
   padding: 0.45rem 0.65rem;
   font-size: 0.75rem;
+}
+
+/* ── Color Chips per Size ── */
+.size-color-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding-top: 0.3rem;
+  border-top: 1px dashed var(--border-subtle);
+  margin-top: 0.1rem;
+}
+
+.size-color-pills-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.size-color-pills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.size-color-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: var(--trans);
+  user-select: none;
+}
+
+.size-color-chip:has(input:checked) {
+  border-color: var(--burgundy);
+  color: var(--burgundy);
+  background: var(--bg-primary);
+}
+
+.size-color-chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+
+.size-color-chip-name {
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .color-admin-row {

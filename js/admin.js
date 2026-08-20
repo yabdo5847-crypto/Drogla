@@ -742,15 +742,44 @@ document.getElementById('m-price').addEventListener('input', (e) => {
 function renderSizeRows(sizes) {
   const wrap = document.getElementById('m-size-rows');
   wrap.innerHTML = '';
+  const colors = getColorRowsData();
+
   sizes.forEach((sz, i) => {
     const row = document.createElement('div');
     row.className = 'size-row';
+
+    // Build color checkboxes for this size
+    const sizeColors = Array.isArray(sz.colors) ? sz.colors : [];
+    let colorCheckboxesHtml = '';
+    if (colors.length > 0) {
+      colorCheckboxesHtml = `
+        <div class="size-color-pills">
+          <span class="size-color-pills-lbl">Colors:</span>
+          <div class="size-color-pills-list">
+            ${colors.map(c => {
+              const checked = sizeColors.length === 0 || sizeColors.includes(c.name) ? 'checked' : '';
+              return `
+                <label class="size-color-chip" title="${escapeHtml(c.name)}">
+                  <input type="checkbox" data-color="${escapeHtml(c.name)}" ${checked} style="display:none"/>
+                  <span class="size-color-chip-dot" style="background:${c.hex || '#111010'}"></span>
+                  <span class="size-color-chip-name">${escapeHtml(c.name)}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
     row.innerHTML = `
-      <span class="size-row-lbl">#${i + 1}</span>
-      <div class="fg"><input type="text" placeholder="Size (e.g. M)" value="${escapeHtml(sz.label || '')}" data-field="label"/></div>
-      <div class="fg"><input type="number" placeholder="Price" value="${sz.price || ''}" min="0" data-field="price"/></div>
-      <div class="fg"><input type="number" placeholder="Stock" value="${sz.stock !== undefined ? sz.stock : 10}" min="0" data-field="stock"/></div>
-      <button type="button" onclick="this.closest('.size-row').remove()" style="color:var(--red);background:none;border:none;font-size:1.1rem;cursor:pointer;padding:0.2rem">✕</button>
+      <div class="size-row-top">
+        <span class="size-row-lbl">#${i + 1}</span>
+        <div class="fg"><input type="text" placeholder="Size (e.g. M)" value="${escapeHtml(sz.label || '')}" data-field="label"/></div>
+        <div class="fg"><input type="number" placeholder="Price" value="${sz.price || ''}" min="0" data-field="price"/></div>
+        <div class="fg"><input type="number" placeholder="Stock" value="${sz.stock !== undefined ? sz.stock : 10}" min="0" data-field="stock"/></div>
+        <button type="button" onclick="this.closest('.size-row').remove()" style="color:var(--red);background:none;border:none;font-size:1.1rem;cursor:pointer;padding:0.2rem">✕</button>
+      </div>
+      ${colorCheckboxesHtml}
     `;
     wrap.appendChild(row);
   });
@@ -758,11 +787,24 @@ function renderSizeRows(sizes) {
 
 function getSizeRowsData() {
   const rows = document.querySelectorAll('#m-size-rows .size-row');
-  return Array.from(rows).map(row => ({
-    label: row.querySelector('[data-field="label"]').value.trim(),
-    price: parseFloat(row.querySelector('[data-field="price"]').value) || parseFloat(document.getElementById('m-price').value) || 0,
-    stock: parseInt(row.querySelector('[data-field="stock"]').value) || 0
-  })).filter(s => s.label);
+  return Array.from(rows).map(row => {
+    // Collect checked colors for this size
+    const colorCheckboxes = row.querySelectorAll('[data-color]');
+    let selectedColors = [];
+    if (colorCheckboxes.length > 0) {
+      colorCheckboxes.forEach(cb => {
+        if (cb.checked) selectedColors.push(cb.getAttribute('data-color'));
+      });
+      // If all are checked, store empty array (means all available = default)
+      if (selectedColors.length === colorCheckboxes.length) selectedColors = [];
+    }
+    return {
+      label: row.querySelector('[data-field="label"]').value.trim(),
+      price: parseFloat(row.querySelector('[data-field="price"]').value) || parseFloat(document.getElementById('m-price').value) || 0,
+      stock: parseInt(row.querySelector('[data-field="stock"]').value) || 0,
+      colors: selectedColors
+    };
+  }).filter(s => s.label);
 }
 
 document.getElementById('add-size-btn').addEventListener('click', () => {
@@ -792,9 +834,9 @@ function renderColorRows(colors) {
     const row = document.createElement('div');
     row.className = 'color-admin-row';
     row.innerHTML = `
-      <input type="color" value="${c.hex || '#111010'}" data-field="hex" title="Select color hex"/>
-      <div class="fg" style="flex:1;"><input type="text" placeholder="Color Name (e.g. Washed Black)" value="${escapeHtml(c.name || '')}" data-field="name"/></div>
-      <button type="button" onclick="this.closest('.color-admin-row').remove(); updateVariantInputsOnColorChange();" style="color:var(--red);background:none;border:none;font-size:1.1rem;cursor:pointer;padding:0.2rem">✕</button>
+      <input type="color" value="${c.hex || '#111010'}" data-field="hex" title="Select color hex" oninput="updateSizeColorCheckboxes()"/>
+      <div class="fg" style="flex:1;"><input type="text" placeholder="Color Name (e.g. Washed Black)" value="${escapeHtml(c.name || '')}" data-field="name" oninput="updateSizeColorCheckboxes()"/></div>
+      <button type="button" onclick="this.closest('.color-admin-row').remove(); updateVariantInputsOnColorChange(); updateSizeColorCheckboxes();" style="color:var(--red);background:none;border:none;font-size:1.1rem;cursor:pointer;padding:0.2rem">✕</button>
     `;
     wrap.appendChild(row);
   });
@@ -813,11 +855,53 @@ document.getElementById('add-color-btn').addEventListener('click', () => {
   colors.push({ hex: '#111010', name: '' });
   renderColorRows(colors);
   updateVariantInputsOnColorChange();
+  updateSizeColorCheckboxes();
 });
 
 function updateVariantInputsOnColorChange() {
   const colors = getColorRowsData();
   renderVariantImageInputs(getVariantImagesData(), colors);
+}
+
+// ── Sync color checkboxes in size rows when colors change ──
+function updateSizeColorCheckboxes() {
+  const colors = getColorRowsData();
+  const sizeRows = document.querySelectorAll('#m-size-rows .size-row');
+
+  sizeRows.forEach(row => {
+    // Read currently checked colors before re-render
+    const existingChecks = {};
+    row.querySelectorAll('[data-color]').forEach(cb => {
+      existingChecks[cb.getAttribute('data-color')] = cb.checked;
+    });
+
+    // Remove old pills section
+    const oldPills = row.querySelector('.size-color-pills');
+    if (oldPills) oldPills.remove();
+
+    if (colors.length === 0) return;
+
+    // Build new pills
+    const pillsDiv = document.createElement('div');
+    pillsDiv.className = 'size-color-pills';
+    pillsDiv.innerHTML = `
+      <span class="size-color-pills-lbl">Colors:</span>
+      <div class="size-color-pills-list">
+        ${colors.map(c => {
+          // New colors default to checked; existing colors keep their state
+          const wasChecked = existingChecks.hasOwnProperty(c.name) ? existingChecks[c.name] : true;
+          return `
+            <label class="size-color-chip" title="${escapeHtml(c.name)}">
+              <input type="checkbox" data-color="${escapeHtml(c.name)}" ${wasChecked ? 'checked' : ''} style="display:none"/>
+              <span class="size-color-chip-dot" style="background:${c.hex || '#111010'}"></span>
+              <span class="size-color-chip-name">${escapeHtml(c.name)}</span>
+            </label>
+          `;
+        }).join('')}
+      </div>
+    `;
+    row.appendChild(pillsDiv);
+  });
 }
 
 // ── Variant Images Mapping ──

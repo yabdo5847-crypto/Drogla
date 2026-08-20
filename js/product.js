@@ -290,48 +290,131 @@ document.addEventListener('DOMContentLoaded', async () => {
                 colorContainer.appendChild(thumb);
             });
         } else {
-            // Legacy / Standard Products
-            const colors = product.colors ? product.colors.split(',').map(c => c.trim()).filter(c => c !== '') : [];
-            if (colors.length > 0) {
-                colorWrapper.style.display = 'block';
+            // ── New System: sizes array with per-size color availability ──
+            const sizesData = (product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0)
+                ? product.sizes
+                : null;
+
+            // Build full colors list (from colors array or string)
+            let colorsData = [];
+            if (product.colors && Array.isArray(product.colors)) {
+                colorsData = product.colors;
+            } else if (typeof product.colors === 'string' && product.colors) {
+                colorsData = product.colors.split(',').map(c => ({ name: c.trim(), hex: '#111010' })).filter(c => c.name);
+            }
+
+            // ── Render colors based on selected size ──
+            function renderColorsForSize(sizeLabel) {
+                if (colorsData.length === 0) {
+                    if (colorWrapper) colorWrapper.style.display = 'none';
+                    return;
+                }
+                if (colorWrapper) colorWrapper.style.display = 'block';
+                if (!colorContainer) return;
                 colorContainer.innerHTML = '';
-                colors.forEach((c, idx) => {
+
+                // Find the size object to get its allowed colors
+                const sizeObj = sizesData ? sizesData.find(s => s.label === sizeLabel) : null;
+                // If sizeObj.colors is empty array or undefined → all colors available
+                const allowedColors = (sizeObj && Array.isArray(sizeObj.colors) && sizeObj.colors.length > 0)
+                    ? sizeObj.colors
+                    : colorsData.map(c => c.name);
+
+                let firstAvailable = null;
+                colorsData.forEach((c, idx) => {
+                    const isAvailable = allowedColors.includes(c.name);
                     const thumb = document.createElement('button');
                     thumb.type = 'button';
-                    thumb.className = 'mavin-color-thumb' + (idx === 0 ? ' active' : '');
-                    const imgForColor = images[idx] || firstImage;
-                    thumb.innerHTML = `<img src="${imgForColor}" alt="${c}">`;
+                    thumb.className = 'mavin-color-thumb' + (!isAvailable ? ' sold-out' : '');
 
-                    thumb.onclick = () => {
-                        colorContainer.querySelectorAll('.mavin-color-thumb').forEach(b => b.classList.remove('active'));
-                        thumb.classList.add('active');
-                        selectedColor = c;
-                        if (colorLabel) colorLabel.textContent = c;
-                    };
-                    if (idx === 0) {
-                        selectedColor = c;
-                        if (colorLabel) colorLabel.textContent = c;
+                    // Find image for this color from variant_images
+                    const variantImgs = product.variant_images || product.variantImages || {};
+                    const imgForColor = variantImgs[c.name] || images[idx] || firstImage;
+                    thumb.innerHTML = `<img src="${imgForColor}" alt="${c.name}">`;
+                    thumb.title = isAvailable ? c.name : `${c.name} — Not available in this size`;
+
+                    if (!isAvailable) {
+                        thumb.disabled = true;
+                        thumb.style.opacity = '0.35';
+                        thumb.style.filter = 'grayscale(1)';
+                    } else {
+                        thumb.onclick = () => {
+                            colorContainer.querySelectorAll('.mavin-color-thumb').forEach(b => b.classList.remove('active'));
+                            thumb.classList.add('active');
+                            selectedColor = c.name;
+                            if (colorLabel) colorLabel.textContent = c.name;
+                            // Update main image
+                            const mainImg = document.getElementById('main-img-view');
+                            if (mainImg && imgForColor) {
+                                mainImg.style.opacity = '0';
+                                setTimeout(() => { mainImg.src = imgForColor; mainImg.style.opacity = '1'; }, 180);
+                            }
+                        };
+                        if (!firstAvailable) firstAvailable = { thumb, c, imgForColor };
                     }
                     colorContainer.appendChild(thumb);
                 });
+
+                // Auto-select first available color
+                if (firstAvailable) {
+                    firstAvailable.thumb.classList.add('active');
+                    selectedColor = firstAvailable.c.name;
+                    if (colorLabel) colorLabel.textContent = firstAvailable.c.name;
+                } else {
+                    selectedColor = null;
+                    if (colorLabel) colorLabel.textContent = '';
+                }
             }
 
-            const sizes = product.size ? product.size.split(',').map(s => s.trim()).filter(s => s !== '') : ['S', 'M', 'L', 'XL', 'XXL'];
-            sizeContainer.innerHTML = '';
-            sizes.forEach(s => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'mavin-size-box';
-                btn.innerText = s;
-                btn.onclick = () => {
-                    sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selectedSize = s;
-                    if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
-                    updateCartButtonState();
-                };
-                sizeContainer.appendChild(btn);
-            });
+            // ── Render sizes ──
+            if (sizesData) {
+                sizeContainer.innerHTML = '';
+                sizesData.forEach(sz => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'mavin-size-box';
+                    btn.innerText = sz.label;
+
+                    if ((sz.stock !== undefined && sz.stock <= 0)) {
+                        btn.disabled = true;
+                        btn.title = 'Sold Out';
+                        btn.classList.add('sold-out');
+                    } else {
+                        btn.onclick = () => {
+                            sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            selectedSize = sz.label;
+                            if (sizeBadge) sizeBadge.textContent = `${sz.label} SIZE`;
+                            updateCartButtonState();
+                            // Update colors availability for this size
+                            renderColorsForSize(sz.label);
+                        };
+                    }
+                    sizeContainer.appendChild(btn);
+                });
+                // Show all colors initially (no size selected yet)
+                renderColorsForSize(null);
+            } else {
+                // Fallback to plain size string
+                const sizes = product.size ? product.size.split(',').map(s => s.trim()).filter(s => s !== '') : ['S', 'M', 'L', 'XL', 'XXL'];
+                sizeContainer.innerHTML = '';
+                sizes.forEach(s => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'mavin-size-box';
+                    btn.innerText = s;
+                    btn.onclick = () => {
+                        sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        selectedSize = s;
+                        if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
+                        updateCartButtonState();
+                        renderColorsForSize(s);
+                    };
+                    sizeContainer.appendChild(btn);
+                });
+                renderColorsForSize(null);
+            }
         }
 
         // ─────────────────────────────────────────────────────────────────────
