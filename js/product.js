@@ -144,8 +144,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         const oldPriceEl = document.getElementById('product-old-price');
         if (oldPriceEl) {
-            const oldPrice = numPrice * 1.25;
-            oldPriceEl.textContent = `LE ${oldPrice.toFixed(2)}`;
+            if (product.old_price && parseFloat(product.old_price) > 0) {
+                oldPriceEl.textContent = `LE ${parseFloat(product.old_price).toFixed(2)}`;
+                oldPriceEl.style.display = '';
+            } else {
+                // No old price set — hide the element
+                oldPriceEl.style.display = 'none';
+            }
         }
 
         const descBody = document.getElementById('product-desc-body');
