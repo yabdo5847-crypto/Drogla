@@ -709,15 +709,36 @@ window.openEditProduct = async function (pid) {
   }
   renderSizeRows(sizes);
 
-  // Colors rows
+  // Colors rows — defensive parsing to handle various DB formats
   let colors = p ? p.colors : null;
   let colorsList = [];
+
   if (Array.isArray(colors)) {
-    colorsList = colors;
+    colorsList = colors.map(c => {
+      // c might be a proper {name, hex} object, or a stringified object, or a plain string
+      if (typeof c === 'object' && c !== null) {
+        return { name: String(c.name || '').replace(/[{}"\\]/g, '').trim(), hex: c.hex || '#111010' };
+      }
+      if (typeof c === 'string') {
+        // Try to parse if it's a JSON string
+        try {
+          const parsed = JSON.parse(c);
+          return { name: String(parsed.name || parsed || '').trim(), hex: parsed.hex || '#111010' };
+        } catch {
+          return { name: c.trim(), hex: '#111010' };
+        }
+      }
+      return null;
+    }).filter(c => c && c.name);
   } else if (typeof colors === 'string' && colors) {
-    colorsList = colors.split(',').map(c => ({ name: c.trim(), hex: '#111010' }));
+    // Plain comma-separated string
+    colorsList = colors.split(',').map(c => ({ name: c.trim(), hex: '#111010' })).filter(c => c.name);
   }
+
   renderColorRows(colorsList);
+
+  // ← IMPORTANT: update size chips AFTER colors are rendered in DOM
+  updateSizeColorCheckboxes();
 
   // Variant images mapping
   renderVariantImageInputs(p ? (p.variant_images || p.variantImages) : null, colorsList);
