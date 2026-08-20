@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .from('admin_users')
         .select('id, role')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!error && data && data.role === 'admin') {
         return true;
@@ -705,6 +705,14 @@ window.openEditProduct = async function (pid) {
 };
 
 document.getElementById('add-product-btn').addEventListener('click', () => openEditProduct(null));
+
+document.getElementById('m-price').addEventListener('input', (e) => {
+  const newPrice = parseFloat(e.target.value);
+  if (!isNaN(newPrice)) {
+    const priceInputs = document.querySelectorAll('#m-size-rows .size-row [data-field="price"]');
+    priceInputs.forEach(input => input.value = newPrice);
+  }
+});
 
 // ── Size Rows Management ──
 function renderSizeRows(sizes) {

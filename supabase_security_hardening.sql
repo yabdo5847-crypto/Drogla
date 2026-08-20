@@ -237,3 +237,15 @@ ON storage.objects FOR ALL
 TO authenticated
 USING (bucket_id = 'product-images' AND public.is_admin())
 WITH CHECK (bucket_id = 'product-images' AND public.is_admin());
+
+-- ══════════════════════════════════════════════════════════════════════════
+-- 8. إضافة مستخدم كـ Admin (قم بتمرير الإيميل الخاي بك)
+-- ══════════════════════════════════════════════════════════════════════════
+-- شغّل هذا الكويري في Supabase SQL Editor لإعطاء صلاحية الأدمن للحساب:
+
+INSERT INTO public.admin_users (id, email, role)
+SELECT id, email, 'admin'
+FROM auth.users
+WHERE email = 'yabdo5847@gmail.com'
+ON CONFLICT (id) DO UPDATE SET role = 'admin';
+
