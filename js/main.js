@@ -1,4 +1,4 @@
-﻿// ══════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════
 // DROGLA STREETWEAR — MAIN SHARED CONTROLLER & CART DRAWER ENGINE
 // ══════════════════════════════════════════════════════════════════════════
 
@@ -122,14 +122,25 @@ function renderCartDrawer() {
     const totalQty = cart.reduce((acc, item) => acc + item.quantity, 0);
     const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-    // Discount calculations: 2 items = 10%, 3+ items = 15%
-    let discountPercent = 0;
-    if (totalQty >= 3) {
-        discountPercent = 15;
-    } else if (totalQty === 2) {
-        discountPercent = 10;
+    // Tiered Bundle Offer Calculation
+    let bundleTargetPrice = subtotal;
+    let bundleLabelText = '';
+
+    if (totalQty === 2) {
+        bundleTargetPrice = 1200;
+        bundleLabelText = 'Bundle Offer (2 for 1200 EGP)';
+    } else if (totalQty === 3) {
+        bundleTargetPrice = 1600;
+        bundleLabelText = 'Bundle Offer (3 for 1600 EGP)';
+    } else if (totalQty === 4) {
+        bundleTargetPrice = 2000;
+        bundleLabelText = 'Bundle Offer (4 for 2000 EGP)';
+    } else if (totalQty > 4) {
+        bundleTargetPrice = 2000 + ((totalQty - 4) * 500);
+        bundleLabelText = `Bundle Offer (${totalQty} items)`;
     }
-    const discountAmount = subtotal * (discountPercent / 100);
+
+    const discountAmount = Math.max(0, subtotal - bundleTargetPrice);
     const finalTotal = subtotal - discountAmount;
 
     if (cart.length === 0) {
@@ -146,35 +157,20 @@ function renderCartDrawer() {
             </div>
         `;
 
-        footerEl.innerHTML = `
-            <div class="dg-cart-subtotal-row">
-                <span class="dg-cart-subtotal-label">SUBTOTAL</span>
-                <span class="dg-cart-subtotal-val">0 جنيه</span>
-            </div>
-            <a href="/checkout" class="dg-cart-checkout-btn" style="opacity:0.4; pointer-events:none;">CHECKOUT →</a>
-            <div class="dg-cart-trust">
-                <span>🔒</span>
-                <span>Secure Checkout · Free Returns</span>
-            </div>
-        `;
-
-        const shopBtn = document.getElementById('dg-cart-shop-btn');
-        if (shopBtn) {
-            shopBtn.addEventListener('click', (e) => {
-                closeCartDrawer();
-            });
-        }
+        footerEl.innerHTML = '';
         return;
     }
 
     // Promo Nudge Banner
     let nudgeHTML = '';
     if (totalQty === 1) {
-        nudgeHTML = `<div class="dg-cart-nudge">🔥 <strong>Add 1 more item</strong> to get <strong>10% OFF</strong> your order!</div>`;
+        nudgeHTML = `<div class="dg-cart-nudge">🔥 <strong>Add 1 more item</strong> to get <strong>2 for 1200 EGP</strong> (أي قطعتين بـ 1200 ج)!</div>`;
     } else if (totalQty === 2) {
-        nudgeHTML = `<div class="dg-cart-nudge">🎉 <strong>10% Bundle Discount applied!</strong> Add 1 more item for <strong>15% OFF</strong>!</div>`;
-    } else if (totalQty >= 3) {
-        nudgeHTML = `<div class="dg-cart-nudge">🚀 <strong>15% Bundle Discount applied!</strong> Maximum savings reached.</div>`;
+        nudgeHTML = `<div class="dg-cart-nudge">🎉 <strong>Offer Applied (2 for 1200 EGP)!</strong> Add 1 more for <strong>3 for 1600 EGP</strong>!</div>`;
+    } else if (totalQty === 3) {
+        nudgeHTML = `<div class="dg-cart-nudge">🎉 <strong>Offer Applied (3 for 1600 EGP)!</strong> Add 1 more for <strong>4 for 2000 EGP</strong>!</div>`;
+    } else if (totalQty >= 4) {
+        nudgeHTML = `<div class="dg-cart-nudge">🚀 <strong>Maximum Bundle Offer Applied!</strong> Enjoy your savings.</div>`;
     }
 
     // ITEMS LIST
@@ -185,7 +181,7 @@ function renderCartDrawer() {
                 <div>
                     <h3 class="dg-cart-item-name">${item.name}</h3>
                     <div class="dg-cart-item-meta">Size: ${item.size}${item.color ? ' • ' + item.color : ''}</div>
-                    <div class="dg-cart-item-price">${(item.price * item.quantity).toFixed(2)} جنيه</div>
+                    <div class="dg-cart-item-price">${(item.price * item.quantity).toFixed(2)} EGP</div>
                 </div>
                 <div class="dg-cart-item-controls">
                     <div class="dg-cart-stepper">
@@ -208,11 +204,11 @@ function renderCartDrawer() {
 
     // FOOTER
     let discountHTML = '';
-    if (discountPercent > 0) {
+    if (discountAmount > 0) {
         discountHTML = `
             <div class="dg-cart-discount-row">
-                <span>Bundle Discount (${discountPercent}%)</span>
-                <span>-${discountAmount.toFixed(2)} جنيه</span>
+                <span>${bundleLabelText}</span>
+                <span>-${discountAmount.toFixed(2)} EGP</span>
             </div>
         `;
     }

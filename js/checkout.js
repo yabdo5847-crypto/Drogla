@@ -1,4 +1,4 @@
-﻿// Initialize EmailJS
+// Initialize EmailJS
 emailjs.init("eZ7uWoJO76WgbZyo2");
 
 // ── Security Helper: Escape HTML to prevent DOM XSS ──
@@ -39,16 +39,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     const totalQty = cart.reduce((acc, item) => acc + item.quantity, 0);
     const rawSubtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-    // Bundle Discount: 2 items = 10%, 3+ items = 15%
-    let discountPercent = 0;
-    if (totalQty >= 3) {
-        discountPercent = 15;
-    } else if (totalQty === 2) {
-        discountPercent = 10;
+    // ── Tiered Bundle Offer Calculation ────────────────────────────────────
+    // 2 items = 1200 EGP, 3 items = 1600 EGP, 4 items = 2000 EGP, 4+ = +500/item
+    let bundleTargetPrice = rawSubtotal;
+    let bundleDiscountLabelText = '';
+
+    if (totalQty === 2) {
+        bundleTargetPrice = 1200;
+        bundleDiscountLabelText = 'Bundle Offer (2 for 1200 EGP)';
+    } else if (totalQty === 3) {
+        bundleTargetPrice = 1600;
+        bundleDiscountLabelText = 'Bundle Offer (3 for 1600 EGP)';
+    } else if (totalQty === 4) {
+        bundleTargetPrice = 2000;
+        bundleDiscountLabelText = 'Bundle Offer (4 for 2000 EGP)';
+    } else if (totalQty > 4) {
+        bundleTargetPrice = 2000 + ((totalQty - 4) * 500);
+        bundleDiscountLabelText = `Bundle Offer (${totalQty} items for ${bundleTargetPrice} EGP)`;
     }
 
-    const discountAmount = rawSubtotal * (discountPercent / 100);
-    const subtotalAfterDiscount = rawSubtotal - discountAmount;
+    const bundleDiscountAmount = Math.max(0, rawSubtotal - bundleTargetPrice);
+    let couponDiscountAmount = 0;   // set when promo code is applied
+    let appliedCouponCode = '';
+
+    // ── VALID PROMO CODES ──────────────────────────────────────────────────
+    // Valid ONLY on orders with 2 or more items
+    const VALID_CODES = {
+      'DROGLA15': { percent: 15, minQty: 2 },
+    };
+    // ──────────────────────────────────────────────────────────────────────
+
+    function getSubtotalAfterDiscount() {
+      return Math.max(0, rawSubtotal - bundleDiscountAmount - couponDiscountAmount);
+    }
 
     // Render Side Items Preview if present
     const sidePreview = document.getElementById('checkout-items-preview');
@@ -67,40 +90,138 @@ document.addEventListener('DOMContentLoaded', async () => {
         `).join('');
     }
 
-    // Set Initial Subtotal and Discount in UI
+    // Set Initial Subtotal in UI
     const checkoutTotalEl = document.getElementById('checkout-total');
     if (checkoutTotalEl) checkoutTotalEl.innerText = rawSubtotal.toFixed(2);
 
     const sideSubtotalEl = document.getElementById('checkout-total-side');
     if (sideSubtotalEl) sideSubtotalEl.innerText = rawSubtotal.toFixed(2);
 
-    // Mobile discount row
+    // Mobile bundle discount row
     const discountRow = document.getElementById('checkout-discount-row');
     const discountLabel = document.getElementById('checkout-discount-label');
     const discountAmountEl = document.getElementById('checkout-discount');
     if (discountRow) {
-        if (discountPercent > 0) {
+        if (bundleDiscountAmount > 0) {
             discountRow.style.display = 'flex';
-            if (discountLabel) discountLabel.innerText = `Bundle Discount (${discountPercent}%):`;
-            if (discountAmountEl) discountAmountEl.innerText = discountAmount.toFixed(2);
+            if (discountLabel) discountLabel.innerText = bundleDiscountLabelText + ':';
+            if (discountAmountEl) discountAmountEl.innerText = bundleDiscountAmount.toFixed(2);
         } else {
             discountRow.style.display = 'none';
         }
     }
 
-    // Side discount row
+    // Side bundle discount row
     const sideDiscountRow = document.getElementById('checkout-discount-side-row');
     const sideDiscountLabel = document.getElementById('checkout-discount-side-label');
     const sideDiscountAmountEl = document.getElementById('checkout-discount-side');
     if (sideDiscountRow) {
-        if (discountPercent > 0) {
+        if (bundleDiscountAmount > 0) {
             sideDiscountRow.style.display = 'flex';
-            if (sideDiscountLabel) sideDiscountLabel.innerText = `Bundle Discount (${discountPercent}%)`;
-            if (sideDiscountAmountEl) sideDiscountAmountEl.innerText = discountAmount.toFixed(2);
+            if (sideDiscountLabel) sideDiscountLabel.innerText = bundleDiscountLabelText;
+            if (sideDiscountAmountEl) sideDiscountAmountEl.innerText = bundleDiscountAmount.toFixed(2);
         } else {
             sideDiscountRow.style.display = 'none';
         }
     }
+
+    // ── Coupon Code Logic (Mobile & Desktop Synced) ────────────────────────
+    const couponInput        = document.getElementById('coupon-input');
+    const couponApplyBtn     = document.getElementById('coupon-apply-btn');
+    const couponMsg          = document.getElementById('coupon-msg');
+    const couponRow          = document.getElementById('coupon-discount-row');
+    const couponAmountEl     = document.getElementById('coupon-discount-amount');
+    const couponLabelEl      = document.getElementById('coupon-discount-label');
+
+    const couponInputSide    = document.getElementById('coupon-input-side');
+    const couponApplySideBtn = document.getElementById('coupon-apply-side-btn');
+    const couponSideMsg      = document.getElementById('coupon-side-msg');
+    const couponSideRow      = document.getElementById('coupon-discount-side-row');
+    const couponSideAmountEl = document.getElementById('coupon-discount-side-amount');
+    const couponSideLabelEl  = document.getElementById('coupon-discount-side-label');
+
+    function applyPromoCode(codeToApply) {
+      const code = String(codeToApply || '').trim().toUpperCase();
+
+      const setFeedback = (text, isSuccess) => {
+        const color = isSuccess ? '#16a34a' : '#c62828';
+        if (couponMsg) { couponMsg.style.color = color; couponMsg.textContent = text; }
+        if (couponSideMsg) { couponSideMsg.style.color = color; couponSideMsg.textContent = text; }
+      };
+
+      if (!code) {
+        setFeedback('Please enter a promo code / الرجاء إدخال كود الخصم', false);
+        return;
+      }
+
+      const rule = VALID_CODES[code];
+      if (!rule) {
+        setFeedback('✗ Invalid promo code / كود الخصم غير صحيح', false);
+        couponDiscountAmount = 0;
+        appliedCouponCode = '';
+        if (couponRow) couponRow.style.display = 'none';
+        if (couponSideRow) couponSideRow.style.display = 'none';
+        updateTotals();
+        return;
+      }
+
+      // Check condition: Must have 2 or more items in cart!
+      if (totalQty < rule.minQty) {
+        setFeedback(`✗ Code "${code}" is valid on orders with ${rule.minQty}+ items only (متاح عند شراء قطعتين أو أكثر).`, false);
+        couponDiscountAmount = 0;
+        appliedCouponCode = '';
+        if (couponRow) couponRow.style.display = 'none';
+        if (couponSideRow) couponSideRow.style.display = 'none';
+        updateTotals();
+        return;
+      }
+
+      // Calculate coupon discount
+      const baseForCoupon = Math.max(0, rawSubtotal - bundleDiscountAmount);
+      couponDiscountAmount = baseForCoupon * (rule.percent / 100);
+      appliedCouponCode = code;
+
+      // Update mobile UI
+      if (couponRow) couponRow.style.display = 'flex';
+      if (couponAmountEl) couponAmountEl.textContent = couponDiscountAmount.toFixed(2);
+      if (couponLabelEl) couponLabelEl.textContent = `Promo Code (${code} - ${rule.percent}%):`;
+
+      // Update desktop UI
+      if (couponSideRow) couponSideRow.style.display = 'flex';
+      if (couponSideAmountEl) couponSideAmountEl.textContent = couponDiscountAmount.toFixed(2);
+      if (couponSideLabelEl) couponSideLabelEl.textContent = `Promo Code (${code} - ${rule.percent}%)`;
+
+      setFeedback(`✓ Code "${code}" applied — ${rule.percent}% off!`, true);
+
+      // Disable inputs
+      [couponInput, couponInputSide].forEach(inp => {
+        if (inp) { inp.value = code; inp.disabled = true; }
+      });
+      [couponApplyBtn, couponApplySideBtn].forEach(btn => {
+        if (btn) { btn.textContent = 'Applied ✓'; btn.style.background = '#16a34a'; btn.disabled = true; }
+      });
+
+      updateTotals();
+    }
+
+    if (couponApplyBtn) {
+      couponApplyBtn.addEventListener('click', () => applyPromoCode(couponInput ? couponInput.value : ''));
+    }
+    if (couponInput) {
+      couponInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); applyPromoCode(couponInput.value); }
+      });
+    }
+
+    if (couponApplySideBtn) {
+      couponApplySideBtn.addEventListener('click', () => applyPromoCode(couponInputSide ? couponInputSide.value : ''));
+    }
+    if (couponInputSide) {
+      couponInputSide.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); applyPromoCode(couponInputSide.value); }
+      });
+    }
+    // ──────────────────────────────────────────────────────────────────────
 
     // Load Shipping Rates
     const govSelect = document.getElementById('c-gov');
@@ -127,6 +248,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const updateTotals = () => {
+        const subtotalAfterDiscount = getSubtotalAfterDiscount();
         // Free shipping if subtotal is >= 1500 EGP
         let finalShippingCost = currentShippingCost;
         if (subtotalAfterDiscount >= 1500) {

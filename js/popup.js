@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    popup.js — Drogla Welcome Discount Popup
    • Shows once every 7 days (localStorage gate)
    • Collects email + phone
@@ -113,13 +113,16 @@
         <!-- State: SUCCESS ─────────────────────── -->
         <div id="dg-popup-success-state" style="display:none;">
           <div class="dg-popup-success-icon">✓</div>
-          <h2 class="dg-popup-title" style="font-size:1.5rem;">Your code is ready!</h2>
-          <p class="dg-popup-sub">Check your inbox — we sent the code to your email.<br>Use it at checkout:</p>
-          <div class="dg-popup-code-box" id="dg-popup-code-box">
-            <span id="dg-popup-code-text">${DISCOUNT_CODE}</span>
-            <button class="dg-popup-copy-btn" id="dg-popup-copy-btn" type="button">Copy</button>
+          <h2 class="dg-popup-title" style="font-size:1.5rem;">It's on its way!</h2>
+          <p class="dg-popup-sub">
+            We sent your exclusive discount code to your email inbox.<br>
+            <strong>Use it at checkout — valid on 2+ items.</strong>
+          </p>
+          <div style="background:#f5f3f0;border-radius:6px;padding:14px 18px;margin:18px 0;text-align:center;">
+            <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6e6c69;margin:0 0 4px;">Check your inbox at</p>
+            <p id="dg-popup-email-display" style="font-size:0.95rem;font-weight:700;color:#111010;margin:0;word-break:break-all;"></p>
           </div>
-          <a href="/shop" class="dg-popup-cta" style="display:block;text-align:center;text-decoration:none;margin-top:1.2rem;">
+          <a href="/shop" class="dg-popup-cta" style="display:block;text-align:center;text-decoration:none;margin-top:0.5rem;">
             Shop Now →
           </a>
         </div>
@@ -147,27 +150,26 @@
     });
 
     try {
-      // Use no-cors mode — GAS will still process; we don't need a JSON response
       await fetch(GAS_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString()
       });
-
-      // Show success state regardless (no-cors gives opaque response)
-      showSuccess();
+      showSuccess(email);
     } catch (err) {
-      // Even on network error show success (code still copied)
       console.warn('Popup fetch error:', err);
-      showSuccess();
+      showSuccess(email);
     }
   }
 
   // ── Show/hide states ──────────────────────────────────────────────────────
-  function showSuccess() {
+  function showSuccess(email) {
     document.getElementById('dg-popup-form-state').style.display = 'none';
     document.getElementById('dg-popup-success-state').style.display = 'block';
+    // Show the email address the code was sent to
+    const emailDisplay = document.getElementById('dg-popup-email-display');
+    if (emailDisplay && email) emailDisplay.textContent = email;
     markSeen();
   }
 
@@ -219,22 +221,6 @@
       }
 
       await submitForm(email, phone, sms);
-    });
-
-    // Copy code button
-    document.getElementById('dg-popup-copy-btn').addEventListener('click', () => {
-      navigator.clipboard.writeText(DISCOUNT_CODE).then(() => {
-        const btn = document.getElementById('dg-popup-copy-btn');
-        btn.textContent = 'Copied!';
-        btn.style.background = '#16a34a';
-        setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; }, 2000);
-      }).catch(() => {
-        // Fallback: select text
-        const range = document.createRange();
-        range.selectNode(document.getElementById('dg-popup-code-text'));
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-      });
     });
   }
 

@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     renderCart();
 });
 
@@ -29,15 +29,25 @@ function recalculateTotal(cart) {
     const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-    // Bundle Discount: 2 items = 10%, 3+ items = 15%
-    let discountPercent = 0;
-    if (totalQty >= 3) {
-        discountPercent = 15;
-    } else if (totalQty === 2) {
-        discountPercent = 10;
+    // Tiered Bundle Offer Calculation
+    let bundleTargetPrice = subtotal;
+    let bundleLabelText = '';
+
+    if (totalQty === 2) {
+        bundleTargetPrice = 1200;
+        bundleLabelText = 'Bundle Offer (2 for 1200 EGP)';
+    } else if (totalQty === 3) {
+        bundleTargetPrice = 1600;
+        bundleLabelText = 'Bundle Offer (3 for 1600 EGP)';
+    } else if (totalQty === 4) {
+        bundleTargetPrice = 2000;
+        bundleLabelText = 'Bundle Offer (4 for 2000 EGP)';
+    } else if (totalQty > 4) {
+        bundleTargetPrice = 2000 + ((totalQty - 4) * 500);
+        bundleLabelText = `Bundle Offer (${totalQty} items)`;
     }
 
-    const discountAmount = subtotal * (discountPercent / 100);
+    const discountAmount = Math.max(0, subtotal - bundleTargetPrice);
     const finalTotal = subtotal - discountAmount;
 
     if (bagCount) bagCount.textContent = totalQty + ' Item' + (totalQty !== 1 ? 's' : '');
@@ -46,9 +56,9 @@ function recalculateTotal(cart) {
     if (totalMirrorEl) totalMirrorEl.innerText = finalTotal.toFixed(2);
 
     if (discountRow) {
-        if (discountPercent > 0) {
+        if (discountAmount > 0) {
             discountRow.style.display = 'flex';
-            if (discountLabel) discountLabel.innerText = `Bundle Discount (${discountPercent}%)`;
+            if (discountLabel) discountLabel.innerText = bundleLabelText;
             if (discountAmountEl) discountAmountEl.innerText = discountAmount.toFixed(2);
         } else {
             discountRow.style.display = 'none';
@@ -58,13 +68,16 @@ function recalculateTotal(cart) {
     if (promoNudge) {
         if (totalQty === 1) {
             promoNudge.style.display = 'block';
-            promoNudge.innerHTML = '🔥 <strong>Add 1 more item</strong> to get <strong>10% OFF</strong> your order!';
+            promoNudge.innerHTML = '🔥 <strong>Add 1 more item</strong> to get <strong>2 items for 1200 EGP</strong> (أي قطعتين بـ 1200 ج)!';
         } else if (totalQty === 2) {
             promoNudge.style.display = 'block';
-            promoNudge.innerHTML = '🎉 <strong>10% discount applied!</strong> Add 1 more item for <strong>15% OFF</strong>!';
-        } else if (totalQty >= 3) {
+            promoNudge.innerHTML = '🎉 <strong>Offer Applied (2 for 1200 EGP)!</strong> Add 1 more item for <strong>3 for 1600 EGP</strong>!';
+        } else if (totalQty === 3) {
             promoNudge.style.display = 'block';
-            promoNudge.innerHTML = '🚀 <strong>15% Bundle Discount applied!</strong> Maximum savings reached.';
+            promoNudge.innerHTML = '🎉 <strong>Offer Applied (3 for 1600 EGP)!</strong> Add 1 more item for <strong>4 for 2000 EGP</strong>!';
+        } else if (totalQty >= 4) {
+            promoNudge.style.display = 'block';
+            promoNudge.innerHTML = '🚀 <strong>Maximum Bundle Offer Applied!</strong> Enjoy your savings.';
         } else {
             promoNudge.style.display = 'none';
         }
