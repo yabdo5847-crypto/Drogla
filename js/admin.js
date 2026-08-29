@@ -709,35 +709,121 @@ window.openEditProduct = async function (pid) {
   }
   renderSizeRows(sizes);
 
-  // Colors rows — defensive parsing to handle various DB formats
-  let colors = p ? p.colors : null;
-  let colorsList = [];
+  // Colors rows — ultra-defensive parser to handle raw objects, JSON strings, arrays, or corrupted legacy text
+  function extractCleanColors(prod) {
+    if (!prod) return [];
+    let list = [];
 
-  if (Array.isArray(colors)) {
-    colorsList = colors.map(c => {
-      // c might be a proper {name, hex} object, or a stringified object, or a plain string
-      if (typeof c === 'object' && c !== null) {
-        return { name: String(c.name || '').replace(/[{}"\\]/g, '').trim(), hex: c.hex || '#111010' };
-      }
-      if (typeof c === 'string') {
-        // Try to parse if it's a JSON string
+    const sanitizeItem = (name, hex) => {
+      if (!name) return null;
+      let cleanName = String(name)
+        .replace(/[\[\]{}"'\\]/g, '')
+        .replace(/^(hex|name)\s*:\s*/i, '')
+        .trim();
+      // If it looks like a corrupted json key/value fragment, ignore
+      if (!cleanName || cleanName.toLowerCase() === 'hex' || cleanName.toLowerCase() === 'name') return null;
+      let cleanHex = String(hex || '#111010').trim();
+      if (!cleanHex.startsWith('#')) cleanHex = '#' + cleanHex;
+      return { name: cleanName, hex: cleanHex };
+    };
+
+    const raw = prod.colors || prod.color || prod.variants;
+
+    if (Array.isArray(raw)) {
+      raw.forEach(item => {
+        if (typeof item === 'object' && item !== null) {
+          const colorName = item.name || item.color || '';
+          const colorHex = item.hex || '#111010';
+          const cleaned = sanitizeItem(colorName, colorHex);
+          if (cleaned) list.push(cleaned);
+        } else if (typeof item === 'string') {
+          // If stringified JSON object
+          try {
+            const parsed = JSON.parse(item);
+            if (typeof parsed === 'object' && parsed !== null) {
+              const cleaned = sanitizeItem(parsed.name || parsed.color, parsed.hex);
+              if (cleaned) list.push(cleaned);
+            } else if (typeof parsed === 'string') {
+              const cleaned = sanitizeItem(parsed, '#111010');
+              if (cleaned) list.push(cleaned);
+            }
+          } catch {
+            const cleaned = sanitizeItem(item, '#111010');
+            if (cleaned) list.push(cleaned);
+          }
+        }
+      });
+    } else if (typeof raw === 'string' && raw.trim()) {
+      const str = raw.trim();
+      // Check if it's a JSON array or object string
+      if (str.startsWith('[') || str.startsWith('{')) {
         try {
-          const parsed = JSON.parse(c);
-          return { name: String(parsed.name || parsed || '').trim(), hex: parsed.hex || '#111010' };
+          const parsed = JSON.parse(str);
+          if (Array.isArray(parsed)) {
+            parsed.forEach(item => {
+              if (typeof item === 'object' && item !== null) {
+                const cleaned = sanitizeItem(item.name || item.color, item.hex);
+                if (cleaned) list.push(cleaned);
+              } else if (typeof item === 'string') {
+                const cleaned = sanitizeItem(item, '#111010');
+                if (cleaned) list.push(cleaned);
+              }
+            });
+          } else if (typeof parsed === 'object' && parsed !== null) {
+            const cleaned = sanitizeItem(parsed.name || parsed.color, parsed.hex);
+            if (cleaned) list.push(cleaned);
+          }
         } catch {
-          return { name: c.trim(), hex: '#111010' };
+          // If JSON parse fails due to corruption, extract using regex
+          const nameMatches = str.match(/"name"\s*:\s*"([^"]+)"/gi);
+          const hexMatches = str.match(/"hex"\s*:\s*"([^"]+)"/gi);
+          if (nameMatches && nameMatches.length > 0) {
+            nameMatches.forEach((nm, idx) => {
+              const n = nm.replace(/"name"\s*:\s*"/i, '').replace(/"/g, '').trim();
+              let h = '#111010';
+              if (hexMatches && hexMatches[idx]) {
+                h = hexMatches[idx].replace(/"hex"\s*:\s*"/i, '').replace(/"/g, '').trim();
+              }
+              const cleaned = sanitizeItem(n, h);
+              if (cleaned) list.push(cleaned);
+            });
+          }
         }
       }
-      return null;
-    }).filter(c => c && c.name);
-  } else if (typeof colors === 'string' && colors) {
-    // Plain comma-separated string
-    colorsList = colors.split(',').map(c => ({ name: c.trim(), hex: '#111010' })).filter(c => c.name);
+
+      // If still empty, split by comma (standard plain text format)
+      if (list.length === 0) {
+        str.split(',').forEach(part => {
+          const cleaned = sanitizeItem(part, '#111010');
+          if (cleaned) list.push(cleaned);
+        });
+      }
+    }
+
+    // Fallback to variants if list is empty
+    if (list.length === 0 && Array.isArray(prod.variants)) {
+      prod.variants.forEach(v => {
+        if (v && (v.color || v.name)) {
+          const cleaned = sanitizeItem(v.color || v.name, v.hex);
+          if (cleaned) list.push(cleaned);
+        }
+      });
+    }
+
+    // Deduplicate by lowercase name
+    const seen = new Set();
+    return list.filter(c => {
+      const key = c.name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }
 
+  const colorsList = extractCleanColors(p);
   renderColorRows(colorsList);
 
-  // ← IMPORTANT: update size chips AFTER colors are rendered in DOM
+  // Update size chips AFTER colors are rendered in DOM
   updateSizeColorCheckboxes();
 
   // Variant images mapping
@@ -865,10 +951,16 @@ function renderColorRows(colors) {
 
 function getColorRowsData() {
   const rows = document.querySelectorAll('#m-color-rows .color-admin-row');
-  return Array.from(rows).map(row => ({
-    hex: row.querySelector('[data-field="hex"]').value,
-    name: row.querySelector('[data-field="name"]').value.trim()
-  })).filter(c => c.name);
+  return Array.from(rows).map(row => {
+    const hexVal = row.querySelector('[data-field="hex"]')?.value || '#111010';
+    let nameVal = (row.querySelector('[data-field="name"]')?.value || '').trim();
+    // Clean any accidental JSON or corrupted fragments
+    nameVal = nameVal.replace(/[\[\]{}"'\\]/g, '').replace(/^(hex|name)\s*:\s*/i, '').trim();
+    return {
+      hex: hexVal.startsWith('#') ? hexVal : '#' + hexVal,
+      name: nameVal
+    };
+  }).filter(c => c.name && c.name.toLowerCase() !== 'hex' && c.name.toLowerCase() !== 'name');
 }
 
 document.getElementById('add-color-btn').addEventListener('click', () => {
@@ -1129,6 +1221,7 @@ document.getElementById('save-product-btn').addEventListener('click', async () =
     description: desc,
     image: imgStr,
     size: sizes.map(s => s.label).join(', '),
+    color: cleanColors.map(c => c.name).join(', '),
     sizes: sizes,
     colors: cleanColors,
     variant_images: variantImages,
