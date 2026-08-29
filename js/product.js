@@ -484,10 +484,53 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Size Guide Modal
+        // Size Guide Modal & Tab Switching
         const sizeGuideModal = document.getElementById('sizeGuideModal');
         const openSizeGuide = document.getElementById('openSizeGuide');
         const closeSizeGuide = document.getElementById('closeSizeGuide');
+
+        window.switchSizeTab = function (gender) {
+            const tabWomen = document.getElementById('tab-btn-women');
+            const tabMen = document.getElementById('tab-btn-men');
+            const tableWomen = document.getElementById('size-table-women');
+            const tableMen = document.getElementById('size-table-men');
+
+            if (gender === 'women') {
+                if (tabWomen) {
+                    tabWomen.style.borderBottomColor = 'var(--clr-accent, #5c1a1a)';
+                    tabWomen.style.color = 'var(--text, #111010)';
+                    tabWomen.style.fontWeight = '800';
+                }
+                if (tabMen) {
+                    tabMen.style.borderBottomColor = 'transparent';
+                    tabMen.style.color = 'var(--text-muted, #706e6b)';
+                    tabMen.style.fontWeight = '700';
+                }
+                if (tableWomen) tableWomen.style.display = 'block';
+                if (tableMen) tableMen.style.display = 'none';
+            } else {
+                if (tabMen) {
+                    tabMen.style.borderBottomColor = 'var(--clr-accent, #5c1a1a)';
+                    tabMen.style.color = 'var(--text, #111010)';
+                    tabMen.style.fontWeight = '800';
+                }
+                if (tabWomen) {
+                    tabWomen.style.borderBottomColor = 'transparent';
+                    tabWomen.style.color = 'var(--text-muted, #706e6b)';
+                    tabWomen.style.fontWeight = '700';
+                }
+                if (tableMen) tableMen.style.display = 'block';
+                if (tableWomen) tableWomen.style.display = 'none';
+            }
+        };
+
+        // Auto-select tab based on category
+        const prodCat = (product.category || '').toLowerCase();
+        if (prodCat.includes('women')) {
+            window.switchSizeTab('women');
+        } else {
+            window.switchSizeTab('men');
+        }
 
         if (openSizeGuide && sizeGuideModal) {
             openSizeGuide.addEventListener('click', () => {
