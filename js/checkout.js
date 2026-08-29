@@ -1,4 +1,4 @@
-// Initialize EmailJS
+﻿// Initialize EmailJS
 emailjs.init("eZ7uWoJO76WgbZyo2");
 
 // ── Security Helper: Escape HTML to prevent DOM XSS ──
@@ -493,7 +493,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div style="text-align: center; padding: 40px;">
                         <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--clr-accent); margin-bottom: 20px;">Order Confirmed!</h2>
                         <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 2;">Thank you <strong>${escapeHtml(name)}</strong>. Your order has been placed successfully and will be processed soon.<br>Your Order ID is <strong>#${escapeHtml(orderData.id)}</strong></p>
-                        <a href="shop.html" class="submit-btn" style="display: inline-block; width: auto; margin-top: 30px; text-decoration: none;">Continue Shopping</a>
+                        <a href="/shop" class="submit-btn" style="display: inline-block; width: auto; margin-top: 30px; text-decoration: none;">Continue Shopping</a>
                     </div>
                 `;
             }

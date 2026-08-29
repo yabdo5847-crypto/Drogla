@@ -1,4 +1,4 @@
-
+﻿
 /* ============================================================
    shop.js — Drogla E-Commerce | Shop Page Logic
    Features: skeleton loading, live search, pill filters,
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             : `<img src="${firstImage}" alt="${p.name}" class="card-img">`;
 
         const card       = document.createElement('a');
-        card.href = `product.html?id=${p.id}`;
+        card.href = `/product?id=${p.id}`;
         card.className   = 'product-card fade-up visible';
         card.style.transitionDelay = `${(idx % 3) * 0.1}s`;
 

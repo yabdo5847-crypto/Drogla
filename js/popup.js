@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    popup.js — Drogla Welcome Discount Popup
    • Shows once every 7 days (localStorage gate)
    • Collects email + phone
@@ -119,7 +119,7 @@
             <span id="dg-popup-code-text">${DISCOUNT_CODE}</span>
             <button class="dg-popup-copy-btn" id="dg-popup-copy-btn" type="button">Copy</button>
           </div>
-          <a href="shop.html" class="dg-popup-cta" style="display:block;text-align:center;text-decoration:none;margin-top:1.2rem;">
+          <a href="/shop" class="dg-popup-cta" style="display:block;text-align:center;text-decoration:none;margin-top:1.2rem;">
             Shop Now →
           </a>
         </div>

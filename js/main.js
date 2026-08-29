@@ -1,4 +1,4 @@
-// ══════════════════════════════════════════════════════════════════════════
+﻿// ══════════════════════════════════════════════════════════════════════════
 // DROGLA STREETWEAR — MAIN SHARED CONTROLLER & CART DRAWER ENGINE
 // ══════════════════════════════════════════════════════════════════════════
 
@@ -78,7 +78,7 @@ function initCartDrawer() {
 }
 
 function bindCartTriggers() {
-    const cartLinks = document.querySelectorAll('a[href="cart.html"], a[href="/cart"], #cartBtn, #cart-count-mobile-badge, #cart-count-mobile, .dg-drawer-bag');
+    const cartLinks = document.querySelectorAll('a[href="/cart"], a[href="/cart"], #cartBtn, #cart-count-mobile-badge, #cart-count-mobile, .dg-drawer-bag');
     cartLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             // If on cart.html or checkout.html, allow normal navigation or drawer
@@ -142,7 +142,7 @@ function renderCartDrawer() {
                     <path d="M16 10a4 4 0 0 1-8 0"></path>
                 </svg>
                 <p class="dg-cart-empty-text">Your cart is empty.</p>
-                <a href="shop.html" class="dg-cart-shop-btn" id="dg-cart-shop-btn">SHOP NOW</a>
+                <a href="/shop" class="dg-cart-shop-btn" id="dg-cart-shop-btn">SHOP NOW</a>
             </div>
         `;
 
@@ -151,7 +151,7 @@ function renderCartDrawer() {
                 <span class="dg-cart-subtotal-label">SUBTOTAL</span>
                 <span class="dg-cart-subtotal-val">0 جنيه</span>
             </div>
-            <a href="checkout.html" class="dg-cart-checkout-btn" style="opacity:0.4; pointer-events:none;">CHECKOUT →</a>
+            <a href="/checkout" class="dg-cart-checkout-btn" style="opacity:0.4; pointer-events:none;">CHECKOUT →</a>
             <div class="dg-cart-trust">
                 <span>🔒</span>
                 <span>Secure Checkout · Free Returns</span>
@@ -223,7 +223,7 @@ function renderCartDrawer() {
             <span class="dg-cart-subtotal-val">${finalTotal.toFixed(2)} جنيه</span>
         </div>
         ${discountHTML}
-        <a href="checkout.html" class="dg-cart-checkout-btn">CHECKOUT →</a>
+        <a href="/checkout" class="dg-cart-checkout-btn">CHECKOUT →</a>
         <div class="dg-cart-trust">
             <span>🔒</span>
             <span>Secure Checkout · Free Returns</span>

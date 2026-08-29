@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     renderCart();
 });
 
@@ -87,7 +87,7 @@ function renderCart() {
                     <path d="M16 10a4 4 0 0 1-8 0"></path>
                 </svg>
                 <p style="font-size:1rem; color:var(--text-muted); margin-bottom:1.5rem; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">Your bag is empty</p>
-                <a href="shop.html" class="dg-checkout-btn" style="width:auto; padding:0.85rem 2.5rem; font-size:0.75rem;">Explore Collection →</a>
+                <a href="/shop" class="dg-checkout-btn" style="width:auto; padding:0.85rem 2.5rem; font-size:0.75rem;">Explore Collection →</a>
             </div>
         `;
         if (summary) summary.style.display = 'none';
