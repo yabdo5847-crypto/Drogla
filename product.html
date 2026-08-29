@@ -356,17 +356,43 @@
       <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:1rem;">All measurements in centimetres (CM). Points of Measurement Guide.</p>
 
       <!-- Tabs -->
-      <div style="display:flex; gap:8px; margin-bottom:1rem; border-bottom:1.5px solid var(--border-mid);">
-        <button type="button" id="tab-btn-women" class="dg-tab-btn active" onclick="switchSizeTab('women')" style="padding:8px 16px; border:none; background:none; font-weight:800; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer; border-bottom:2.5px solid var(--clr-accent, #5c1a1a); color:var(--text, #111010);">
-          👩 Women / بناتي
+      <div style="display:flex; gap:6px; margin-bottom:1rem; border-bottom:1.5px solid var(--border-mid); overflow-x:auto;">
+        <button type="button" id="tab-btn-men" class="dg-tab-btn active" onclick="switchSizeTab('men')" style="padding:8px 14px; border:none; background:none; font-weight:800; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; cursor:pointer; border-bottom:2.5px solid var(--clr-accent, #5c1a1a); color:var(--text, #111010); white-space:nowrap;">
+          👕 Men T-Shirt (رجالي)
         </button>
-        <button type="button" id="tab-btn-men" class="dg-tab-btn" onclick="switchSizeTab('men')" style="padding:8px 16px; border:none; background:none; font-weight:700; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer; border-bottom:2.5px solid transparent; color:var(--text-muted, #706e6b);">
-          👨 Men / Unisex (رجالي)
+        <button type="button" id="tab-btn-women" class="dg-tab-btn" onclick="switchSizeTab('women')" style="padding:8px 14px; border:none; background:none; font-weight:700; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; cursor:pointer; border-bottom:2.5px solid transparent; color:var(--text-muted, #706e6b); white-space:nowrap;">
+          👚 Women (بناتي)
+        </button>
+        <button type="button" id="tab-btn-pants" class="dg-tab-btn" onclick="switchSizeTab('pants')" style="padding:8px 14px; border:none; background:none; font-weight:700; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; cursor:pointer; border-bottom:2.5px solid transparent; color:var(--text-muted, #706e6b); white-space:nowrap;">
+          👖 Pants (بنطلونات)
         </button>
       </div>
 
+      <!-- Men's Table (Official Model: A153-TSO-W100) -->
+      <div id="size-table-men">
+        <div style="font-size:0.68rem; font-weight:700; color:var(--clr-accent, #5c1a1a); text-transform:uppercase; margin-bottom:0.5rem;">Model: A153-TSO-W100 (تيشيرت رجالي)</div>
+        <table class="dg-size-table" style="font-size:0.8rem;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Points of Measurement</th>
+              <th>S</th>
+              <th>M</th>
+              <th>L</th>
+              <th>XL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="text-align:left;"><strong>CHEST (محيط الصدر)</strong></td><td>54.07 cm</td><td>58.03 cm</td><td>62.01 cm</td><td>66.00 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>LENGTH (طول القطعة)</strong></td><td>68.39 cm</td><td>70.39 cm</td><td>72.38 cm</td><td>74.38 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>SHOULDERS (الكتف)</strong></td><td>54.85 cm</td><td>56.90 cm</td><td>58.95 cm</td><td>61.00 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>SLEEVE LENGTH (طول الكم)</strong></td><td>22.46 cm</td><td>23.46 cm</td><td>24.46 cm</td><td>25.46 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>OPENING SLEEVE (فتحة الكم)</strong></td><td>19.91 cm</td><td>20.41 cm</td><td>20.91 cm</td><td>21.41 cm</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- Women's Table (Official Model: A153-TSO-W101) -->
-      <div id="size-table-women">
+      <div id="size-table-women" style="display:none;">
         <div style="font-size:0.68rem; font-weight:700; color:var(--clr-accent, #5c1a1a); text-transform:uppercase; margin-bottom:0.5rem;">Model: A153-TSO-W101 (البناتي)</div>
         <table class="dg-size-table" style="font-size:0.8rem;">
           <thead>
@@ -388,9 +414,9 @@
         </table>
       </div>
 
-      <!-- Men's Table (Official Model: A153-TSO-W100) -->
-      <div id="size-table-men" style="display:none;">
-        <div style="font-size:0.68rem; font-weight:700; color:var(--clr-accent, #5c1a1a); text-transform:uppercase; margin-bottom:0.5rem;">Model: A153-TSO-W100 (الرجالي)</div>
+      <!-- Pants / Bottoms Table (Official Model: A153-PANT-M102) -->
+      <div id="size-table-pants" style="display:none;">
+        <div style="font-size:0.68rem; font-weight:700; color:var(--clr-accent, #5c1a1a); text-transform:uppercase; margin-bottom:0.5rem;">Model: A153-PANT-M102 (البنطلونات)</div>
         <table class="dg-size-table" style="font-size:0.8rem;">
           <thead>
             <tr>
@@ -402,11 +428,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td style="text-align:left;"><strong>CHEST (محيط الصدر)</strong></td><td>54.07 cm</td><td>58.03 cm</td><td>62.01 cm</td><td>66.00 cm</td></tr>
-            <tr><td style="text-align:left;"><strong>LENGTH (طول القطعة)</strong></td><td>68.39 cm</td><td>70.39 cm</td><td>72.38 cm</td><td>74.38 cm</td></tr>
-            <tr><td style="text-align:left;"><strong>SHOULDERS (الكتف)</strong></td><td>54.85 cm</td><td>56.90 cm</td><td>58.95 cm</td><td>61.00 cm</td></tr>
-            <tr><td style="text-align:left;"><strong>SLEEVE LENGTH (طول الكم)</strong></td><td>22.46 cm</td><td>23.46 cm</td><td>24.46 cm</td><td>25.46 cm</td></tr>
-            <tr><td style="text-align:left;"><strong>OPENING SLEEVE (فتحة الكم)</strong></td><td>19.91 cm</td><td>20.41 cm</td><td>20.91 cm</td><td>21.41 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>WAIST - ELASTIC (الوسط مع الأستك)</strong></td><td>33 cm</td><td>35 cm</td><td>37 cm</td><td>39 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>WAIST - STRETCHED (الوسط مفرود)</strong></td><td>51.00 cm</td><td>53.24 cm</td><td>55.47 cm</td><td>57.71 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>HIP (الهيب / الأرداف)</strong></td><td>57.31 cm</td><td>59.54 cm</td><td>61.78 cm</td><td>64.02 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>THIGH (محيط الفخذ)</strong></td><td>70.52 cm</td><td>72.95 cm</td><td>75.40 cm</td><td>77.85 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>HEIGHT / LENGTH (طول البنطلون)</strong></td><td>103.64 cm</td><td>105.63 cm</td><td>107.63 cm</td><td>109.63 cm</td></tr>
+            <tr><td style="text-align:left;"><strong>OPENING / LEG OPEN (فتحة الرجل)</strong></td><td>50.13 cm</td><td>52.50 cm</td><td>54.86 cm</td><td>57.23 cm</td></tr>
           </tbody>
         </table>
       </div>

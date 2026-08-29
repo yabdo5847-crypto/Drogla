@@ -181,6 +181,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // ─────────────────────────────────────────────────────────────────────
         // 5. COLOR & SIZE SELECTORS (MAVIN SYSTEM)
         // ─────────────────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────────────
+        // 5. COLOR & SIZE SELECTORS (ROBUST SYSTEM)
+        // ─────────────────────────────────────────────────────────────────────
         const sizeContainer = document.getElementById('size-container');
         const colorWrapper = document.getElementById('color-wrapper');
         const colorContainer = document.getElementById('color-container');
@@ -190,11 +193,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         let selectedSize = null;
         let selectedColor = null;
+        let activePrice = numPrice;
 
         function updateCartButtonState() {
             if (!cartBtn) return;
             if (selectedSize) {
-                cartBtn.textContent = `ADD TO BAG — LE ${numPrice.toFixed(2)}`;
+                cartBtn.textContent = `ADD TO BAG — LE ${activePrice.toFixed(2)}`;
                 cartBtn.classList.add('ready');
             } else {
                 cartBtn.textContent = 'SELECT A SIZE';
@@ -209,228 +213,205 @@ document.addEventListener('DOMContentLoaded', async () => {
             ? images[0].trim()
             : 'https://placehold.co/800x1000/16161a/ffffff?text=DROGLA';
 
-        function renderSizesForVariant(variant) {
-            sizeContainer.innerHTML = '';
-            selectedSize = null;
-            if (sizeBadge) sizeBadge.textContent = 'SELECT SIZE';
-            updateCartButtonState();
-
-            if (!variant || !variant.sizes || Object.keys(variant.sizes).length === 0) {
-                const defaultSizes = ['S', 'M', 'L', 'XL', 'XXL'];
-                defaultSizes.forEach(s => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'mavin-size-box';
-                    btn.innerText = s;
-                    btn.onclick = () => {
-                        sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        selectedSize = s;
-                        if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
-                        updateCartButtonState();
-                    };
-                    sizeContainer.appendChild(btn);
-                });
-                return;
+        // ── 5.1 Parse Sizes Defensively ──
+        let parsedSizes = null;
+        if (product.sizes) {
+            let rawS = product.sizes;
+            if (typeof rawS === 'string') {
+                try { rawS = JSON.parse(rawS); } catch (e) { rawS = null; }
             }
+            if (Array.isArray(rawS) && rawS.length > 0) {
+                parsedSizes = rawS.map(s => {
+                    if (typeof s === 'object' && s !== null) {
+                        return {
+                            label: String(s.label || s.size || '').trim(),
+                            price: parseFloat(s.price) || numPrice,
+                            stock: s.stock !== undefined ? parseInt(s.stock, 10) : 10,
+                            colors: Array.isArray(s.colors) ? s.colors.map(c => String(c).trim()) : []
+                        };
+                    }
+                    return { label: String(s).trim(), price: numPrice, stock: 10, colors: [] };
+                }).filter(s => s.label);
+            }
+        }
 
-            Object.entries(variant.sizes).forEach(([s, q]) => {
+        if (!parsedSizes || parsedSizes.length === 0) {
+            if (product.size) {
+                const sArr = String(product.size).split(',').map(s => s.trim()).filter(s => s);
+                if (sArr.length > 0) {
+                    parsedSizes = sArr.map(label => ({
+                        label,
+                        price: numPrice,
+                        stock: 10,
+                        colors: []
+                    }));
+                }
+            }
+        }
+
+        if (!parsedSizes || parsedSizes.length === 0) {
+            parsedSizes = ['S', 'M', 'L', 'XL', 'XXL'].map(label => ({
+                label,
+                price: numPrice,
+                stock: 10,
+                colors: []
+            }));
+        }
+
+        // ── 5.2 Parse Colors Defensively ──
+        let parsedColors = [];
+        let rawC = product.colors;
+        if (typeof rawC === 'string') {
+            try { rawC = JSON.parse(rawC); } catch (e) {}
+        }
+        if (Array.isArray(rawC) && rawC.length > 0) {
+            rawC.forEach(c => {
+                if (typeof c === 'object' && c !== null) {
+                    let cName = String(c.name || c.color || '').replace(/[\[\]{}"'\\]/g, '').trim();
+                    cName = cName.replace(/^(hex|name)\s*:\s*/i, '').trim();
+                    let cHex = String(c.hex || '#111010').trim();
+                    if (!cHex.startsWith('#')) cHex = '#' + cHex;
+                    if (cName && cName.toLowerCase() !== 'hex' && cName.toLowerCase() !== 'name') {
+                        parsedColors.push({ name: cName, hex: cHex });
+                    }
+                } else if (typeof c === 'string') {
+                    const cName = c.replace(/[\[\]{}"'\\]/g, '').trim();
+                    if (cName) parsedColors.push({ name: cName, hex: '#111010' });
+                }
+            });
+        }
+
+        if (parsedColors.length === 0 && typeof product.color === 'string' && product.color) {
+            product.color.split(',').forEach(c => {
+                const cName = c.replace(/[\[\]{}"'\\]/g, '').replace(/^(hex|name)\s*:\s*/i, '').trim();
+                if (cName && cName.toLowerCase() !== 'hex' && cName.toLowerCase() !== 'name') {
+                    parsedColors.push({ name: cName, hex: '#111010' });
+                }
+            });
+        }
+
+        if (parsedColors.length === 0 && Array.isArray(product.variants)) {
+            product.variants.forEach(v => {
+                if (v && (v.color || v.name)) {
+                    parsedColors.push({ name: String(v.color || v.name).trim(), hex: v.hex || '#111010' });
+                }
+            });
+        }
+
+        // Deduplicate colors
+        const seenColors = new Set();
+        parsedColors = parsedColors.filter(c => {
+            const key = c.name.toLowerCase();
+            if (seenColors.has(key)) return false;
+            seenColors.add(key);
+            return true;
+        });
+
+        // Variant images mapping
+        let variantImgs = product.variant_images || product.variantImages || {};
+        if (typeof variantImgs === 'string') {
+            try { variantImgs = JSON.parse(variantImgs); } catch (e) { variantImgs = {}; }
+        }
+
+        // ── 5.3 Render Sizes ──
+        function renderSizeButtons() {
+            if (!sizeContainer) return;
+            sizeContainer.innerHTML = '';
+
+            parsedSizes.forEach(sz => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'mavin-size-box';
-                btn.innerText = s;
+                btn.innerText = sz.label;
 
-                if (q <= 0) {
+                // Check if size is available for the currently selected color
+                let isColorAvailable = true;
+                if (selectedColor && Array.isArray(sz.colors) && sz.colors.length > 0) {
+                    isColorAvailable = sz.colors.some(c => c.toLowerCase() === selectedColor.toLowerCase());
+                }
+
+                const isOutOfStock = sz.stock !== undefined && sz.stock <= 0;
+
+                if (isOutOfStock || !isColorAvailable) {
                     btn.disabled = true;
-                    btn.title = 'Sold Out';
+                    btn.classList.add('sold-out');
+                    btn.title = isOutOfStock ? 'Sold Out' : `Not available in ${selectedColor}`;
+                    if (selectedSize === sz.label) {
+                        selectedSize = null;
+                        if (sizeBadge) sizeBadge.textContent = 'SELECT SIZE';
+                        updateCartButtonState();
+                    }
                 } else {
+                    if (selectedSize === sz.label) {
+                        btn.classList.add('active');
+                    }
                     btn.onclick = () => {
                         sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-                        selectedSize = s;
-                        if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
+                        selectedSize = sz.label;
+                        activePrice = sz.price || numPrice;
+                        if (sizeBadge) sizeBadge.textContent = `${sz.label} SIZE`;
                         updateCartButtonState();
                     };
                 }
+
                 sizeContainer.appendChild(btn);
             });
         }
 
-        const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
-
-        if (hasVariants) {
+        // ── 5.4 Render Colors ──
+        if (parsedColors.length > 0 && colorContainer && colorWrapper) {
             colorWrapper.style.display = 'block';
             colorContainer.innerHTML = '';
 
-            product.variants.forEach((v, index) => {
+            parsedColors.forEach((c, idx) => {
                 const thumb = document.createElement('button');
                 thumb.type = 'button';
-                thumb.className = 'mavin-color-thumb' + (index === 0 ? ' active' : '');
-                thumb.title = v.color;
+                thumb.className = 'mavin-color-thumb' + (idx === 0 ? ' active' : '');
+                thumb.title = c.name;
 
-                // Show image if available, otherwise show a color swatch dot
-                if (v.image && v.image.trim()) {
-                    thumb.innerHTML = `<img src="${v.image}" alt="${v.color}">`;
+                const imgForColor = variantImgs[c.name] || images[idx];
+                if (imgForColor && imgForColor.trim()) {
+                    thumb.innerHTML = `<img src="${imgForColor}" alt="${escapeHtml(c.name)}">`;
                 } else {
-                    const dotColor = v.hex || '#111010';
+                    const dotColor = c.hex || '#111010';
                     thumb.innerHTML = `
                         <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;height:100%;padding:4px;">
-                            <span style="width:22px;height:22px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.25);display:block;"></span>
-                            <span style="font-size:0.5rem;font-weight:700;letter-spacing:0.04em;color:currentColor;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50px;">${v.color}</span>
+                            <span style="width:22px;height:22px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.3);display:block;"></span>
+                            <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.04em;color:currentColor;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52px;">${escapeHtml(c.name)}</span>
                         </span>`;
                 }
 
                 thumb.onclick = () => {
                     colorContainer.querySelectorAll('.mavin-color-thumb').forEach(b => b.classList.remove('active'));
                     thumb.classList.add('active');
-                    selectedColor = v.color;
-                    if (colorLabel) colorLabel.textContent = v.color;
+                    selectedColor = c.name;
+                    if (colorLabel) colorLabel.textContent = c.name;
 
-                    if (v.image && v.image.trim()) {
+                    if (imgForColor && imgForColor.trim()) {
                         const mainImg = document.getElementById('main-img-view');
                         if (mainImg) {
                             mainImg.style.opacity = '0';
-                            setTimeout(() => { mainImg.src = v.image; mainImg.style.opacity = '1'; }, 180);
+                            setTimeout(() => { mainImg.src = imgForColor; mainImg.style.opacity = '1'; }, 180);
                         }
                     }
 
-                    renderSizesForVariant(v);
+                    renderSizeButtons();
                 };
 
-                if (index === 0) {
-                    selectedColor = v.color;
-                    if (colorLabel) colorLabel.textContent = v.color;
-                    renderSizesForVariant(v);
+                if (idx === 0) {
+                    selectedColor = c.name;
+                    if (colorLabel) colorLabel.textContent = c.name;
                 }
+
                 colorContainer.appendChild(thumb);
             });
-        } else {
-            // ── New System: sizes array with per-size color availability ──
-            const sizesData = (product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0)
-                ? product.sizes
-                : null;
-
-            // Build full colors list (from colors array or string)
-            let colorsData = [];
-            if (product.colors && Array.isArray(product.colors)) {
-                colorsData = product.colors;
-            } else if (typeof product.colors === 'string' && product.colors) {
-                colorsData = product.colors.split(',').map(c => ({ name: c.trim(), hex: '#111010' })).filter(c => c.name);
-            }
-
-            // ── Render colors based on selected size ──
-            function renderColorsForSize(sizeLabel) {
-                if (colorsData.length === 0) {
-                    if (colorWrapper) colorWrapper.style.display = 'none';
-                    return;
-                }
-                if (colorWrapper) colorWrapper.style.display = 'block';
-                if (!colorContainer) return;
-                colorContainer.innerHTML = '';
-
-                // Find the size object to get its allowed colors
-                const sizeObj = sizesData ? sizesData.find(s => s.label === sizeLabel) : null;
-                // If sizeObj.colors is empty array or undefined → all colors available
-                const allowedColors = (sizeObj && Array.isArray(sizeObj.colors) && sizeObj.colors.length > 0)
-                    ? sizeObj.colors
-                    : colorsData.map(c => c.name);
-
-                let firstAvailable = null;
-                colorsData.forEach((c, idx) => {
-                    const isAvailable = allowedColors.includes(c.name);
-                    const thumb = document.createElement('button');
-                    thumb.type = 'button';
-                    thumb.className = 'mavin-color-thumb' + (!isAvailable ? ' sold-out' : '');
-
-                    // Find image for this color from variant_images
-                    const variantImgs = product.variant_images || product.variantImages || {};
-                    const imgForColor = variantImgs[c.name] || images[idx] || firstImage;
-                    thumb.innerHTML = `<img src="${imgForColor}" alt="${c.name}">`;
-                    thumb.title = isAvailable ? c.name : `${c.name} — Not available in this size`;
-
-                    if (!isAvailable) {
-                        thumb.disabled = true;
-                        thumb.style.opacity = '0.35';
-                        thumb.style.filter = 'grayscale(1)';
-                    } else {
-                        thumb.onclick = () => {
-                            colorContainer.querySelectorAll('.mavin-color-thumb').forEach(b => b.classList.remove('active'));
-                            thumb.classList.add('active');
-                            selectedColor = c.name;
-                            if (colorLabel) colorLabel.textContent = c.name;
-                            // Update main image
-                            const mainImg = document.getElementById('main-img-view');
-                            if (mainImg && imgForColor) {
-                                mainImg.style.opacity = '0';
-                                setTimeout(() => { mainImg.src = imgForColor; mainImg.style.opacity = '1'; }, 180);
-                            }
-                        };
-                        if (!firstAvailable) firstAvailable = { thumb, c, imgForColor };
-                    }
-                    colorContainer.appendChild(thumb);
-                });
-
-                // Auto-select first available color
-                if (firstAvailable) {
-                    firstAvailable.thumb.classList.add('active');
-                    selectedColor = firstAvailable.c.name;
-                    if (colorLabel) colorLabel.textContent = firstAvailable.c.name;
-                } else {
-                    selectedColor = null;
-                    if (colorLabel) colorLabel.textContent = '';
-                }
-            }
-
-            // ── Render sizes ──
-            if (sizesData) {
-                sizeContainer.innerHTML = '';
-                sizesData.forEach(sz => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'mavin-size-box';
-                    btn.innerText = sz.label;
-
-                    if ((sz.stock !== undefined && sz.stock <= 0)) {
-                        btn.disabled = true;
-                        btn.title = 'Sold Out';
-                        btn.classList.add('sold-out');
-                    } else {
-                        btn.onclick = () => {
-                            sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
-                            btn.classList.add('active');
-                            selectedSize = sz.label;
-                            if (sizeBadge) sizeBadge.textContent = `${sz.label} SIZE`;
-                            updateCartButtonState();
-                            // Update colors availability for this size
-                            renderColorsForSize(sz.label);
-                        };
-                    }
-                    sizeContainer.appendChild(btn);
-                });
-                // Show all colors initially (no size selected yet)
-                renderColorsForSize(null);
-            } else {
-                // Fallback to plain size string
-                const sizes = product.size ? product.size.split(',').map(s => s.trim()).filter(s => s !== '') : ['S', 'M', 'L', 'XL', 'XXL'];
-                sizeContainer.innerHTML = '';
-                sizes.forEach(s => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'mavin-size-box';
-                    btn.innerText = s;
-                    btn.onclick = () => {
-                        sizeContainer.querySelectorAll('.mavin-size-box').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        selectedSize = s;
-                        if (sizeBadge) sizeBadge.textContent = `${s} SIZE`;
-                        updateCartButtonState();
-                        renderColorsForSize(s);
-                    };
-                    sizeContainer.appendChild(btn);
-                });
-                renderColorsForSize(null);
-            }
+        } else if (colorWrapper) {
+            colorWrapper.style.display = 'none';
         }
+
+        // Initial render of sizes
+        renderSizeButtons();
 
         // ─────────────────────────────────────────────────────────────────────
         // 6. MAIN MEDIA VIEW (MAVIN STREAMLINED HERO)
@@ -489,44 +470,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         const openSizeGuide = document.getElementById('openSizeGuide');
         const closeSizeGuide = document.getElementById('closeSizeGuide');
 
-        window.switchSizeTab = function (gender) {
-            const tabWomen = document.getElementById('tab-btn-women');
-            const tabMen = document.getElementById('tab-btn-men');
-            const tableWomen = document.getElementById('size-table-women');
-            const tableMen = document.getElementById('size-table-men');
+        window.switchSizeTab = function (type) {
+            const tabs = {
+                men: document.getElementById('tab-btn-men'),
+                women: document.getElementById('tab-btn-women'),
+                pants: document.getElementById('tab-btn-pants')
+            };
+            const tables = {
+                men: document.getElementById('size-table-men'),
+                women: document.getElementById('size-table-women'),
+                pants: document.getElementById('size-table-pants')
+            };
 
-            if (gender === 'women') {
-                if (tabWomen) {
-                    tabWomen.style.borderBottomColor = 'var(--clr-accent, #5c1a1a)';
-                    tabWomen.style.color = 'var(--text, #111010)';
-                    tabWomen.style.fontWeight = '800';
+            Object.keys(tabs).forEach(k => {
+                if (tabs[k]) {
+                    if (k === type) {
+                        tabs[k].style.borderBottomColor = 'var(--clr-accent, #5c1a1a)';
+                        tabs[k].style.color = 'var(--text, #111010)';
+                        tabs[k].style.fontWeight = '800';
+                    } else {
+                        tabs[k].style.borderBottomColor = 'transparent';
+                        tabs[k].style.color = 'var(--text-muted, #706e6b)';
+                        tabs[k].style.fontWeight = '700';
+                    }
                 }
-                if (tabMen) {
-                    tabMen.style.borderBottomColor = 'transparent';
-                    tabMen.style.color = 'var(--text-muted, #706e6b)';
-                    tabMen.style.fontWeight = '700';
+                if (tables[k]) {
+                    tables[k].style.display = (k === type) ? 'block' : 'none';
                 }
-                if (tableWomen) tableWomen.style.display = 'block';
-                if (tableMen) tableMen.style.display = 'none';
-            } else {
-                if (tabMen) {
-                    tabMen.style.borderBottomColor = 'var(--clr-accent, #5c1a1a)';
-                    tabMen.style.color = 'var(--text, #111010)';
-                    tabMen.style.fontWeight = '800';
-                }
-                if (tabWomen) {
-                    tabWomen.style.borderBottomColor = 'transparent';
-                    tabWomen.style.color = 'var(--text-muted, #706e6b)';
-                    tabWomen.style.fontWeight = '700';
-                }
-                if (tableMen) tableMen.style.display = 'block';
-                if (tableWomen) tableWomen.style.display = 'none';
-            }
+            });
         };
 
-        // Auto-select tab based on category
+        // Auto-select tab based on category or product name
         const prodCat = (product.category || '').toLowerCase();
-        if (prodCat.includes('women')) {
+        const prodName = (product.name || '').toLowerCase();
+        if (prodCat.includes('pant') || prodCat.includes('bottom') || prodName.includes('pant') || prodName.includes('sweatpant') || prodName.includes('trouser')) {
+            window.switchSizeTab('pants');
+        } else if (prodCat.includes('women') || prodName.includes('women') || prodName.includes('بناتي')) {
             window.switchSizeTab('women');
         } else {
             window.switchSizeTab('men');
@@ -567,14 +546,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                          && item.size  === selectedSize
                          && item.color === selectedColor
                 );
+                const cartImg = (variantImgs && selectedColor && variantImgs[selectedColor]) ? variantImgs[selectedColor] : firstImage;
                 if (existing) {
                     existing.quantity += 1;
                 } else {
                     cart.push({
                         id:       product.id,
                         name:     product.name,
-                        price:    product.price,
-                        image:    firstImage,
+                        price:    activePrice || product.price,
+                        image:    cartImg,
                         size:     selectedSize,
                         color:    selectedColor || '',
                         quantity: 1
