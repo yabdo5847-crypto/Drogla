@@ -1660,10 +1660,14 @@ async function renderOrders() {
     }
 
     const tr = document.createElement('tr');
+    tr.dataset.orderId = o.id;
     tr.innerHTML = `
       <td>
         <strong style="font-family:monospace;color:var(--burgundy);display:block;margin-bottom:4px;">#${orderId}</strong>
-        <button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')" style="font-size:0.6rem;padding:2px 6px;">View Details</button>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')" style="font-size:0.6rem;padding:2px 6px;">View</button>
+          <button class="btn btn-sm" onclick="deleteOrder('${o.id}')" style="font-size:0.6rem;padding:2px 6px;background:rgba(198,40,40,0.12);color:var(--red,#c62828);border:1px solid rgba(198,40,40,0.25);border-radius:4px;">🗑 Delete</button>
+        </div>
       </td>
       <td>
         <strong style="font-size:0.85rem;display:block;">${customerName}</strong>
@@ -1681,6 +1685,40 @@ async function renderOrders() {
     tbody.appendChild(tr);
   });
 }
+
+// ── Delete a Single Order ──────────────────────────────────────────
+window.deleteOrder = async function (orderId) {
+  if (!confirm(`⚠️ Delete order #${String(orderId).substring(0, 8)}?\n\nThis will permanently delete the order and all its items. This CANNOT be undone.`)) return;
+
+  try {
+    // Remove order_items first (FK constraint)
+    await supabase.from('order_items').delete().eq('order_id', orderId);
+    // Remove the order itself
+    const { error } = await supabase.from('orders').delete().eq('id', orderId);
+    if (error) throw error;
+
+    // Remove from local array
+    allOrders = allOrders.filter(o => String(o.id) !== String(orderId));
+    currentOrders = currentOrders.filter(o => String(o.id) !== String(orderId));
+
+    // Remove the row from DOM instantly (no full re-render needed)
+    const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+    if (row) {
+      row.style.transition = 'opacity 0.25s, transform 0.25s';
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(12px)';
+      setTimeout(() => row.remove(), 260);
+    }
+
+    // Close modal if open
+    closeModal('order-details-modal');
+
+    toast(`Order #${String(orderId).substring(0, 8)} deleted.`, 'success');
+    await renderOverview();
+  } catch (err) {
+    toast('Failed to delete order: ' + err.message, 'error');
+  }
+};
 
 // ── View Order Details Modal (With Payment Proof Preview) ──
 window.viewOrder = async function (id) {
@@ -1763,12 +1801,24 @@ window.viewOrder = async function (id) {
       ${itemsHtml}
     </div>
 
-    <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.1rem; color:var(--burgundy); border-top:1px solid var(--border-color); padding-top:0.8rem;">
+    <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.1rem; color:var(--burgundy); border-top:1px solid var(--border-color); padding-top:0.8rem; margin-top:0.5rem;">
       <span>Grand Total:</span>
       <span>${(parseFloat(o.total_price || o.total) || 0).toLocaleString()} EGP</span>
     </div>
 
     ${proofHtml}
+
+    <!-- Delete Order button inside modal -->
+    <div style="margin-top:1.4rem; padding-top:1rem; border-top:1px solid var(--border-color); display:flex; justify-content:flex-end;">
+      <button
+        onclick="deleteOrder('${o.id}')"
+        style="background:rgba(198,40,40,0.1); color:#c62828; border:1px solid rgba(198,40,40,0.3);
+               border-radius:6px; padding:9px 20px; font-size:0.78rem; font-weight:700;
+               letter-spacing:0.06em; cursor:pointer; transition:background 0.2s;"
+        onmouseover="this.style.background='rgba(198,40,40,0.2)'"
+        onmouseout="this.style.background='rgba(198,40,40,0.1)'"
+      >🗑 Delete This Order</button>
+    </div>
   `;
 
   openModal('order-details-modal');
