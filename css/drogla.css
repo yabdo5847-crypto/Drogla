@@ -3366,3 +3366,281 @@ body.dark-mode .dg-cart-checkout-btn {
   margin-top: 0.85rem;
   letter-spacing: 0.02em;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   WELCOME POPUP — Discount offer overlay
+   ═══════════════════════════════════════════════════════════ */
+
+/* Overlay backdrop */
+#dg-welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(10,10,10,0.68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+#dg-welcome-overlay.dg-popup--visible  { opacity: 1; }
+#dg-welcome-overlay.dg-popup--closing  { opacity: 0; pointer-events: none; }
+
+/* Card */
+.dg-popup-card {
+  position: relative;
+  background: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  max-height: 92svh;
+  overflow-y: auto;
+  border-radius: 4px;
+  padding: 40px 36px 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.38);
+  transform: translateY(24px) scale(0.97);
+  transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+  scrollbar-width: none;
+}
+.dg-popup-card::-webkit-scrollbar { display: none; }
+#dg-welcome-overlay.dg-popup--visible .dg-popup-card {
+  transform: translateY(0) scale(1);
+}
+
+/* Close button */
+.dg-popup-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #6e6c69;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+}
+.dg-popup-close:hover { color: #111010; background: #f0edea; }
+
+/* Badge */
+.dg-popup-badge {
+  display: inline-block;
+  background: #111010;
+  color: #f5f3f0;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  padding: 3px 10px;
+  border-radius: 2px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+
+/* Title */
+.dg-popup-title {
+  font-size: clamp(1.55rem, 5vw, 2.1rem);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: #111010;
+  line-height: 1.12;
+  margin-bottom: 12px;
+}
+
+/* Sub */
+.dg-popup-sub {
+  font-size: 0.88rem;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+/* Form fields */
+.dg-popup-field {
+  margin-bottom: 13px;
+}
+.dg-popup-field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #111010;
+  margin-bottom: 5px;
+}
+.dg-popup-field input[type="email"],
+.dg-popup-field input[type="tel"] {
+  width: 100%;
+  border: 1.5px solid #ddd;
+  border-radius: 3px;
+  padding: 11px 14px;
+  font-size: 0.92rem;
+  color: #111010;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.dg-popup-field input:focus { border-color: #111010; }
+
+/* Phone row with country code prefix */
+.dg-popup-phone-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.dg-popup-country-code {
+  display: flex;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 3px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #111010;
+  white-space: nowrap;
+  background: #f9f8f7;
+}
+.dg-popup-phone-row input[type="tel"] {
+  flex: 1;
+}
+
+/* SMS/WhatsApp checkbox */
+.dg-popup-sms-row {
+  margin: 10px 0 16px;
+}
+.dg-popup-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: #555;
+  cursor: pointer;
+}
+.dg-popup-checkbox-label input[type="checkbox"] {
+  display: none;
+}
+.dg-popup-checkbox-box {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 1.5px solid #aaa;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dg-popup-checkbox-label input:checked + .dg-popup-checkbox-box {
+  background: #111010;
+  border-color: #111010;
+}
+.dg-popup-checkbox-label input:checked + .dg-popup-checkbox-box::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(44deg) translate(-1px,-1px);
+  display: block;
+}
+
+/* Error message */
+.dg-popup-error {
+  color: #c62828;
+  font-size: 0.78rem;
+  min-height: 18px;
+  margin-bottom: 6px;
+}
+
+/* CTA button */
+.dg-popup-cta {
+  display: block;
+  width: 100%;
+  background: #111010;
+  color: #f5f3f0;
+  border: none;
+  border-radius: 3px;
+  padding: 15px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  text-align: center;
+  text-decoration: none;
+}
+.dg-popup-cta:hover:not(:disabled) { background: #2a2626; transform: translateY(-1px); }
+.dg-popup-cta:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Legal text */
+.dg-popup-legal {
+  font-size: 0.68rem;
+  color: #aaa;
+  line-height: 1.5;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Success state */
+.dg-popup-success-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #111010;
+  color: #f5f3f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 auto 20px;
+}
+
+/* Code box */
+.dg-popup-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f5f3f0;
+  border: 2px dashed #111010;
+  border-radius: 4px;
+  padding: 16px 18px;
+  margin: 16px 0 4px;
+}
+#dg-popup-code-text {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #111010;
+}
+.dg-popup-copy-btn {
+  background: #111010;
+  color: #f5f3f0;
+  border: none;
+  border-radius: 2px;
+  padding: 7px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.dg-popup-copy-btn:hover { background: #2a2626; }
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .dg-popup-card {
+    padding: 32px 22px 28px;
+    max-height: 96svh;
+  }
+  .dg-popup-title { font-size: 1.55rem; }
+  #dg-popup-code-text { font-size: 1.2rem; }
+}
