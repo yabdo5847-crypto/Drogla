@@ -266,8 +266,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const thumb = document.createElement('button');
                 thumb.type = 'button';
                 thumb.className = 'mavin-color-thumb' + (index === 0 ? ' active' : '');
-                const thumbImg = v.image || firstImage;
-                thumb.innerHTML = `<img src="${thumbImg}" alt="${v.color}">`;
+                thumb.title = v.color;
+
+                // Show image if available, otherwise show a color swatch dot
+                if (v.image && v.image.trim()) {
+                    thumb.innerHTML = `<img src="${v.image}" alt="${v.color}">`;
+                } else {
+                    const dotColor = v.hex || '#111010';
+                    thumb.innerHTML = `
+                        <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;height:100%;padding:4px;">
+                            <span style="width:22px;height:22px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.25);display:block;"></span>
+                            <span style="font-size:0.5rem;font-weight:700;letter-spacing:0.04em;color:currentColor;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50px;">${v.color}</span>
+                        </span>`;
+                }
 
                 thumb.onclick = () => {
                     colorContainer.querySelectorAll('.mavin-color-thumb').forEach(b => b.classList.remove('active'));
@@ -275,13 +286,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     selectedColor = v.color;
                     if (colorLabel) colorLabel.textContent = v.color;
 
-                    const mainImg = document.getElementById('main-img-view');
-                    if (mainImg && v.image) {
-                        mainImg.style.opacity = '0';
-                        setTimeout(() => {
-                            mainImg.src = v.image;
-                            mainImg.style.opacity = '1';
-                        }, 180);
+                    if (v.image && v.image.trim()) {
+                        const mainImg = document.getElementById('main-img-view');
+                        if (mainImg) {
+                            mainImg.style.opacity = '0';
+                            setTimeout(() => { mainImg.src = v.image; mainImg.style.opacity = '1'; }, 180);
+                        }
                     }
 
                     renderSizesForVariant(v);

@@ -1094,12 +1094,25 @@ document.getElementById('save-product-btn').addEventListener('click', async () =
     return;
   }
 
-  // Format storefront-compatible variants
-  const variants = colors.map(c => {
+  // Clean colors to ensure proper format saved to DB
+  const cleanColors = colors.map(c => ({
+    name: String(c.name || '').trim(),
+    hex: String(c.hex || '#111010').trim()
+  })).filter(c => c.name);
+
+  // Format storefront-compatible variants (respects per-size color availability)
+  const variants = cleanColors.map(c => {
     const sizeMap = {};
-    sizes.forEach(s => { sizeMap[s.label] = s.stock || 10; });
+    sizes.forEach(s => {
+      // Only include this size for this color if the color is allowed for that size
+      const allowedColors = (Array.isArray(s.colors) && s.colors.length > 0) ? s.colors : null;
+      if (!allowedColors || allowedColors.includes(c.name)) {
+        sizeMap[s.label] = s.stock || 10;
+      }
+    });
     return {
       color: c.name,
+      hex: c.hex,
       image: (variantImages && variantImages[c.name]) || (imgStr ? imgStr.split(',')[0].trim() : ''),
       sizes: sizeMap
     };
@@ -1117,7 +1130,7 @@ document.getElementById('save-product-btn').addEventListener('click', async () =
     image: imgStr,
     size: sizes.map(s => s.label).join(', '),
     sizes: sizes,
-    colors: colors,
+    colors: cleanColors,
     variant_images: variantImages,
     variants: variants,
     featured: getToggleVal('m-featured-toggle'),

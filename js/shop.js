@@ -119,6 +119,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <p class="card-name">${p.name}</p>
                 <p class="card-cat">${p.category || 'Apparel'}</p>
                 <div class="card-foot">
+                    ${p.old_price && parseFloat(p.old_price) > parseFloat(p.price)
+                        ? `<span class="card-old-price" style="text-decoration:line-through;opacity:0.5;font-size:0.8em;margin-right:6px;">EGP ${parseFloat(p.old_price).toFixed(2)}</span>`
+                        : ''}
                     <span class="card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
                 </div>
             </div>`;
