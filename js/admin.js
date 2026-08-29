@@ -694,16 +694,19 @@ window.openEditProduct = async function (pid) {
 
   // Sizes rows
   let sizes = p ? p.sizes : null;
+  if (typeof sizes === 'string' && sizes.trim()) {
+    try { sizes = JSON.parse(sizes); } catch(e) { sizes = null; }
+  }
   if (!sizes || !Array.isArray(sizes) || sizes.length === 0) {
     if (p && p.size) {
-      sizes = p.size.split(',').map(s => ({ label: s.trim(), price: p.price, stock: 10 }));
+      sizes = String(p.size).split(',').map(s => ({ label: s.trim(), price: p.price || 650, stock: 10, colors: [] })).filter(s => s.label);
     } else {
       sizes = [
-        { label: 'S', price: p ? p.price : 650, stock: 10 },
-        { label: 'M', price: p ? p.price : 650, stock: 15 },
-        { label: 'L', price: p ? p.price : 650, stock: 15 },
-        { label: 'XL', price: p ? p.price : 650, stock: 10 },
-        { label: 'XXL', price: p ? p.price : 650, stock: 5 }
+        { label: 'S', price: p ? p.price : 650, stock: 10, colors: [] },
+        { label: 'M', price: p ? p.price : 650, stock: 15, colors: [] },
+        { label: 'L', price: p ? p.price : 650, stock: 15, colors: [] },
+        { label: 'XL', price: p ? p.price : 650, stock: 10, colors: [] },
+        { label: 'XXL', price: p ? p.price : 650, stock: 5, colors: [] }
       ];
     }
   }

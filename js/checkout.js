@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const { data: dbProducts, error: dbProdError } = await supabase
                 .from('products')
-                .select('id, name, price, active')
+                .select('id, name, price, active, sizes, stock, size')
                 .in('id', productIds);
 
             if (dbProdError) throw dbProdError;
@@ -569,6 +569,46 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .insert(dbOrderItems);
 
             if (itemsError) throw itemsError;
+
+            // ─────────────────────────────────────────────────────────────────
+            // 4.5 AUTOMATIC STOCK DEDUCTION PER PRODUCT & SIZE
+            // ─────────────────────────────────────────────────────────────────
+            try {
+                for (const item of verifiedOrderItems) {
+                    const dbP = productMap.get(String(item.product_id));
+                    if (!dbP) continue;
+
+                    let currentSizes = dbP.sizes;
+                    if (typeof currentSizes === 'string' && currentSizes.trim()) {
+                        try { currentSizes = JSON.parse(currentSizes); } catch (e) { currentSizes = null; }
+                    }
+
+                    let sizesUpdated = false;
+                    if (Array.isArray(currentSizes) && currentSizes.length > 0) {
+                        currentSizes.forEach(sz => {
+                            if (String(sz.label).trim().toLowerCase() === String(item.size).trim().toLowerCase()) {
+                                const oldStock = parseInt(sz.stock, 10) || 0;
+                                sz.stock = Math.max(0, oldStock - item.quantity);
+                                sizesUpdated = true;
+                            }
+                        });
+                    }
+
+                    const updatePayload = {};
+                    if (sizesUpdated) {
+                        updatePayload.sizes = currentSizes;
+                    }
+                    if (dbP.stock !== undefined && dbP.stock !== null) {
+                        updatePayload.stock = Math.max(0, (parseInt(dbP.stock, 10) || 0) - item.quantity);
+                    }
+
+                    if (Object.keys(updatePayload).length > 0) {
+                        await supabase.from('products').update(updatePayload).eq('id', item.product_id);
+                    }
+                }
+            } catch (stockErr) {
+                console.warn('Stock decrement notice:', stockErr);
+            }
 
             // ─────────────────────────────────────────────────────────────────
             // 5. SEND EMAIL NOTIFICATION (EmailJS)
