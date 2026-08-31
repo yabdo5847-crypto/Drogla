@@ -389,10 +389,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (colorLabel) colorLabel.textContent = c.name;
 
                     if (imgForColor && imgForColor.trim()) {
-                        const mainImg = document.getElementById('main-img-view');
-                        if (mainImg) {
-                            mainImg.style.opacity = '0';
-                            setTimeout(() => { mainImg.src = imgForColor; mainImg.style.opacity = '1'; }, 180);
+                        if (typeof window.switchSliderToImage === 'function') {
+                            window.switchSliderToImage(imgForColor);
                         }
                     }
 
@@ -414,31 +412,225 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSizeButtons();
 
         // ─────────────────────────────────────────────────────────────────────
-        // 6. MAIN MEDIA VIEW (MAVIN STREAMLINED HERO)
+        // 6. LUXURY MULTI-IMAGE BRAND SLIDER (2.5s Auto-play + Swipe)
         // ─────────────────────────────────────────────────────────────────────
+        let allMediaList = [];
+
         if (product.video_url && product.video_url.trim() !== '') {
-            mediaMain.innerHTML = `
-                <video autoplay muted loop playsinline src="${product.video_url}"
-                    style="width:100%; aspect-ratio:3/4; object-fit:cover;">
-                </video>
-            `;
-        } else {
-            mediaMain.innerHTML = `
-                <div style="position: relative; width: 100%; height: 100%; overflow: hidden;">
-                    <img id="main-img-view"
-                        src="${firstImage}"
-                        alt="${product.name}"
-                        style="width:100%; aspect-ratio:3/4; object-fit:cover; transition: opacity 0.25s ease-in-out;">
+            allMediaList.push({ type: 'video', src: product.video_url.trim() });
+        }
+
+        if (images && images.length > 0) {
+            images.forEach(src => {
+                if (src && src.trim()) {
+                    allMediaList.push({ type: 'image', src: src.trim() });
+                }
+            });
+        }
+
+        if (allMediaList.length === 0) {
+            allMediaList.push({ type: 'image', src: firstImage });
+        }
+
+        let currentSlide = 0;
+        let autoSlideTimer = null;
+        const slideDuration = 2500; // 2.5s auto-transition
+
+        const hasMultiple = allMediaList.length > 1;
+
+        const slidesHTML = allMediaList.map((m, idx) => `
+            <div class="dg-slider-slide" data-index="${idx}">
+                ${m.type === 'video' 
+                    ? `<video autoplay muted loop playsinline src="${m.src}"></video>` 
+                    : `<img src="${m.src}" alt="${escapeHtml(product.name)} - View ${idx + 1}" loading="${idx === 0 ? 'eager' : 'lazy'}">`
+                }
+            </div>
+        `).join('');
+
+        let navHTML = '';
+        if (hasMultiple) {
+            navHTML = `
+                <button type="button" class="dg-slider-btn dg-slider-btn--prev" id="sliderPrevBtn" aria-label="Previous image">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <button type="button" class="dg-slider-btn dg-slider-btn--next" id="sliderNextBtn" aria-label="Next image">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+                <div class="dg-slider-dots" id="sliderDots">
+                    ${allMediaList.map((_, idx) => `<button type="button" class="dg-slider-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}" aria-label="Go to slide ${idx + 1}"></button>`).join('')}
                 </div>
+                <div class="dg-slider-counter" id="sliderCounter">1 / ${allMediaList.length}</div>
             `;
         }
+
+        mediaMain.innerHTML = `
+            <div class="dg-slider-container" id="dgSliderContainer">
+                <div class="dg-slider-track" id="dgSliderTrack">
+                    ${slidesHTML}
+                </div>
+                ${navHTML}
+            </div>
+        `;
+
+        const sliderTrack = document.getElementById('dgSliderTrack');
+        const sliderDots = document.getElementById('sliderDots');
+        const sliderCounter = document.getElementById('sliderCounter');
+        const galleryContainer = document.getElementById('product-gallery');
+
+        // Render Thumbnails
+        if (galleryContainer) {
+            galleryContainer.innerHTML = '';
+            if (hasMultiple) {
+                galleryContainer.style.display = 'flex';
+                allMediaList.forEach((m, idx) => {
+                    const thumb = document.createElement(m.type === 'video' ? 'video' : 'img');
+                    thumb.src = m.src;
+                    thumb.alt = `${product.name} ${idx + 1}`;
+                    if (idx === 0) thumb.className = 'active';
+                    thumb.onclick = () => {
+                        goToSlide(idx);
+                        restartAutoSlide();
+                    };
+                    galleryContainer.appendChild(thumb);
+                });
+            } else {
+                galleryContainer.style.display = 'none';
+            }
+        }
+
+        function goToSlide(index) {
+            if (!sliderTrack) return;
+            currentSlide = (index + allMediaList.length) % allMediaList.length;
+            sliderTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            // Update dots
+            if (sliderDots) {
+                sliderDots.querySelectorAll('.dg-slider-dot').forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentSlide);
+                });
+            }
+
+            // Update counter
+            if (sliderCounter) {
+                sliderCounter.textContent = `${currentSlide + 1} / ${allMediaList.length}`;
+            }
+
+            // Update thumbnails
+            if (galleryContainer) {
+                const thumbs = galleryContainer.children;
+                for (let i = 0; i < thumbs.length; i++) {
+                    thumbs[i].classList.toggle('active', i === currentSlide);
+                }
+            }
+        }
+
+        function startAutoSlide() {
+            stopAutoSlide();
+            if (hasMultiple) {
+                autoSlideTimer = setInterval(() => {
+                    goToSlide(currentSlide + 1);
+                }, slideDuration);
+            }
+        }
+
+        function stopAutoSlide() {
+            if (autoSlideTimer) {
+                clearInterval(autoSlideTimer);
+                autoSlideTimer = null;
+            }
+        }
+
+        function restartAutoSlide() {
+            stopAutoSlide();
+            startAutoSlide();
+        }
+
+        // Attach prev / next buttons
+        const prevBtn = document.getElementById('sliderPrevBtn');
+        const nextBtn = document.getElementById('sliderNextBtn');
+        if (prevBtn) {
+            prevBtn.onclick = (e) => {
+                e.stopPropagation();
+                goToSlide(currentSlide - 1);
+                restartAutoSlide();
+            };
+        }
+        if (nextBtn) {
+            nextBtn.onclick = (e) => {
+                e.stopPropagation();
+                goToSlide(currentSlide + 1);
+                restartAutoSlide();
+            };
+        }
+
+        // Attach dot buttons
+        if (sliderDots) {
+            sliderDots.querySelectorAll('.dg-slider-dot').forEach(dot => {
+                dot.onclick = (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(dot.dataset.index, 10);
+                    goToSlide(idx);
+                    restartAutoSlide();
+                };
+            });
+        }
+
+        // Pause on Hover (Desktop)
+        const sliderContainer = document.getElementById('dgSliderContainer');
+        if (sliderContainer) {
+            sliderContainer.addEventListener('mouseenter', stopAutoSlide);
+            sliderContainer.addEventListener('mouseleave', startAutoSlide);
+
+            // Touch Swipe Gestures (Mobile)
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let touchStartY = 0;
+            let touchEndY = 0;
+
+            sliderContainer.addEventListener('touchstart', (e) => {
+                stopAutoSlide();
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            sliderContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                const diffX = touchStartX - touchEndX;
+                const diffY = touchStartY - touchEndY;
+
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
+                    if (diffX > 0) {
+                        goToSlide(currentSlide + 1); // Swipe left -> Next
+                    } else {
+                        goToSlide(currentSlide - 1); // Swipe right -> Prev
+                    }
+                }
+                startAutoSlide();
+            }, { passive: true });
+        }
+
+        // Start auto slide
+        startAutoSlide();
+
+        // Connect Color click to slider slide
+        window.switchSliderToImage = function(imgSrc) {
+            if (!imgSrc) return;
+            const idx = allMediaList.findIndex(m => m.src === imgSrc.trim());
+            if (idx !== -1) {
+                goToSlide(idx);
+                restartAutoSlide();
+            }
+        };
 
         // Expand image on click
         const expandBtn = document.getElementById('expandMediaBtn');
         if (expandBtn) {
             expandBtn.onclick = () => {
-                const mainImg = document.getElementById('main-img-view');
-                if (mainImg) window.open(mainImg.src, '_blank');
+                const currentMedia = allMediaList[currentSlide];
+                if (currentMedia && currentMedia.src) {
+                    window.open(currentMedia.src, '_blank');
+                }
             };
         }
 
