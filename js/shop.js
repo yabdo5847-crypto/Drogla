@@ -1,4 +1,4 @@
-﻿
+
 /* ============================================================
    shop.js — Drogla E-Commerce | Shop Page Logic
    Features: skeleton loading, live search, pill filters,
@@ -131,11 +131,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ================================================================
-    // 5.  Client-side filter + render visible cards
+    // 5.  Accurate Category Matching & Client-Side Filtering
     // ================================================================
+    function matchCategory(p, pill) {
+        if (!pill || pill === 'all') return true;
+
+        const cat  = (p.category || '').toLowerCase().trim();
+        const name = (p.name     || '').toLowerCase().trim();
+
+        const isWomen = cat.startsWith('women') || cat.includes('women-') || cat.includes('women') || cat.includes('حريمي') || cat.includes('بناتي') || name.includes('women') || name.includes('بناتي') || name.includes('حريمي');
+        const isMen   = (cat.startsWith('men') || cat.includes('men-') || cat.includes('رجالي') || name.includes('men') || name.includes('رجالي')) && !isWomen;
+        const isUnisex = cat.startsWith('unisex') || cat.includes('unisex-') || cat.includes('stealth') || cat.includes('للجنسين');
+
+        const isTshirt = cat.includes('tshirt') || cat.includes('t-shirt') || cat.includes('top') || cat.includes('تيشيرت') || cat.includes('توب') || name.includes('t-shirt') || name.includes('tee') || name.includes('tshirt') || name.includes('تيشيرت');
+        const isBottom = cat.includes('bottom') || cat.includes('pant') || cat.includes('trouser') || cat.includes('short') || cat.includes('بنطلون') || name.includes('pant') || name.includes('sweatpant') || name.includes('trousers') || name.includes('بنطلون');
+        const isHoodie = cat.includes('hoodie') || cat.includes('sweatshirt') || cat.includes('سويت') || cat.includes('هودي') || name.includes('hoodie') || name.includes('sweatshirt') || name.includes('هود');
+
+        if (pill === 'men')      return isMen || (isUnisex && !isWomen);
+        if (pill === 'women')    return isWomen || (isUnisex && !isMen);
+        if (pill === 'unisex')   return isUnisex;
+        if (pill === 't-shirts') return isTshirt;
+        if (pill === 'bottoms')  return isBottom;
+        if (pill === 'hoodies')  return isHoodie;
+
+        // Direct slug or keyword fallback
+        return cat.includes(pill) || name.includes(pill);
+    }
+
     function applyFilters() {
         const q    = searchQuery.trim().toLowerCase();
-        const pill = activePill;  // 'all' | 'men' | 'women' | 't-shirts' | 'bottoms'
+        const pill = activePill;
 
         grid.innerHTML = '';
         let visibleCount = 0;
@@ -145,12 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const category = (p.category || '').toLowerCase();
 
             // ── pill filter ──
-            let pillMatch = true;
-            if (pill === 'men')          pillMatch = category.startsWith('men');
-            else if (pill === 'women')   pillMatch = category.startsWith('women');
-            else if (pill === 'unisex')  pillMatch = category.startsWith('unisex');
-            else if (pill === 't-shirts') pillMatch = category.includes('t-shirt');
-            else if (pill === 'bottoms') pillMatch = category.includes('bottom');
+            const pillMatch = matchCategory(p, pill);
 
             // ── search filter ──
             const searchMatch = !q || name.includes(q) || category.includes(q);
@@ -224,38 +244,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderSkeletons(6);
 
     try {
-        let query = supabase
+        const { data: products, error } = await supabase
             .from('products')
             .select('*')
             .order('created_at', { ascending: false });
-
-        // Apply server-side category filter from URL
-        if (catFilter) {
-            let gender = '';
-            let type   = '';
-
-            if (catFilter.includes('unisex'))      gender = 'Unisex';
-            else if (catFilter.includes('women'))  gender = 'Women';
-            else if (catFilter.includes('men'))    gender = 'Men';
-
-            if (catFilter.includes('tshirts'))         type = 'T-Shirts';
-            else if (catFilter.includes('bottoms'))    type = 'Bottoms';
-            else if (catFilter.includes('tops'))       type = 'Tops';
-
-            if (gender && !type) {
-                query = query.ilike('category', `${gender}%`);
-            } else if (gender && type) {
-                if (type === 'Tops') {
-                    query = query.or(
-                        `category.ilike.${gender} Tops%,category.ilike.${gender} T-Shirts%`
-                    );
-                } else {
-                    query = query.ilike('category', `${gender} ${type}%`);
-                }
-            }
-        }
-
-        const { data: products, error } = await query;
 
         if (error) throw error;
 
@@ -265,18 +257,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (allProducts.length === 0) {
             grid.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">
-                Collection is currently empty or no products match this category.
+                Collection is currently empty.
             </p>`;
             return;
         }
 
-        // Sync pill active state from URL cat param so they stay in harmony
+        // Sync pill active state from URL cat param
         if (catFilter) {
-            if (catFilter.includes('women'))      activePill = 'women';
-            else if (catFilter.includes('men'))   activePill = 'men';
-
-            if (catFilter.includes('tshirts'))        activePill = 't-shirts';
-            else if (catFilter.includes('bottoms'))   activePill = 'bottoms';
+            const cleanCat = catFilter.toLowerCase();
+            if (cleanCat.includes('women')) activePill = 'women';
+            else if (cleanCat.includes('men')) activePill = 'men';
+            else if (cleanCat.includes('bottom') || cleanCat.includes('pant')) activePill = 'bottoms';
+            else if (cleanCat.includes('tshirt') || cleanCat.includes('t-shirt') || cleanCat.includes('top')) activePill = 't-shirts';
+            else if (cleanCat.includes('hoodie')) activePill = 'hoodies';
 
             pills.forEach(p => {
                 p.classList.toggle('active', p.dataset.filter === activePill);
@@ -288,7 +281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
         console.error('Error fetching products:', err);
         grid.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">
-            Failed to load collection. Please check your Supabase connection.
+            Failed to load collection. Please check your network connection.
         </p>`;
     }
 
