@@ -604,22 +604,30 @@ window.openEditProduct = async function (pid) {
   catSelect.innerHTML = '';
 
   const defaultCats = [
-    { slug: 'men-tops', name: 'Men Tops', name_ar: 'توبات رجالي', gender: 'men' },
     { slug: 'men-tshirts', name: 'Men T-Shirts', name_ar: 'تيشيرتات رجالي', gender: 'men' },
+    { slug: 'men-tops', name: 'Men Tops', name_ar: 'توبات رجالي', gender: 'men' },
     { slug: 'men-shirts', name: 'Men Shirts', name_ar: 'قمصان رجالي', gender: 'men' },
     { slug: 'men-bottoms', name: 'Men Bottoms / Pants', name_ar: 'بناطيل رجالي', gender: 'men' },
-    { slug: 'women-tops', name: 'Women Tops', name_ar: 'توبات حريمي', gender: 'women' },
     { slug: 'women-tshirts', name: 'Women T-Shirts', name_ar: 'تيشيرتات حريمي', gender: 'women' },
+    { slug: 'women-tops', name: 'Women Tops', name_ar: 'توبات حريمي', gender: 'women' },
     { slug: 'women-shirts', name: 'Women Shirts', name_ar: 'قمصان حريمي', gender: 'women' },
-    { slug: 'women-bottoms', name: 'Women Bottoms', name_ar: 'بناطيل حريمي', gender: 'women' },
-    { slug: 'stealth', name: 'Stealth Drop', name_ar: 'مجموعة ستيلث', gender: 'unisex' },
+    { slug: 'women-bottoms', name: 'Women Bottoms / Pants', name_ar: 'بناطيل حريمي', gender: 'women' },
     { slug: 'hoodies', name: 'Hoodies & Sweatshirts', name_ar: 'هوديز وسويت شيرت', gender: 'unisex' },
-    { slug: 'unisex-tops', name: 'Unisex Tops', name_ar: 'توبات للجنسين', gender: 'unisex' },
     { slug: 'unisex-tshirts', name: 'Unisex T-Shirts', name_ar: 'تيشيرتات للجنسين', gender: 'unisex' },
-    { slug: 'unisex-bottoms', name: 'Unisex Bottoms', name_ar: 'بناطيل للجنسين', gender: 'unisex' }
+    { slug: 'unisex-bottoms', name: 'Unisex Bottoms', name_ar: 'بناطيل للجنسين', gender: 'unisex' },
+    { slug: 'stealth', name: 'Stealth Drop', name_ar: 'مجموعة ستيلث', gender: 'unisex' }
   ];
 
-  const catsToUse = allCategories.length > 0 ? allCategories : defaultCats;
+  // Merge default categories with custom categories from Supabase
+  const combinedMap = new Map();
+  defaultCats.forEach(c => combinedMap.set((c.slug || c.name).toLowerCase(), c));
+  if (Array.isArray(allCategories)) {
+    allCategories.forEach(c => {
+      const key = (c.slug || c.name || '').toLowerCase();
+      if (key) combinedMap.set(key, c);
+    });
+  }
+  const catsToUse = Array.from(combinedMap.values());
 
   const groups = {
     men: { label: '👨 Men — رجالي', items: [] },
@@ -631,10 +639,10 @@ window.openEditProduct = async function (pid) {
   catsToUse.forEach(cat => {
     let g = (cat.gender || '').toLowerCase();
     if (!g) {
-      const s = (cat.slug || '').toLowerCase();
-      if (s.startsWith('men-') || s.startsWith('men')) g = 'men';
-      else if (s.startsWith('women-') || s.startsWith('women')) g = 'women';
-      else if (s.startsWith('acc-') || s.startsWith('accessory')) g = 'accessories';
+      const s = (cat.slug || cat.name || '').toLowerCase();
+      if (s.startsWith('men-') || s.startsWith('men') || s.includes('رجالي')) g = 'men';
+      else if (s.startsWith('women-') || s.startsWith('women') || s.includes('حريمي') || s.includes('بناتي')) g = 'women';
+      else if (s.startsWith('acc-') || s.startsWith('accessory') || s.includes('إكسسوار')) g = 'accessories';
       else g = 'unisex';
     }
     if (!groups[g]) groups[g] = { label: g.toUpperCase(), items: [] };
