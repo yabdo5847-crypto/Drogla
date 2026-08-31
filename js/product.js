@@ -519,7 +519,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (galleryContainer) {
                 const thumbs = galleryContainer.children;
                 for (let i = 0; i < thumbs.length; i++) {
-                    thumbs[i].classList.toggle('active', i === currentSlide);
+                    const isActive = (i === currentSlide);
+                    thumbs[i].classList.toggle('active', isActive);
+                    if (isActive && typeof thumbs[i].scrollIntoView === 'function') {
+                        thumbs[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
                 }
             }
         }
