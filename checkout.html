@@ -412,32 +412,6 @@
                 <strong style="color:var(--clr-accent, #5c1a1a);">-EGP <span id="checkout-discount">0.00</span></strong>
               </div>
 
-              <!-- Coupon discount row (hidden until applied) -->
-              <div class="dg-order-summary-row" id="coupon-discount-row" style="display:none; color:#16a34a;">
-                <span id="coupon-discount-label" style="font-weight:700;">Promo Code</span>
-                <strong style="color:#16a34a;">-EGP <span id="coupon-discount-amount">0.00</span></strong>
-              </div>
-
-              <!-- Coupon code input -->
-              <div style="margin:10px 0 14px;">
-                <div style="display:flex;gap:8px;align-items:stretch;">
-                  <input
-                    type="text"
-                    id="coupon-input"
-                    placeholder="Promo / Discount Code"
-                    style="flex:1;border:1.5px solid var(--border-mid,#e0ddd8);border-radius:3px;padding:9px 12px;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.08em;background:#fff;color:#111010;outline:none;"
-                    autocomplete="off"
-                    maxlength="30"
-                  />
-                  <button
-                    type="button"
-                    id="coupon-apply-btn"
-                    style="background:#111010;color:#f5f3f0;border:none;border-radius:3px;padding:9px 16px;font-size:0.75rem;font-weight:800;letter-spacing:0.1em;cursor:pointer;white-space:nowrap;"
-                  >Apply</button>
-                </div>
-                <p id="coupon-msg" style="font-size:0.72rem;margin:5px 0 0;min-height:16px;"></p>
-              </div>
-
               <div class="dg-order-summary-row">
                 <span>Estimated Shipping</span>
                 <span id="shipping-line-wrap">+ EGP <span id="shipping-cost">0.00</span></span>
@@ -532,32 +506,6 @@
             <div class="dg-summary-row" id="checkout-discount-side-row" style="display:none; color:var(--clr-accent); font-weight:700;">
               <span id="checkout-discount-side-label">Bundle Discount</span>
               <span>-EGP <span id="checkout-discount-side">0.00</span></span>
-            </div>
-
-            <!-- Coupon discount row (desktop) -->
-            <div class="dg-summary-row" id="coupon-discount-side-row" style="display:none; color:#16a34a; font-weight:700;">
-              <span id="coupon-discount-side-label">Promo Code</span>
-              <span>-EGP <span id="coupon-discount-side-amount">0.00</span></span>
-            </div>
-
-            <!-- Coupon input (desktop) -->
-            <div style="margin:12px 0 16px;">
-              <div style="display:flex;gap:8px;align-items:stretch;">
-                <input
-                  type="text"
-                  id="coupon-input-side"
-                  placeholder="PROMO CODE"
-                  style="flex:1;border:1.5px solid var(--border-mid,#e0ddd8);border-radius:3px;padding:9px 12px;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;background:#fff;color:#111010;outline:none;"
-                  autocomplete="off"
-                  maxlength="30"
-                />
-                <button
-                  type="button"
-                  id="coupon-apply-side-btn"
-                  style="background:#111010;color:#f5f3f0;border:none;border-radius:3px;padding:9px 14px;font-size:0.75rem;font-weight:800;letter-spacing:0.1em;cursor:pointer;white-space:nowrap;"
-                >Apply</button>
-              </div>
-              <p id="coupon-side-msg" style="font-size:0.72rem;margin:5px 0 0;min-height:16px;"></p>
             </div>
 
             <div class="dg-summary-row">

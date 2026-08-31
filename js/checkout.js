@@ -59,18 +59,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const bundleDiscountAmount = Math.max(0, rawSubtotal - bundleTargetPrice);
-    let couponDiscountAmount = 0;   // set when promo code is applied
-    let appliedCouponCode = '';
-
-    // ── VALID PROMO CODES ──────────────────────────────────────────────────
-    // Valid ONLY on orders with 2 or more items
-    const VALID_CODES = {
-      'DROGLA15': { percent: 15, minQty: 2 },
-    };
-    // ──────────────────────────────────────────────────────────────────────
 
     function getSubtotalAfterDiscount() {
-      return Math.max(0, rawSubtotal - bundleDiscountAmount - couponDiscountAmount);
+      return Math.max(0, rawSubtotal - bundleDiscountAmount);
     }
 
     // Render Side Items Preview if present
@@ -124,104 +115,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             sideDiscountRow.style.display = 'none';
         }
     }
-
-    // ── Coupon Code Logic (Mobile & Desktop Synced) ────────────────────────
-    const couponInput        = document.getElementById('coupon-input');
-    const couponApplyBtn     = document.getElementById('coupon-apply-btn');
-    const couponMsg          = document.getElementById('coupon-msg');
-    const couponRow          = document.getElementById('coupon-discount-row');
-    const couponAmountEl     = document.getElementById('coupon-discount-amount');
-    const couponLabelEl      = document.getElementById('coupon-discount-label');
-
-    const couponInputSide    = document.getElementById('coupon-input-side');
-    const couponApplySideBtn = document.getElementById('coupon-apply-side-btn');
-    const couponSideMsg      = document.getElementById('coupon-side-msg');
-    const couponSideRow      = document.getElementById('coupon-discount-side-row');
-    const couponSideAmountEl = document.getElementById('coupon-discount-side-amount');
-    const couponSideLabelEl  = document.getElementById('coupon-discount-side-label');
-
-    function applyPromoCode(codeToApply) {
-      const code = String(codeToApply || '').trim().toUpperCase();
-
-      const setFeedback = (text, isSuccess) => {
-        const color = isSuccess ? '#16a34a' : '#c62828';
-        if (couponMsg) { couponMsg.style.color = color; couponMsg.textContent = text; }
-        if (couponSideMsg) { couponSideMsg.style.color = color; couponSideMsg.textContent = text; }
-      };
-
-      if (!code) {
-        setFeedback('Please enter a promo code / الرجاء إدخال كود الخصم', false);
-        return;
-      }
-
-      const rule = VALID_CODES[code];
-      if (!rule) {
-        setFeedback('✗ Invalid promo code / كود الخصم غير صحيح', false);
-        couponDiscountAmount = 0;
-        appliedCouponCode = '';
-        if (couponRow) couponRow.style.display = 'none';
-        if (couponSideRow) couponSideRow.style.display = 'none';
-        updateTotals();
-        return;
-      }
-
-      // Check condition: Must have 2 or more items in cart!
-      if (totalQty < rule.minQty) {
-        setFeedback(`✗ Code "${code}" is valid on orders with ${rule.minQty}+ items only (متاح عند شراء قطعتين أو أكثر).`, false);
-        couponDiscountAmount = 0;
-        appliedCouponCode = '';
-        if (couponRow) couponRow.style.display = 'none';
-        if (couponSideRow) couponSideRow.style.display = 'none';
-        updateTotals();
-        return;
-      }
-
-      // Calculate coupon discount
-      const baseForCoupon = Math.max(0, rawSubtotal - bundleDiscountAmount);
-      couponDiscountAmount = baseForCoupon * (rule.percent / 100);
-      appliedCouponCode = code;
-
-      // Update mobile UI
-      if (couponRow) couponRow.style.display = 'flex';
-      if (couponAmountEl) couponAmountEl.textContent = couponDiscountAmount.toFixed(2);
-      if (couponLabelEl) couponLabelEl.textContent = `Promo Code (${code} - ${rule.percent}%):`;
-
-      // Update desktop UI
-      if (couponSideRow) couponSideRow.style.display = 'flex';
-      if (couponSideAmountEl) couponSideAmountEl.textContent = couponDiscountAmount.toFixed(2);
-      if (couponSideLabelEl) couponSideLabelEl.textContent = `Promo Code (${code} - ${rule.percent}%)`;
-
-      setFeedback(`✓ Code "${code}" applied — ${rule.percent}% off!`, true);
-
-      // Disable inputs
-      [couponInput, couponInputSide].forEach(inp => {
-        if (inp) { inp.value = code; inp.disabled = true; }
-      });
-      [couponApplyBtn, couponApplySideBtn].forEach(btn => {
-        if (btn) { btn.textContent = 'Applied ✓'; btn.style.background = '#16a34a'; btn.disabled = true; }
-      });
-
-      updateTotals();
-    }
-
-    if (couponApplyBtn) {
-      couponApplyBtn.addEventListener('click', () => applyPromoCode(couponInput ? couponInput.value : ''));
-    }
-    if (couponInput) {
-      couponInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); applyPromoCode(couponInput.value); }
-      });
-    }
-
-    if (couponApplySideBtn) {
-      couponApplySideBtn.addEventListener('click', () => applyPromoCode(couponInputSide ? couponInputSide.value : ''));
-    }
-    if (couponInputSide) {
-      couponInputSide.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); applyPromoCode(couponInputSide.value); }
-      });
-    }
-    // ──────────────────────────────────────────────────────────────────────
 
     // Load Shipping Rates
     const govSelect = document.getElementById('c-gov');
@@ -451,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const { data: dbProducts, error: dbProdError } = await supabase
                 .from('products')
-                .select('id, name, price, active, sizes, stock, size')
+                .select('id, name, price, active, size')
                 .in('id', productIds);
 
             if (dbProdError) throw dbProdError;
@@ -493,14 +386,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // Calculate authoritative bundle discount
-            let authDiscountPercent = 0;
-            if (verifiedTotalQty >= 3) {
-                authDiscountPercent = 15;
-            } else if (verifiedTotalQty === 2) {
-                authDiscountPercent = 10;
+            let authTargetPrice = authoritativeSubtotal;
+            let authDiscountLabelText = '';
+            if (verifiedTotalQty === 2) {
+                authTargetPrice = 1200;
+                authDiscountLabelText = 'Bundle Offer (2 for 1200 EGP)';
+            } else if (verifiedTotalQty === 3) {
+                authTargetPrice = 1600;
+                authDiscountLabelText = 'Bundle Offer (3 for 1600 EGP)';
+            } else if (verifiedTotalQty === 4) {
+                authTargetPrice = 2000;
+                authDiscountLabelText = 'Bundle Offer (4 for 2000 EGP)';
+            } else if (verifiedTotalQty > 4) {
+                authTargetPrice = 2000 + ((verifiedTotalQty - 4) * 500);
+                authDiscountLabelText = `Bundle Offer (${verifiedTotalQty} items for ${authTargetPrice} EGP)`;
             }
 
-            const authDiscountAmount = authoritativeSubtotal * (authDiscountPercent / 100);
+            const authDiscountAmount = Math.max(0, authoritativeSubtotal - authTargetPrice);
             const authSubtotalAfterDiscount = authoritativeSubtotal - authDiscountAmount;
 
             // Calculate authoritative shipping cost
@@ -571,52 +473,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (itemsError) throw itemsError;
 
             // ─────────────────────────────────────────────────────────────────
-            // 4.5 AUTOMATIC STOCK DEDUCTION PER PRODUCT & SIZE
-            // ─────────────────────────────────────────────────────────────────
-            try {
-                for (const item of verifiedOrderItems) {
-                    const dbP = productMap.get(String(item.product_id));
-                    if (!dbP) continue;
-
-                    let currentSizes = dbP.sizes;
-                    if (typeof currentSizes === 'string' && currentSizes.trim()) {
-                        try { currentSizes = JSON.parse(currentSizes); } catch (e) { currentSizes = null; }
-                    }
-
-                    let sizesUpdated = false;
-                    if (Array.isArray(currentSizes) && currentSizes.length > 0) {
-                        currentSizes.forEach(sz => {
-                            if (String(sz.label).trim().toLowerCase() === String(item.size).trim().toLowerCase()) {
-                                const oldStock = parseInt(sz.stock, 10) || 0;
-                                sz.stock = Math.max(0, oldStock - item.quantity);
-                                sizesUpdated = true;
-                            }
-                        });
-                    }
-
-                    const updatePayload = {};
-                    if (sizesUpdated) {
-                        updatePayload.sizes = currentSizes;
-                    }
-                    if (dbP.stock !== undefined && dbP.stock !== null) {
-                        updatePayload.stock = Math.max(0, (parseInt(dbP.stock, 10) || 0) - item.quantity);
-                    }
-
-                    if (Object.keys(updatePayload).length > 0) {
-                        await supabase.from('products').update(updatePayload).eq('id', item.product_id);
-                    }
-                }
-            } catch (stockErr) {
-                console.warn('Stock decrement notice:', stockErr);
-            }
-
-            // ─────────────────────────────────────────────────────────────────
             // 5. SEND EMAIL NOTIFICATION (EmailJS)
             // ─────────────────────────────────────────────────────────────────
             let itemsString = verifiedOrderItems.map(item => `${item.quantity}x ${item.product_name} (Size: ${item.size}${item.color ? ', Color: ' + item.color : ''}) - EGP ${item.price.toFixed(2)}`).join('\n');
             itemsString += `\n\nSubtotal: EGP ${authoritativeSubtotal.toFixed(2)}`;
-            if (authDiscountPercent > 0) {
-                itemsString += `\nBundle Discount (${authDiscountPercent}%): -EGP ${authDiscountAmount.toFixed(2)}`;
+            if (authDiscountAmount > 0) {
+                itemsString += `\n${authDiscountLabelText}: -EGP ${authDiscountAmount.toFixed(2)}`;
             }
             itemsString += `\nShipping (${govName}): EGP ${authShippingCost.toFixed(2)} ${authShippingCost === 0 && currentShippingCost > 0 ? '(FREE!)' : ''}`;
             itemsString += `\nGrand Total: EGP ${authoritativeGrandTotal.toFixed(2)}`;
