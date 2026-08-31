@@ -2435,6 +2435,39 @@ body.dark-mode .dg-checkout-summary-panel { background: #1a1717; }
 }
 .dg-footer-social:hover { border-color: var(--clr-accent-lt); color: var(--clr-accent-lt); }
 
+/* Stacked branded social badges (Instagram, Facebook, TikTok) */
+.dg-footer-social-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+.dg-social-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.dg-social-badge:hover {
+  transform: translateX(4px);
+  opacity: 0.88;
+}
+.dg-social-svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  display: block;
+}
+.dg-social-name {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--clr-off-white, #f5f3f0);
+}
+
 .dg-footer-col-title {
   font-size: var(--text-xs);
   font-weight: 700;
