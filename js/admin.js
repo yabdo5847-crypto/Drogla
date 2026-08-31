@@ -1085,10 +1085,53 @@ function getVariantImagesData() {
 
   input.addEventListener('change', () => handleFiles(input.files));
 
+  async function compressImageClientSide(file, maxWidth = 1600, quality = 0.85) {
+    if (file.type.startsWith('video/')) return file;
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > maxWidth || h > maxWidth) {
+            if (w > h) {
+              h = Math.round((h * maxWidth) / w);
+              w = maxWidth;
+            } else {
+              w = Math.round((w * maxWidth) / h);
+              h = maxWidth;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              resolve(file);
+              return;
+            }
+            const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(compressedFile);
+          }, 'image/jpeg', quality);
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function handleFiles(files) {
     const textEl = zone.querySelector('.drop-zone-text');
     const origText = textEl.innerHTML;
-    textEl.innerHTML = 'Uploading files to storage... please wait.';
+    textEl.innerHTML = 'Optimizing & uploading images to storage... please wait.';
 
     const ALLOWED_ADMIN_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'video/mp4', 'video/webm'];
     const MAX_ADMIN_FILE_SIZE = 15 * 1024 * 1024; // 15MB
@@ -1096,13 +1139,16 @@ function getVariantImagesData() {
     const uploadedUrls = [];
 
     try {
-      for (const file of Array.from(files)) {
-        if (!ALLOWED_ADMIN_MIMES.includes(file.type.toLowerCase())) {
-          throw new Error(`File "${file.name}" has invalid format. Only JPEG, PNG, WEBP images and MP4/WEBM videos are allowed.`);
+      for (const rawFile of Array.from(files)) {
+        if (!ALLOWED_ADMIN_MIMES.includes(rawFile.type.toLowerCase())) {
+          throw new Error(`File "${rawFile.name}" has invalid format. Only JPEG, PNG, WEBP images and MP4/WEBM videos are allowed.`);
         }
-        if (file.size > MAX_ADMIN_FILE_SIZE) {
-          throw new Error(`File "${file.name}" exceeds maximum allowed size of 15MB.`);
+        if (rawFile.size > MAX_ADMIN_FILE_SIZE) {
+          throw new Error(`File "${rawFile.name}" exceeds maximum allowed size of 15MB.`);
         }
+
+        // Auto compress images on the fly before upload
+        const file = await compressImageClientSide(rawFile);
 
         const rawExt = file.name.split('.').pop() || 'jpg';
         const fileExt = rawExt.replace(/[^a-zA-Z0-9]/g, '').slice(0, 4);
@@ -1131,7 +1177,7 @@ function getVariantImagesData() {
       const merged = [...new Set([...existing, ...uploadedUrls])].join(', ');
       pathInput.value = merged;
       renderDropPreviews();
-      toast(`Successfully uploaded ${uploadedUrls.length} file(s)`, 'success');
+      toast(`Successfully optimized & uploaded ${uploadedUrls.length} file(s)`, 'success');
     } catch (err) {
       toast('Upload failed: ' + err.message, 'error');
     } finally {
