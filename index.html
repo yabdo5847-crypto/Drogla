@@ -592,12 +592,43 @@
         if (products && products.length > 0) {
           grid.innerHTML = '';
           products.forEach((p, idx) => {
-            const firstImage = (p.image && p.image.split(',')[0].trim()) || 'https://placehold.co/800x1000/111010/f5f3f0?text=DROGLA';
-            const isVideo = firstImage.match(/\.(mp4|webm)$/i);
+            const rawImgs = (p.image || '').split(',').map(s => s.trim()).filter(Boolean);
+            const images = rawImgs.length > 0 ? rawImgs : ['https://placehold.co/800x1000/111010/f5f3f0?text=DROGLA'];
+            const hasMultiple = images.length > 1;
 
-            const mediaHTML = isVideo
-              ? `<video class="dg-card-video" autoplay muted loop playsinline><source src="${firstImage}" type="video/mp4"/></video>`
-              : `<img src="${firstImage}" alt="${p.name}" class="dg-card-img" loading="lazy">`;
+            let mediaHTML = '';
+            if (hasMultiple) {
+              const slidesHTML = images.map((src, sIdx) => {
+                const isVideo = src.match(/\.(mp4|webm)$/i);
+                return `
+                  <div class="dg-card-slide">
+                    ${isVideo 
+                      ? `<video class="dg-card-video" autoplay muted loop playsinline><source src="${src}" type="video/mp4"/></video>` 
+                      : `<img src="${src}" alt="${p.name} - ${sIdx + 1}" class="dg-card-img" loading="lazy">`
+                    }
+                  </div>
+                `;
+              }).join('');
+
+              const dotsHTML = images.map((_, sIdx) => `<span class="dg-card-dot ${sIdx === 0 ? 'active' : ''}"></span>`).join('');
+
+              mediaHTML = `
+                <div class="dg-card-slider">
+                  <div class="dg-card-slider-track">
+                    ${slidesHTML}
+                  </div>
+                  <div class="dg-card-dots">
+                    ${dotsHTML}
+                  </div>
+                </div>
+              `;
+            } else {
+              const firstImage = images[0];
+              const isVideo = firstImage.match(/\.(mp4|webm)$/i);
+              mediaHTML = isVideo
+                ? `<video class="dg-card-video" autoplay muted loop playsinline><source src="${firstImage}" type="video/mp4"/></video>`
+                : `<img src="${firstImage}" alt="${p.name}" class="dg-card-img" loading="lazy">`;
+            }
 
             const card = document.createElement('a');
             card.href = `product.html?id=${p.id}`;
@@ -622,6 +653,36 @@
                   <span class="dg-card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
                 </div>
               </div>`;
+
+            // Hover / touch slider on homepage cards
+            if (hasMultiple) {
+              const track = card.querySelector('.dg-card-slider-track');
+              const dots = card.querySelectorAll('.dg-card-dot');
+              let cardSlide = 0;
+              let cardTimer = null;
+
+              const setCardSlide = (s) => {
+                cardSlide = (s + images.length) % images.length;
+                if (track) track.style.transform = `translateX(-${cardSlide * 100}%)`;
+                dots.forEach((d, i) => d.classList.toggle('active', i === cardSlide));
+              };
+
+              card.addEventListener('mouseenter', () => {
+                if (cardTimer) clearInterval(cardTimer);
+                cardTimer = setInterval(() => {
+                  setCardSlide(cardSlide + 1);
+                }, 1600);
+              });
+
+              card.addEventListener('mouseleave', () => {
+                if (cardTimer) {
+                  clearInterval(cardTimer);
+                  cardTimer = null;
+                }
+                setCardSlide(0);
+              });
+            }
+
             grid.appendChild(card);
           });
         } else {

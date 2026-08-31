@@ -83,18 +83,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ================================================================
-    // 4.  Build a single product card DOM element
+    // 4.  Build a single product card DOM element (with multi-image slider)
     // ================================================================
     function buildCard(p, idx, isFirst) {
-        const firstImage = (p.image && p.image.split(',')[0].trim()) ||
-            'https://placehold.co/800x1000/16161a/ffffff?text=DROGLA';
+        const rawImgs = (p.image || '').split(',').map(s => s.trim()).filter(Boolean);
+        const images = rawImgs.length > 0 ? rawImgs : ['https://placehold.co/800x1000/16161a/ffffff?text=DROGLA'];
+        const hasMultiple = images.length > 1;
 
-        const isVideo   = /\.(mp4|webm)$/i.test(firstImage);
-        const mediaHTML = isVideo
-            ? `<video class="placeholder-video" autoplay muted loop playsinline>
-                 <source src="${firstImage}" type="video/mp4"/>
-               </video>`
-            : `<img src="${firstImage}" alt="${p.name}" class="card-img">`;
+        let mediaHTML = '';
+        if (hasMultiple) {
+            const slidesHTML = images.map((src, sIdx) => {
+                const isVideo = /\.(mp4|webm)$/i.test(src);
+                return `
+                    <div class="dg-card-slide">
+                        ${isVideo 
+                            ? `<video class="placeholder-video" autoplay muted loop playsinline><source src="${src}" type="video/mp4"/></video>` 
+                            : `<img src="${src}" alt="${escapeHtml(p.name)} - ${sIdx + 1}" class="card-img" loading="${idx < 3 ? 'eager' : 'lazy'}">`
+                        }
+                    </div>
+                `;
+            }).join('');
+
+            const dotsHTML = images.map((_, sIdx) => `<span class="dg-card-dot ${sIdx === 0 ? 'active' : ''}"></span>`).join('');
+
+            mediaHTML = `
+                <div class="dg-card-slider">
+                    <div class="dg-card-slider-track">
+                        ${slidesHTML}
+                    </div>
+                    <div class="dg-card-dots">
+                        ${dotsHTML}
+                    </div>
+                </div>
+            `;
+        } else {
+            const firstImage = images[0];
+            const isVideo = /\.(mp4|webm)$/i.test(firstImage);
+            mediaHTML = isVideo
+                ? `<video class="placeholder-video" autoplay muted loop playsinline><source src="${firstImage}" type="video/mp4"/></video>`
+                : `<img src="${firstImage}" alt="${escapeHtml(p.name)}" class="card-img" loading="${idx < 3 ? 'eager' : 'lazy'}">`;
+        }
 
         const card       = document.createElement('a');
         card.href = `/product?id=${p.id}`;
@@ -125,6 +153,50 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span class="card-price">EGP ${parseFloat(p.price).toFixed(2)}</span>
                 </div>
             </div>`;
+
+        // Multi-image hover / swipe interaction
+        if (hasMultiple) {
+            const track = card.querySelector('.dg-card-slider-track');
+            const dots = card.querySelectorAll('.dg-card-dot');
+            let cardSlide = 0;
+            let cardTimer = null;
+
+            const setCardSlide = (s) => {
+                cardSlide = (s + images.length) % images.length;
+                if (track) track.style.transform = `translateX(-${cardSlide * 100}%)`;
+                dots.forEach((d, i) => d.classList.toggle('active', i === cardSlide));
+            };
+
+            // On Hover: cycle through images every 1.6s
+            card.addEventListener('mouseenter', () => {
+                if (cardTimer) clearInterval(cardTimer);
+                cardTimer = setInterval(() => {
+                    setCardSlide(cardSlide + 1);
+                }, 1600);
+            });
+
+            card.addEventListener('mouseleave', () => {
+                if (cardTimer) {
+                    clearInterval(cardTimer);
+                    cardTimer = null;
+                }
+                setCardSlide(0);
+            });
+
+            // Touch swipe on mobile
+            let touchX = 0;
+            card.addEventListener('touchstart', (e) => {
+                touchX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            card.addEventListener('touchend', (e) => {
+                const diff = touchX - e.changedTouches[0].screenX;
+                if (Math.abs(diff) > 35) {
+                    if (diff > 0) setCardSlide(cardSlide + 1);
+                    else setCardSlide(cardSlide - 1);
+                }
+            }, { passive: true });
+        }
 
         attachCursorFX(card);
         return card;
