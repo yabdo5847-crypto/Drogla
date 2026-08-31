@@ -1450,8 +1450,10 @@ body.dark-mode .dg-product-main-wrap { background: #181717; }
 .dg-product-main-img,
 .dg-product-main-video {
   width: 100%;
-  aspect-ratio: 3/4;
+  aspect-ratio: 4/5;
+  max-height: 650px;
   object-fit: cover;
+  object-position: center top;
   display: block;
   transition: opacity var(--t-base);
 }
