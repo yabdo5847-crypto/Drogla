@@ -415,7 +415,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const senderPhone = (document.getElementById('c-sender-phone')?.value || '').trim();
             const paymentMethod = paymentSelect ? paymentSelect.value : 'Cash on Delivery';
-            const fullAddress = `${govName} - ${rawAddress} (Phone: ${phone}) [Payment: ${paymentMethod}${senderPhone ? ', From: ' + senderPhone : ''}]`;
+            const itemsMeta = verifiedOrderItems.map(it => `${it.product_name} | Size: ${it.size || 'Standard'} | Color: ${it.color || 'Standard'} | Qty: ${it.quantity} | Price: ${it.price}`).join(' ;; ');
+            const fullAddress = `${govName} - ${rawAddress} (Phone: ${phone}) [Payment: ${paymentMethod}${senderPhone ? ', From: ' + senderPhone : ''}] [Items: ${itemsMeta}]`;
 
             // ─────────────────────────────────────────────────────────────────
             // 2. SECURE PROOF UPLOAD
@@ -448,7 +449,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .insert([{
                     customer_name: name.slice(0, 150),
                     email: email.slice(0, 150),
-                    address: (fullAddress + (proofUrl ? ` [Proof: ${proofUrl}]` : '')).slice(0, 500),
+                    address: (fullAddress + (proofUrl ? ` [Proof: ${proofUrl}]` : '')).slice(0, 1000),
                     total_price: parseFloat(authoritativeGrandTotal.toFixed(2))
                 }])
                 .select()
@@ -457,20 +458,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (orderError) throw orderError;
 
             // ─────────────────────────────────────────────────────────────────
-            // 4. SAVE VERIFIED ORDER ITEMS
+            // 4. SAVE VERIFIED ORDER ITEMS (WITH SIZE & COLOR)
             // ─────────────────────────────────────────────────────────────────
-            const dbOrderItems = verifiedOrderItems.map(item => ({
+            const dbOrderItemsWithVariants = verifiedOrderItems.map(item => ({
                 order_id: orderData.id,
                 product_id: item.product_id,
                 quantity: item.quantity,
-                price: item.price
+                price: item.price,
+                size: item.size || 'Standard',
+                color: item.color || 'Standard'
             }));
 
-            const { error: itemsError } = await supabase
+            let { error: itemsError } = await supabase
                 .from('order_items')
-                .insert(dbOrderItems);
+                .insert(dbOrderItemsWithVariants);
 
-            if (itemsError) throw itemsError;
+            if (itemsError && itemsError.message && (itemsError.message.includes('size') || itemsError.message.includes('color') || itemsError.code === '42703')) {
+                // If columns size/color do not exist yet in Supabase, fallback to base columns
+                const dbOrderItemsBasic = verifiedOrderItems.map(item => ({
+                    order_id: orderData.id,
+                    product_id: item.product_id,
+                    quantity: item.quantity,
+                    price: item.price
+                }));
+                const fbRes = await supabase.from('order_items').insert(dbOrderItemsBasic);
+                if (fbRes.error) throw fbRes.error;
+            } else if (itemsError) {
+                throw itemsError;
+            }
 
             // ─────────────────────────────────────────────────────────────────
             // 5. SEND EMAIL NOTIFICATION (EmailJS)

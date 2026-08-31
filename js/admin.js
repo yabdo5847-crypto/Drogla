@@ -1891,6 +1891,35 @@ window.viewOrder = async function (id) {
   const proofMatch = addressRaw.match(/\[Proof:\s*([^\]]+)\]/i);
   if (proofMatch) proofUrl = proofMatch[1].trim();
 
+  // Parse items breakdown from address metadata if available
+  const itemsMatch = addressRaw.match(/\[Items:\s*([^\]]+)\]/i);
+  let parsedMetaItems = [];
+  if (itemsMatch) {
+    parsedMetaItems = itemsMatch[1].split(';;').map(s => {
+      const parts = s.split('|').map(p => p.trim());
+      const namePart = parts[0] || '';
+      const sizePart = parts.find(p => p.toLowerCase().startsWith('size:'));
+      const colorPart = parts.find(p => p.toLowerCase().startsWith('color:'));
+      const qtyPart = parts.find(p => p.toLowerCase().startsWith('qty:'));
+      const pricePart = parts.find(p => p.toLowerCase().startsWith('price:'));
+      return {
+        name: namePart,
+        size: sizePart ? sizePart.replace(/size:\s*/i, '').trim() : '',
+        color: colorPart ? colorPart.replace(/color:\s*/i, '').trim() : '',
+        quantity: qtyPart ? qtyPart.replace(/qty:\s*/i, '').trim() : '',
+        price: pricePart ? pricePart.replace(/price:\s*/i, '').trim() : ''
+      };
+    });
+  }
+
+  // Clean shipping address display
+  cleanAddress = addressRaw
+    .replace(/\(Phone:[^)]+\)/gi, '')
+    .replace(/\[Payment:[^\]]+\]/gi, '')
+    .replace(/\[Proof:[^\]]+\]/gi, '')
+    .replace(/\[Items:[^\]]+\]/gi, '')
+    .trim();
+
   // Fetch associated order items if available
   let orderItems = [];
   try {
@@ -1900,13 +1929,41 @@ window.viewOrder = async function (id) {
 
   let itemsHtml = '';
   if (orderItems.length > 0) {
-    itemsHtml = orderItems.map(i => `
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:8px 0;">
-        <div>
-          <strong>${escapeHtml(i.products?.name || `Product #${i.product_id}`)}</strong>
-          <span style="font-size:0.72rem; color:var(--text-muted); display:block;">Qty: ${i.quantity} × ${parseFloat(i.price).toFixed(2)} EGP</span>
+    itemsHtml = orderItems.map((i, idx) => {
+      const meta = parsedMetaItems[idx] || {};
+      const sizeVal = i.size || meta.size || '';
+      const colorVal = i.color || meta.color || '';
+      const firstImg = i.products?.image ? (i.products.image.split(',')[0].trim()) : '';
+
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:10px 0; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            ${firstImg ? `<img src="${firstImg}" alt="" style="width:44px; height:44px; object-fit:cover; border-radius:4px; border:1px solid var(--border-color); flex-shrink:0;"/>` : ''}
+            <div>
+              <strong style="font-size:0.85rem; display:block; text-transform:uppercase;">${escapeHtml(i.products?.name || `Product #${i.product_id}`)}</strong>
+              <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap; align-items:center;">
+                <span style="font-size:0.72rem; color:var(--text-muted);">Qty: <strong>${i.quantity}</strong> × ${parseFloat(i.price).toFixed(2)} EGP</span>
+                ${sizeVal ? `<span style="font-size:0.68rem; padding:2px 7px; border-radius:3px; background:rgba(0,0,0,0.06); font-weight:700; border:1px solid var(--border-color);">Size: ${escapeHtml(sizeVal)}</span>` : ''}
+                ${colorVal ? `<span style="font-size:0.68rem; padding:2px 7px; border-radius:3px; background:rgba(92,26,26,0.09); color:var(--burgundy); font-weight:700; border:1px solid rgba(92,26,26,0.25);">Color: ${escapeHtml(colorVal)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <strong style="font-size:0.9rem; white-space:nowrap; color:var(--text);">${(parseFloat(i.price) * parseInt(i.quantity)).toFixed(2)} EGP</strong>
         </div>
-        <strong>${(parseFloat(i.price) * parseInt(i.quantity)).toFixed(2)} EGP</strong>
+      `;
+    }).join('');
+  } else if (parsedMetaItems.length > 0) {
+    itemsHtml = parsedMetaItems.map(m => `
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:10px 0;">
+        <div>
+          <strong style="font-size:0.85rem; display:block; text-transform:uppercase;">${escapeHtml(m.name)}</strong>
+          <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap; align-items:center;">
+            ${m.quantity ? `<span style="font-size:0.72rem; color:var(--text-muted);">Qty: <strong>${m.quantity}</strong></span>` : ''}
+            ${m.size ? `<span style="font-size:0.68rem; padding:2px 7px; border-radius:3px; background:rgba(0,0,0,0.06); font-weight:700; border:1px solid var(--border-color);">Size: ${escapeHtml(m.size)}</span>` : ''}
+            ${m.color ? `<span style="font-size:0.68rem; padding:2px 7px; border-radius:3px; background:rgba(92,26,26,0.09); color:var(--burgundy); font-weight:700; border:1px solid rgba(92,26,26,0.25);">Color: ${escapeHtml(m.color)}</span>` : ''}
+          </div>
+        </div>
+        ${m.price ? `<strong style="font-size:0.9rem; white-space:nowrap;">${parseFloat(m.price).toFixed(2)} EGP</strong>` : ''}
       </div>
     `).join('');
   } else {

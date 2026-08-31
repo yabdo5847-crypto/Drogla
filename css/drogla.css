@@ -856,11 +856,16 @@ body.dark-mode .dg-card-media { background: #1e1c1c; }
   inset: 0;
   z-index: 0;
 }
+.dg-hero-media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .dg-hero-media img,
 .dg-hero-media video {
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 30%;
 }
 
 .dg-hero-overlay {
@@ -2563,7 +2568,7 @@ body.dark-mode .dg-checkout-summary-panel { background: #1a1717; }
     min-height: 500px;
     max-height: 680px;
   }
-  .dg-hero-media img { object-position: center top; }
+  .dg-hero-media img { object-position: center 35%; }
   .dg-hero-content { padding-bottom: 2rem; }
 
   /* Manifesto */
@@ -2963,7 +2968,7 @@ body.dark-mode .mavin-color-thumb.active { border-color: #fff; box-shadow: 0 0 0
 /* dg-hero-media-img: full-cover hero image */
 .dg-hero-media-img {
   width: 100%; height: 100%;
-  object-fit: cover; object-position: center top; display: block;
+  object-fit: cover; object-position: center 38%; display: block;
 }
 
 /* dg-drawer-submenu: mobile drawer sub-links */

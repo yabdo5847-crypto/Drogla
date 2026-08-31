@@ -6,6 +6,8 @@
 ALTER TABLE IF EXISTS public.products ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true;
 ALTER TABLE IF EXISTS public.categories ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true;
 ALTER TABLE IF EXISTS public.shipping_rates ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true;
+ALTER TABLE IF EXISTS public.order_items ADD COLUMN IF NOT EXISTS size TEXT;
+ALTER TABLE IF EXISTS public.order_items ADD COLUMN IF NOT EXISTS color TEXT;
 
 -- 2. إنشاء جدول الأدمن (admin_users)
 CREATE TABLE IF NOT EXISTS public.admin_users (
